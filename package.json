@@ -1,0 +1,24 @@
+{
+  "name": "beans-docs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Documentation website for the Beans programming language.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "coverage": "node scripts/check-coverage.mjs",
+    "links": "node scripts/check-links.mjs",
+    "examples": "node scripts/check-examples.mjs",
+    "check": "npm run coverage && npm run links && npm run examples",
+    "verify": "npm run coverage && npm run links && npm run build && npm run examples"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.7",
+    "astro": "^7.2.0",
+    "sharp": "^0.35.3"
+  }
+}

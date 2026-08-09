@@ -1,0 +1,23 @@
+/* Beans docs theme. Warm accent, easy on the eyes in light and dark. */
+:root {
+  --sl-color-accent-low: #3a2a00;
+  --sl-color-accent: #c98a12;
+  --sl-color-accent-high: #f0d89a;
+  --sl-color-white: #ffffff;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #f7e9c5;
+  --sl-color-accent: #a6720a;
+  --sl-color-accent-high: #4a3200;
+}
+
+/* Slightly tighter reference tables. */
+.sl-markdown-content table {
+  font-size: 0.9rem;
+}
+
+/* Make inline signatures readable. */
+.sl-markdown-content code {
+  font-variant-ligatures: none;
+}

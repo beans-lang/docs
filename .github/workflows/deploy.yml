@@ -1,0 +1,107 @@
+# Build the Beans documentation site, run its checks, and deploy to GitHub Pages.
+#
+# This workflow lives in the website repository. It only builds and publishes the
+# static docs — it never runs the compiler's own CI, tests, or release jobs.
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+    # Run only when website source, the coverage tooling, or this workflow change.
+    # (The upstream doc source — the Beans compiler and stdlib — lives in a
+    # separate repository; use the manual trigger below to rebuild after it moves.)
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'data/**'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+# Least privilege: read the repo, write Pages, and mint the deploy token.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; cancel an in-progress run when a newer one starts.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+
+      # The coverage check reads the Beans stdlib source (public) to build its
+      # inventory. The builtin C++ ABI comes from the committed snapshot at
+      # data/builtin-abi.json, so the private bootstrap submodule is not needed.
+      - name: Checkout Beans compiler (coverage source)
+        uses: actions/checkout@v4
+        with:
+          repository: beans-lang/beans
+          path: beans-src
+
+      # A release beansc is required so the example check actually compiles the
+      # examples and doc snippets. The job fails if it cannot be installed.
+      - name: Install beansc
+        run: |
+          curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh
+          echo "$HOME/.beans/bin" >> "$GITHUB_PATH"
+
+      - name: Verify beansc is available
+        run: |
+          "$HOME/.beans/bin/beansc" --version
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Coverage check
+        env:
+          BEANS_REPO: ${{ github.workspace }}/beans-src
+        run: npm run coverage
+
+      - name: Link check
+        run: npm run links
+
+      - name: Build site
+        env:
+          # Project page base path for GitHub Pages
+          # (https://beans-lang.github.io/website/).
+          BASE: /website
+        run: npm run build
+
+      - name: Example check
+        env:
+          BEANS_REPO: ${{ github.workspace }}/beans-src
+          # Fail (do not skip) if beansc is somehow unavailable in CI.
+          REQUIRE_BEANSC: '1'
+        run: npm run examples
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

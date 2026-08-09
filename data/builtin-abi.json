@@ -1,0 +1,740 @@
+{
+  "methods": [
+    {
+      "recv": "string",
+      "name": "len"
+    },
+    {
+      "recv": "string",
+      "name": "is_empty"
+    },
+    {
+      "recv": "string",
+      "name": "last"
+    },
+    {
+      "recv": "string",
+      "name": "first"
+    },
+    {
+      "recv": "string",
+      "name": "contains"
+    },
+    {
+      "recv": "string",
+      "name": "starts_with"
+    },
+    {
+      "recv": "string",
+      "name": "ends_with"
+    },
+    {
+      "recv": "string",
+      "name": "find"
+    },
+    {
+      "recv": "string",
+      "name": "rfind"
+    },
+    {
+      "recv": "string",
+      "name": "slice"
+    },
+    {
+      "recv": "string",
+      "name": "byte_at"
+    },
+    {
+      "recv": "string",
+      "name": "find_byte"
+    },
+    {
+      "recv": "string",
+      "name": "range_equals"
+    },
+    {
+      "recv": "string",
+      "name": "parse_int_range_or"
+    },
+    {
+      "recv": "string",
+      "name": "trim"
+    },
+    {
+      "recv": "string",
+      "name": "trim_start"
+    },
+    {
+      "recv": "string",
+      "name": "trim_end"
+    },
+    {
+      "recv": "string",
+      "name": "to_upper"
+    },
+    {
+      "recv": "string",
+      "name": "to_lower"
+    },
+    {
+      "recv": "string",
+      "name": "replace"
+    },
+    {
+      "recv": "string",
+      "name": "repeat"
+    },
+    {
+      "recv": "string",
+      "name": "split"
+    },
+    {
+      "recv": "string",
+      "name": "lines"
+    },
+    {
+      "recv": "string",
+      "name": "to_int"
+    },
+    {
+      "recv": "string",
+      "name": "to_float"
+    },
+    {
+      "recv": "string",
+      "name": "to_decimal"
+    },
+    {
+      "recv": "string",
+      "name": "chars"
+    },
+    {
+      "recv": "string",
+      "name": "count_chars"
+    },
+    {
+      "recv": "Bytes",
+      "name": "len"
+    },
+    {
+      "recv": "Bytes",
+      "name": "reserve"
+    },
+    {
+      "recv": "Bytes",
+      "name": "resize"
+    },
+    {
+      "recv": "Bytes",
+      "name": "fill"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get"
+    },
+    {
+      "recv": "Bytes",
+      "name": "set"
+    },
+    {
+      "recv": "Bytes",
+      "name": "push"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_u8"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_u16"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_u32"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_u64"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_i64"
+    },
+    {
+      "recv": "Bytes",
+      "name": "put_u8"
+    },
+    {
+      "recv": "Bytes",
+      "name": "put_u16"
+    },
+    {
+      "recv": "Bytes",
+      "name": "put_u32"
+    },
+    {
+      "recv": "Bytes",
+      "name": "put_u64"
+    },
+    {
+      "recv": "Bytes",
+      "name": "put_i64"
+    },
+    {
+      "recv": "Bytes",
+      "name": "slice"
+    },
+    {
+      "recv": "Bytes",
+      "name": "copy_from"
+    },
+    {
+      "recv": "Bytes",
+      "name": "append"
+    },
+    {
+      "recv": "Bytes",
+      "name": "append_string"
+    },
+    {
+      "recv": "Bytes",
+      "name": "append_i64"
+    },
+    {
+      "recv": "Bytes",
+      "name": "append_range"
+    },
+    {
+      "recv": "Bytes",
+      "name": "to_string_until_nul"
+    },
+    {
+      "recv": "Bytes",
+      "name": "to_string"
+    },
+    {
+      "recv": "Bytes",
+      "name": "append_uvarint"
+    },
+    {
+      "recv": "Bytes",
+      "name": "get_uvarint"
+    },
+    {
+      "recv": "Bytes",
+      "name": "crc32"
+    },
+    {
+      "recv": "File",
+      "name": "read_at"
+    },
+    {
+      "recv": "File",
+      "name": "write_at"
+    },
+    {
+      "recv": "File",
+      "name": "read"
+    },
+    {
+      "recv": "File",
+      "name": "write"
+    },
+    {
+      "recv": "File",
+      "name": "seek"
+    },
+    {
+      "recv": "File",
+      "name": "seek_from_end"
+    },
+    {
+      "recv": "File",
+      "name": "tell"
+    },
+    {
+      "recv": "File",
+      "name": "size"
+    },
+    {
+      "recv": "File",
+      "name": "truncate"
+    },
+    {
+      "recv": "File",
+      "name": "sync"
+    },
+    {
+      "recv": "File",
+      "name": "close"
+    },
+    {
+      "recv": "File",
+      "name": "lock"
+    },
+    {
+      "recv": "File",
+      "name": "try_lock"
+    },
+    {
+      "recv": "File",
+      "name": "unlock"
+    },
+    {
+      "recv": "MMap",
+      "name": "len"
+    },
+    {
+      "recv": "MMap",
+      "name": "get_u8"
+    },
+    {
+      "recv": "MMap",
+      "name": "get_u16"
+    },
+    {
+      "recv": "MMap",
+      "name": "get_u32"
+    },
+    {
+      "recv": "MMap",
+      "name": "get_u64"
+    },
+    {
+      "recv": "MMap",
+      "name": "get_i64"
+    },
+    {
+      "recv": "MMap",
+      "name": "put_u8"
+    },
+    {
+      "recv": "MMap",
+      "name": "put_u16"
+    },
+    {
+      "recv": "MMap",
+      "name": "put_u32"
+    },
+    {
+      "recv": "MMap",
+      "name": "put_u64"
+    },
+    {
+      "recv": "MMap",
+      "name": "put_i64"
+    },
+    {
+      "recv": "MMap",
+      "name": "read"
+    },
+    {
+      "recv": "MMap",
+      "name": "write"
+    },
+    {
+      "recv": "MMap",
+      "name": "flush"
+    },
+    {
+      "recv": "MMap",
+      "name": "flush_range"
+    },
+    {
+      "recv": "MMap",
+      "name": "resize"
+    },
+    {
+      "recv": "MMap",
+      "name": "close"
+    }
+  ],
+  "statics": [
+    {
+      "cls": "Bytes",
+      "name": "from"
+    },
+    {
+      "cls": "Bytes",
+      "name": "uvarint_size"
+    },
+    {
+      "cls": "File",
+      "name": "exists"
+    },
+    {
+      "cls": "File",
+      "name": "size"
+    },
+    {
+      "cls": "File",
+      "name": "remove"
+    },
+    {
+      "cls": "File",
+      "name": "rename"
+    },
+    {
+      "cls": "File",
+      "name": "open"
+    },
+    {
+      "cls": "Dir",
+      "name": "create"
+    },
+    {
+      "cls": "Dir",
+      "name": "create_all"
+    },
+    {
+      "cls": "Dir",
+      "name": "list"
+    },
+    {
+      "cls": "Dir",
+      "name": "remove"
+    },
+    {
+      "cls": "Dir",
+      "name": "remove_all"
+    },
+    {
+      "cls": "Dir",
+      "name": "exists"
+    },
+    {
+      "cls": "Dir",
+      "name": "temp_path"
+    },
+    {
+      "cls": "Dir",
+      "name": "sync"
+    },
+    {
+      "cls": "Dir",
+      "name": "walk"
+    },
+    {
+      "cls": "MMap",
+      "name": "open"
+    },
+    {
+      "cls": "MMap",
+      "name": "open_shared_memory"
+    },
+    {
+      "cls": "MMap",
+      "name": "unlink_shared_memory"
+    }
+  ],
+  "fns": [
+    {
+      "module": "std.os",
+      "name": "args"
+    },
+    {
+      "module": "std.os",
+      "name": "env"
+    },
+    {
+      "module": "std.os",
+      "name": "exit"
+    },
+    {
+      "module": "std.c",
+      "name": "errno"
+    },
+    {
+      "module": "std.c",
+      "name": "set_errno"
+    },
+    {
+      "module": "std.io",
+      "name": "read_line"
+    },
+    {
+      "module": "std.io",
+      "name": "read_all"
+    },
+    {
+      "module": "std.proc",
+      "name": "run"
+    },
+    {
+      "module": "std.proc",
+      "name": "start"
+    },
+    {
+      "module": "std.proc",
+      "name": "status"
+    },
+    {
+      "module": "std.proc",
+      "name": "signal"
+    },
+    {
+      "module": "std.proc",
+      "name": "write"
+    },
+    {
+      "module": "std.proc",
+      "name": "read"
+    },
+    {
+      "module": "std.proc",
+      "name": "close"
+    },
+    {
+      "module": "std.sock",
+      "name": "listen"
+    },
+    {
+      "module": "std.sock",
+      "name": "connect"
+    },
+    {
+      "module": "std.sock",
+      "name": "udp_bind"
+    },
+    {
+      "module": "std.sock",
+      "name": "accept"
+    },
+    {
+      "module": "std.sock",
+      "name": "send"
+    },
+    {
+      "module": "std.sock",
+      "name": "recv"
+    },
+    {
+      "module": "std.sock",
+      "name": "send_to"
+    },
+    {
+      "module": "std.sock",
+      "name": "recv_from"
+    },
+    {
+      "module": "std.sock",
+      "name": "address"
+    },
+    {
+      "module": "std.sock",
+      "name": "shutdown"
+    },
+    {
+      "module": "std.sock",
+      "name": "set_timeouts"
+    },
+    {
+      "module": "std.sock",
+      "name": "set_nonblocking"
+    },
+    {
+      "module": "std.sock",
+      "name": "close"
+    },
+    {
+      "module": "std.sock",
+      "name": "resolve"
+    },
+    {
+      "module": "std.sig",
+      "name": "watch"
+    },
+    {
+      "module": "std.sig",
+      "name": "pending"
+    },
+    {
+      "module": "std.sig",
+      "name": "close"
+    },
+    {
+      "module": "std.sig",
+      "name": "raise"
+    },
+    {
+      "module": "std.sig",
+      "name": "number"
+    },
+    {
+      "module": "std.sig",
+      "name": "name"
+    },
+    {
+      "module": "std.dl",
+      "name": "open"
+    },
+    {
+      "module": "std.dl",
+      "name": "symbol"
+    },
+    {
+      "module": "std.dl",
+      "name": "global_symbol"
+    },
+    {
+      "module": "std.dl",
+      "name": "close"
+    },
+    {
+      "module": "std.dl",
+      "name": "call0"
+    },
+    {
+      "module": "std.dl",
+      "name": "call1"
+    },
+    {
+      "module": "std.dl",
+      "name": "call2"
+    },
+    {
+      "module": "std.dl",
+      "name": "call3"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_void0"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_void1"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_void2"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_void3"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_f64_1"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_f64_i32"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_f32_1"
+    },
+    {
+      "module": "std.dl",
+      "name": "call_f32_i32"
+    },
+    {
+      "module": "std.ready",
+      "name": "open"
+    },
+    {
+      "module": "std.ready",
+      "name": "add"
+    },
+    {
+      "module": "std.ready",
+      "name": "remove"
+    },
+    {
+      "module": "std.ready",
+      "name": "wait"
+    },
+    {
+      "module": "std.ready",
+      "name": "wake"
+    },
+    {
+      "module": "std.ready",
+      "name": "close"
+    },
+    {
+      "module": "std.ready",
+      "name": "task_slot"
+    },
+    {
+      "module": "std.ready",
+      "name": "set_task_slot"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_note"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_bind"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_forget"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_stale"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_dead"
+    },
+    {
+      "module": "std.ready",
+      "name": "park_shutdown"
+    },
+    {
+      "module": "std.time",
+      "name": "monotonic_nanos"
+    },
+    {
+      "module": "std.time",
+      "name": "wall_nanos"
+    },
+    {
+      "module": "std.time",
+      "name": "sleep_nanos"
+    },
+    {
+      "module": "std.time",
+      "name": "wall_millis"
+    },
+    {
+      "module": "std.time",
+      "name": "monotonic_millis"
+    },
+    {
+      "module": "std.time",
+      "name": "sleep_millis"
+    },
+    {
+      "module": "std.random",
+      "name": "bytes"
+    },
+    {
+      "module": "std.random",
+      "name": "u64"
+    },
+    {
+      "module": "std.random",
+      "name": "below"
+    },
+    {
+      "module": "std.fmt",
+      "name": "pad_left"
+    },
+    {
+      "module": "std.fmt",
+      "name": "pad_right"
+    },
+    {
+      "module": "std.fmt",
+      "name": "float"
+    },
+    {
+      "module": "std.fmt",
+      "name": "decimal"
+    }
+  ]
+}
