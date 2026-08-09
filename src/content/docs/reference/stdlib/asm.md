@@ -38,6 +38,7 @@ There are no allowed templates on 32-bit x86 or on wasm32. The value-returning
 `asm.value` rows exist only on 64-bit architectures; the barrier-style templates
 that take no operand go through `asm.run`.
 
+<!-- beans:fragment -->
 ```beans
 import std.asm
 

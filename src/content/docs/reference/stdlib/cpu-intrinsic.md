@@ -44,6 +44,7 @@ three cases: inside an `if cpu.has(...)` guard for that feature, from another
 function that already requires the feature, or in a build made with
 `--features +avx2`.
 
+<!-- beans:fragment -->
 ```beans
 import std.io
 import std.cpu
