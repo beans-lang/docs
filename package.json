@@ -11,10 +11,12 @@
     "preview": "astro preview",
     "astro": "astro",
     "coverage": "node scripts/check-coverage.mjs",
+    "coverage:write": "node scripts/check-coverage.mjs --write",
     "links": "node scripts/check-links.mjs",
     "examples": "node scripts/check-examples.mjs",
-    "check": "npm run coverage && npm run links && npm run examples",
-    "verify": "npm run coverage && npm run links && npm run build && npm run examples"
+    "test:signatures": "node scripts/test-signatures.mjs",
+    "check": "npm run test:signatures && npm run coverage && npm run links && npm run examples",
+    "verify": "npm run test:signatures && npm run coverage && npm run links && npm run build && npm run examples"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.7",

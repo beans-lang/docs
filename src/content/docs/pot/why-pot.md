@@ -5,18 +5,16 @@ description: What POT is, why the name, and the four ideas you need to keep apar
 
 POT is the package manager built into Beans. It works on a file named
 `beans.pot` that sits at the root of your project. That file is the manifest:
-it names your module and lists the Git dependencies you pull in. If you have
-used other languages, `beans.pot` is Beans' answer to `Cargo.toml` or `go.mod`.
+it names your module and lists the Git dependencies you pull in.
 
-## The name is a pun, not an acronym
+## Where the name comes from
 
 POT does not stand for anything. There is no hidden expansion in the source,
 the README, the spec, or these docs. The name is a joke on the project's own
 name: Beans keeps its packages in a **pot of beans**. The manifest file is
 `beans.pot`, and the command that works on it is `beansc pot`.
 
-If you come from Go and type the command you would type there, Beans tells you
-plainly:
+Type a command Beans does not have, like `mod`, and it says so plainly:
 
 ```text
 error: 'mod' is not a Beans command; use 'beansc pot tidy' or 'beansc pot update'
@@ -45,16 +43,5 @@ Here `shop.money` is the import path, and `cash` is the import binding you use
 in this one file. The package itself still calls itself `money` in its
 `package` clause; you just chose to call it `cash` here.
 
-## Where to go next
-
-- [The beans.pot manifest](/pot/manifest/) — every field and how to write it.
-- [Dependencies and the lock file](/pot/dependencies/) — Git pins, `require`,
-  and `beans.lock`.
-- [Local packages and imports](/pot/local-packages/) — one folder, one package,
-  and how import paths resolve.
-- [Reproducible builds](/pot/reproducible/) — the content-addressed cache,
-  `--locked`, and `--offline`.
-- [The pot command reference](/pot/commands/) — `tidy` and `update`.
-
-See also the [imports guide](/guide/imports/) for how imports work in day-to-day
-code.
+The [beans.pot manifest](/pot/manifest/) page covers every field, and the
+[imports guide](/guide/imports/) shows how imports work in day-to-day code.

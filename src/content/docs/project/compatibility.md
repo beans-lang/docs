@@ -44,14 +44,10 @@ dependency network access and accepts only a cached tree matching the lock. See
 
 ## Git is the dependency source
 
-Beans dependencies come from Git, and that stays true for v1 — there is no
+Beans dependencies come from Git, and that stays true for v1: there is no
 central registry required. A dependency is a `host/owner/repo` path plus a ref
 in [`beans.pot`](/pot/manifest/), resolved to an exact commit and tree in
 `beans.lock`. Because the source is Git and the lock is exact, you do not depend
 on a package server staying up.
 
-## See also
-
-- [Versioning](/project/versioning/)
-- [Reproducible builds](/pot/reproducible/)
-- [Maturity and platforms](/intro/maturity/)
+See [Maturity and platforms](/intro/maturity/) for the wider status.

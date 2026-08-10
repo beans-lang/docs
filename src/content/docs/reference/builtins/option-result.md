@@ -3,6 +3,10 @@ title: Option, Result, and Error
 description: How Beans handles missing values and failures with Option, Result, Error, the ? operator, and combinators.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 11 instance methods · 2 public fields · 4 prelude values.
+<!-- coverage:summary:end -->
+
 Beans has no null and no exceptions. Instead it gives you two builtin enums and one
 builtin class for "maybe" and "failed" answers. This page explains all three and
 the tools to work with them. For the wider picture, see
@@ -12,8 +16,8 @@ the tools to work with them. For the wider picture, see
 
 `Option<T>` is a value that may be missing. It is a builtin enum with two variants:
 
-- `some(value: T)` — there is a value.
-- `none` — there is nothing.
+- `some(value: T)`: there is a value.
+- `none`: there is nothing.
 
 You make one with the prelude names `some` and `none`, and read it with `match`:
 
@@ -29,8 +33,8 @@ match found {
 
 `Result<T, E>` is either a value or an error. It is a builtin enum:
 
-- `ok(value: T)` — success, with a value.
-- `err(error: E)` — failure, with an error.
+- `ok(value: T)`: success, with a value.
+- `err(error: E)`: failure, with an error.
 
 `Result<T>` on its own means `Result<T, Error>`, using the standard `Error` type.
 
@@ -44,9 +48,9 @@ fn parse(s: string) -> Result<int> {
 
 `Error` is the standard builtin error class. It has these fields:
 
-- `msg: string` — a human-readable message.
-- `kind: string` — a short slug naming the kind of error, like `"eof"`.
-- a `cause` — an optional underlying error.
+- `msg: string`: a human-readable message.
+- `kind: string`: a short slug naming the kind of error, like `"eof"`.
+- a `cause`: an optional underlying error.
 
 ## some, none, ok, err are prelude names
 
@@ -97,15 +101,25 @@ that should never happen. See [Prelude functions](/reference/builtins/functions/
 
 ## Option methods
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `or(fallback)` | `T` | the value, or `fallback` if `none` |
-| `expect(msg)` | `T` | the value, or panic with `msg` if `none` |
-| `is_some()` | `bool` | true if there is a value |
-| `is_none()` | `bool` | true if empty |
-| `map(fn)` | `Option<U>` | apply `fn` to the value if present |
-| `and_then(fn)` | `Option<U>` | apply `fn` that itself returns an `Option` |
-| `filter(fn)` | `Option<T>` | keep the value only if `fn` returns true |
+```beans
+Option<T>.or(T) -> T
+Option<T>.expect(string) -> T
+Option<T>.is_some() -> bool
+Option<T>.is_none() -> bool
+```
+
+- `or(fallback)` returns the value, or `fallback` if `none`.
+- `expect(msg)` returns the value, or panics with `msg` if `none`.
+- `is_some()` is true when there is a value; `is_none()` is true when there is
+  not.
+
+`Option<T>` also has three higher-order combinators, generic over the closure's
+result:
+
+- `map(fn(T) -> U) -> Option<U>` applies `fn` to the value if present.
+- `and_then(fn(T) -> Option<U>) -> Option<U>` applies an `fn` that itself returns
+  an `Option`.
+- `filter(fn(T) -> bool) -> Option<T>` keeps the value only if `fn` returns true.
 
 ```beans
 let n: int = "7".to_int().or(0)
@@ -115,14 +129,22 @@ let upper: Option<string> = name.map(fn(s: string) -> string { s.to_upper() })
 
 ## Result methods
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `or(fallback)` | `T` | the value, or `fallback` if `err` |
-| `expect(msg)` | `T` | the value, or panic with `msg` if `err` |
-| `is_ok()` | `bool` | true on success |
-| `map(fn)` | `Result<U>` | apply `fn` to the value on success |
-| `and_then(fn)` | `Result<U>` | apply `fn` that itself returns a `Result` |
-| `recover(fn(Error) -> T)` | `T` | turn an error into a value |
+```beans
+Result<T>.or(T) -> T
+Result<T>.expect(string) -> T
+Result<T>.is_ok() -> bool
+```
+
+- `or(fallback)` returns the value, or `fallback` if `err`.
+- `expect(msg)` returns the value, or panics with `msg` if `err`.
+- `is_ok()` is true on success.
+
+`Result<T>` has three higher-order combinators as well:
+
+- `map(fn(T) -> U) -> Result<U>` applies `fn` to the value on success.
+- `and_then(fn(T) -> Result<U>) -> Result<U>` applies an `fn` that itself returns
+  a `Result`.
+- `recover(fn(Error) -> T) -> T` turns an error into a value.
 
 ```beans
 let count: int = "42".to_int().recover(fn(e: Error) -> int { 0 })
@@ -134,8 +156,40 @@ its type must implement `Clone`. There is no `std.option` or `std.result` packag
 these are builtin methods.
 :::
 
+## A worked example
+
+`?` propagates the first error; `match` handles both arms; `err(msg, kind)` sets a
+kind slug you can read back off `Error`:
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn parse_qty(s: string) -> Result<int> {
+    let n: int = s.to_int()?
+    if n < 0 {
+        return err("quantity cannot be negative", "invalid")
+    }
+    return ok(n)
+}
+
+fn main() {
+    match parse_qty("42") {
+        ok(n) => io.println("qty {n}"),
+        err(e) => io.println("{e.kind}: {e.msg}"),
+    }
+    match parse_qty("-3") {
+        ok(n) => io.println("qty {n}"),
+        err(e) => io.println("{e.kind}: {e.msg}"),
+    }
+
+    let fallback: int = parse_qty("nope").or(0)
+    io.println("fallback {fallback}")
+}
+```
+
 ## See also
 
 - [Error handling](/guide/errors/) in the language guide.
-- [Prelude functions](/reference/builtins/functions/) — `panic` in full.
-- [string](/reference/builtins/string/) — `to_int`, `to_float`, `to_decimal` return `Result`.
+- [Prelude functions](/reference/builtins/functions/), `panic` in full.
+- [string](/reference/builtins/string/), `to_int`, `to_float`, `to_decimal` return `Result`.

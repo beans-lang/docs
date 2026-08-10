@@ -5,8 +5,8 @@ description: Beans has no null and no exceptions. Absence is Option, failure is 
 
 Beans has **no null** and **no exceptions**. Two builtin enums cover their jobs:
 
-- `Option<T>` — a value that may be absent: `some(value)` or `none`.
-- `Result<T, E>` — an operation that may fail: `ok(value)` or `err(error)`.
+- `Option<T>`: a value that may be absent, either `some(value)` or `none`.
+- `Result<T, E>`: an operation that may fail, either `ok(value)` or `err(error)`.
 
 The core rule: **a function that can fail says so in its return type.**
 
@@ -36,8 +36,8 @@ fn parse_age(s: string) -> Result<int> {
 `Result<T>` is short for `Result<T, Error>`. `Error` is a builtin class with a
 message and a slug:
 
-- `msg: string` — the human-readable message.
-- `kind: string` — a short slug like `not_found`, `eof`, `timeout`, `invalid`.
+- `msg: string`: the human-readable message.
+- `kind: string`: a short slug like `not_found`, `eof`, `timeout`, or `invalid`.
 
 Build an error in three ways:
 
@@ -94,20 +94,38 @@ let count: int = parsed.recover(fn(e: Error) -> int { return 0 })
 - `Result` has `map`, `and_then`, `recover`, `or`, `expect`, `is_ok`.
 
 These combinators copy the active payload, so its type must implement `Clone`.
-They are instance methods on the value — there is no `std.option` or
+They are instance methods on the value; there is no `std.option` or
 `std.result` package.
 
 ## panic
 
 For the truly unrecoverable, `panic(message)` reports the call location and
 message, then exits with status 3. It never returns and does not run
-[`defer`](/guide/control-flow/) blocks. Use it for bugs, not for expected
-failures — expected failures are what `Result` is for.
+[`defer`](/guide/control-flow/) blocks. Use it for bugs. Expected failures are
+what `Result` is for.
 
-## Next
+## A complete example
 
-- [Pattern matching](/guide/pattern-matching/)
-- [Option and Result reference](/reference/builtins/option-result/)
-- [Control flow](/guide/control-flow/)
+Propagating with `?`, then handling with `match`:
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+```beans
+import std.io
+
+fn parse_positive(s: string) -> Result<int> {
+    let n: int = s.to_int()?          // returns the error up on failure
+    if n < 0 {
+        return err("negative", "invalid")
+    }
+    return ok(n)
+}
+
+fn main() {
+    match parse_positive("42") {
+        ok(n)  => io.println("got {n}"),
+        err(e) => io.println("bad: {e.msg} ({e.kind})"),
+    }
+}
+```
+
+The full method list lives in the
+[Option and Result reference](/reference/builtins/option-result/).

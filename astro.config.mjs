@@ -3,12 +3,12 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import fs from 'node:fs';
 
-// GitHub Pages project-page settings. This is the `beans-lang/website` repo, so
-// a project page publishes at https://beans-lang.github.io/website/ and the base
-// path is "/website". Override with the SITE / BASE env vars for a different
-// deployment (e.g. a custom domain at the root, or a repo renamed to `beans`).
+// GitHub Pages project-page settings. This is the `beans-lang/docs` repo, so a
+// project page publishes at https://beans-lang.github.io/docs/ and the base path
+// is "/docs". Override with the SITE / BASE env vars for a different deployment
+// (for example a custom domain served at the root).
 const SITE = process.env.SITE ?? 'https://beans-lang.github.io';
-const BASE = process.env.BASE ?? '/website';
+const BASE = process.env.BASE ?? '/docs';
 
 // Beans syntax highlighting. We reuse the maintained TextMate grammars from the
 // editors repository (source.beans / source.beans-manifest) so highlighting on
@@ -27,7 +27,7 @@ const beansPotGrammar = {
 // Astro does not prepend the configured `base` to plain absolute links written
 // inside Markdown ( [x](/guide/variables/) ). We write internal links base-less
 // and this tiny rehype plugin rewrites them at build time, so the same content
-// works both locally and under the /beans/ project path.
+// works both locally and under the /docs/ project path.
 function rehypeBaseLinks() {
   const base = BASE.replace(/\/$/, '');
   const walk = (node) => {
@@ -61,8 +61,8 @@ export default defineConfig({
     starlight({
       title: 'Beans',
       description:
-        'The official documentation for Beans — a small OOP systems language with Java-style objects, a Go-sized grammar, predictable ownership, and native systems access.',
-      tagline: 'A small OOP systems language.',
+        'The official documentation for Beans, a small object-oriented systems language with classes, interfaces, predictable ownership, and direct systems access.',
+      tagline: 'A small object-oriented systems language.',
       social: [
         {
           icon: 'github',
@@ -71,7 +71,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: 'https://github.com/beans-lang/website/edit/main/',
+        baseUrl: 'https://github.com/beans-lang/docs/edit/main/',
       },
       lastUpdated: true,
       expressiveCode: {
@@ -221,7 +221,6 @@ export default defineConfig({
             { label: 'Release process', slug: 'project/release' },
           ],
         },
-        { label: 'Documentation coverage', slug: 'docs-coverage' },
       ],
     }),
   ],

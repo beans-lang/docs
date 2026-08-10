@@ -29,8 +29,9 @@ always required.
 let grade: string = if score >= 90 { "a" } else { "b" }
 ```
 
-There is no `return` inside — that is deliberate. `return` always means "leave
-the function". So the rule is:
+There is no `return` inside these branches. `return` always means "leave the
+function", so a `return` in a branch would exit the whole function instead of
+producing the branch value. The rule is:
 
 - **Statement position:** branches hold statements; `return` leaves the
   function as usual.
@@ -38,7 +39,8 @@ the function". So the rule is:
   expression is the value. Need several statements? Use a `var` and the
   statement form.
 
-`match` works the same way — see [Pattern matching](/guide/pattern-matching/):
+`match` works the same way. [Pattern matching](/guide/pattern-matching/) covers
+the pattern shapes:
 
 ```beans
 let label: string = match code {
@@ -51,8 +53,9 @@ let label: string = match code {
 
 ## defer
 
-`defer` schedules an expression to run when the function exits — including
-through `return` and `?` — newest first, and before local destruction:
+`defer` schedules an expression to run when the function exits, including
+through `return` and `?`. Deferred expressions run newest first, and before
+local destruction:
 
 ```beans
 fn read_config(path: string) -> Result<string> {
@@ -64,19 +67,40 @@ fn read_config(path: string) -> Result<string> {
 
 Rules:
 
-- `defer` must sit at the top level of the function body, not inside
-  `if`/`for`/blocks — it is a function-exit hook.
+- `defer` must sit at the top level of the function body, not inside an `if`, a
+  `for`, or a nested block. It is a function-exit hook, and the checker rejects
+  registering one from a nested position.
 - A **panic** exits the process without running defers, and a panic inside a
   defer is itself fatal.
 - `?` is not allowed inside a deferred expression, because the function's return
   path is already being processed.
 
-This is Go's best idea, minus the unwinding.
+Use `defer` to pair a cleanup with the acquisition it undoes, so the cleanup
+runs on every exit path. It is the usual way to close a `File`, unlock a
+resource, or close a `Channel`.
 
-## Next
+## A complete program
 
-- [Pattern matching](/guide/pattern-matching/)
-- [Option and Result](/guide/errors/)
-- [Concurrency](/guide/concurrency/)
+This puts the loop, `match`, `if`, and value position together:
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn classify(n: int) -> string {
+    return match n {
+        0        => "zero",
+        1 | 2    => "small",
+        3..=9    => "medium",
+        _        => "large",
+    }
+}
+
+fn main() {
+    for i: int in 0..5 {
+        let word: string = classify(i)
+        let parity: string = if i % 2 == 0 { "even" } else { "odd" }
+        io.println("{i}: {word}, {parity}")
+    }
+}
+```

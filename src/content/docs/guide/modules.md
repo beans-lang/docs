@@ -47,7 +47,7 @@ name, its import path, and the local binding you use.
 ## One folder is one package
 
 Every `.b` file in a directory belongs to the same package. Files in one package
-share everything and need **no import between them** — a function in `a.b` can
+share everything and need **no import between them**. A function in `a.b` can
 call one in `b.b` directly, as long as both declare the same `package`.
 
 <!-- beans:fragment -->
@@ -77,8 +77,8 @@ kind application
 ```
 
 `kind` is `application` (the default) or `library`. An application is built or
-run as a program and needs `fn main()`. A library has no `main` and exposes its
-API with `pub`.
+run as a program and needs `fn main()`. A library has no `main`, rejects one if
+you write it, and exposes its API with `pub`.
 
 Subdirectories under the module root are sub-packages. `shop/money/` is imported
 as `import shop.money`. See [The beans.pot manifest](/pot/manifest/) and
@@ -86,9 +86,9 @@ as `import shop.money`. See [The beans.pot manifest](/pot/manifest/) and
 
 ## Visibility: private by default
 
-Everything — classes, interfaces, enums, functions, methods, and fields — is
-**private** unless marked `pub`. `pub` is the only way to expose a name outside
-its package. Private means the same import path, not the same package name.
+Classes, interfaces, enums, functions, methods, and fields are all **private**
+unless marked `pub`. `pub` is the only way to expose a name outside its package.
+Private means the same import path, not the same package name.
 
 ```beans
 package money
@@ -103,8 +103,8 @@ fn round_rule() {}      // private helper
 
 ## Lexical rules
 
-- **No semicolons.** A newline ends a statement, Go-style (only after a token
-  that can end one). A consequence: `} else {` must be on one line.
+- **No semicolons.** A newline ends a statement (only after a token that can end
+  one). Because of that, `} else {` must sit on one line.
 - **Comments:** `//` for a line, `/* ... */` for a block (blocks may nest).
 - **No parentheses around conditions:** `if x > 3 { }`. Braces are always
   required.
@@ -125,13 +125,5 @@ self true false unique
 `some`, `none`, `ok`, and `err` are ordinary prelude names, not keywords.
 `super` is contextual. `async`, `await`, and `package` are contextual too:
 `async` means something only right before `fn`, `await` only inside an async
-body, and `package` only as `package <name>` at the top of a file — so all three
+body, and `package` only as `package <name>` at the top of a file. All three
 stay usable as ordinary identifiers elsewhere.
-
-## Next
-
-- [Imports and packages](/guide/imports/)
-- [Variables and constants](/guide/variables/)
-- [POT package management](/pot/why-pot/)
-
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).

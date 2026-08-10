@@ -3,6 +3,10 @@ title: std.thread
 description: Run a closure on a new OS thread and get its result back with join.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 1 package function.
+<!-- coverage:summary:end -->
+
 `std.thread` runs a closure on a real operating-system thread. These are not
 green threads; each one is a full OS thread. It is a native module, built into the
 compiler and runtime.
@@ -23,7 +27,7 @@ socket and file handles cannot be captured into a thread.
 
 `Thread<T>` has one method you use:
 
-- `join() -> T` — wait for the thread to finish and take its returned value.
+- `join() -> T`: wait for the thread to finish and take its returned value.
 
 ```beans
 import std.io
@@ -46,14 +50,14 @@ fn main() {
 threads run, use the sync tools, which are builtin types documented in the
 builtin reference:
 
-- `Mutex` — lock around shared state.
-- `Channel` — send values between threads.
-- `Atomic` — lock-free single values.
+- `Mutex`: lock around shared state.
+- `Channel`: send values between threads.
+- `Atomic`: lock-free single values.
 
 See [Ownership handles](/reference/builtins/handles/) and
 [Atomics](/reference/builtins/atomics/).
 
 ## See also
 
-- [Concurrency guide](/guide/concurrency/) — the full picture of threads, `Send`,
+- [Concurrency guide](/guide/concurrency/), the full picture of threads, `Send`,
   and the sync tools.

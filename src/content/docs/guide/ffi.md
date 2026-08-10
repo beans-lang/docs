@@ -26,7 +26,7 @@ fn main() {
 
 The ABI supports any number of integer, `bool`, `RawPtr`, `CFunctionPtr`, `f32`,
 `f64`, or `extern "C"` struct/union arguments and the same return types (or no
-return) — including arguments past every register bank. Aggregates may contain
+return), including arguments past every register bank. Aggregates may contain
 nested C-layout records and fixed arrays.
 
 `as "native_name"` gives an import a different C symbol name.
@@ -64,7 +64,7 @@ incomplete type you only touch behind `RawPtr`.
   `CFunctionPtr<F>` field, and `context()` for the separate userdata pointer.
   Captures must be `Send + Sync`. Unregister first, then `close()` (which waits
   for active calls). The value is move-only.
-- **`CFunctionPtr<F>`** is C function-pointer storage — one pointer wide, but
+- **`CFunctionPtr<F>`** is C function-pointer storage, one pointer wide but
   distinct from `RawPtr` and from Beans function values. It is valid in C-layout
   records, extern globals, parameters, returns, and generated headers.
   `CFunctionPtr.null()`, `is_null()`, and an `unsafe` `call(...)`.
@@ -101,11 +101,15 @@ To load a shared library at run time, use
 [`std.dylib`](/reference/stdlib/dylib/). Calling a resolved address requires
 `unsafe` and takes one machine word per argument.
 
-## Next
+## Getting the signature right
 
-- [Structs and unions](/guide/structs/)
-- [Unsafe and raw memory](/guide/unsafe/)
-- [bindgen](/tools/bindgen/)
-- [std.dylib](/reference/stdlib/dylib/)
+Beans trusts the signature you declare and matches the target's real C ABI for
+it. It cannot check that declaration against the actual C function, so a wrong
+argument type, count, or return type is undefined behavior at the boundary, not
+a compile error. Generating declarations with `beansc bindgen` (above) keeps
+them exact, and in strict mode it refuses any construct whose ABI it cannot
+reproduce rather than guessing.
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+C-layout records go through [structs and unions](/guide/structs/), and the raw
+pointers you read and write them with are in
+[unsafe and raw memory](/guide/unsafe/).

@@ -3,6 +3,10 @@ title: Primitive types
 description: The basic built-in types in Beans, from unit and bool to integers, floats, byte, and string.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 17 types · 2 instance methods.
+<!-- coverage:summary:end -->
+
 A **primitive type** is the smallest kind of value Beans has. It is not made of
 other values. Every primitive is stored directly (unboxed) in the generated code,
 so it is cheap to use.
@@ -29,7 +33,7 @@ let name: string = "beans"
 | `float` | 64-bit IEEE double | 8 bytes |
 | `f32` `f64` | fixed-width floats | 4, 8 bytes |
 | `decimal` | base-10 exact number | 32 bytes, align 16 |
-| `string` | immutable UTF-8 text | — |
+| `string` | immutable UTF-8 text |, |
 
 ## Names to know
 
@@ -51,8 +55,8 @@ returns `unit`. You rarely write it by hand.
 
 ## decimal
 
-`decimal` is a base-10 exact number. Use it for money, where rounding errors are
-not allowed. It takes 32 bytes and aligns to 16.
+`decimal` is a base-10 exact number, for values where a binary-float rounding
+error would be wrong, such as money. It takes 32 bytes and aligns to 16.
 
 `decimal` is only present on targets that support it. It is refused on
 `thumbv7em-none-eabi` and `riscv32-unknown-none-elf`. Read
@@ -77,5 +81,5 @@ let c: Result<int> = "42".to_int()
 
 ## See also
 
-- [Numbers and decimal](/reference/builtins/numbers/) — number rules and casts.
+- [Numbers and decimal](/reference/builtins/numbers/), number rules and casts.
 - [The type system](/guide/types/) in the language guide.

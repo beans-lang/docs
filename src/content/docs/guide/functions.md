@@ -21,7 +21,7 @@ Parameters state their types, like every other binding.
 ## Every path must return
 
 **There is no implicit tail return.** A trailing expression is a statement like
-any other — its value is discarded, not returned. A function with a `->` must
+any other; its value is discarded, not returned. A function with a `->` must
 `return` on every path:
 
 ```beans
@@ -67,14 +67,26 @@ value (function values do not carry ownership modes yet).
 
 Functions defined inside a class are methods; `static fn` declares a class
 static. Those are covered in [Classes](/guide/classes/). A module-level function
-is for work that yields no object — `io.println`, `os.args`, `fmt.pad_left`.
-Anything that produces an object belongs on that object's class, as `new` or a
-named static.
+is for work that yields no object, such as `io.println`, `os.args`, and
+`fmt.pad_left`. Anything that produces an object belongs on that object's class,
+as `new` or a named static.
 
-## Next
+## A complete example
 
-- [Classes](/guide/classes/)
-- [Generics](/guide/generics/)
-- [Control flow](/guide/control-flow/)
+```beans
+import std.io
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+fn add(a: int, b: int) -> int {
+    return a + b
+}
+
+fn apply(f: fn(int) -> int, x: int) -> int {
+    return f(x)
+}
+
+fn main() {
+    let sum: int = add(2, 3)
+    let square: fn(int) -> int = fn(n: int) -> int { return n * n }
+    io.println("{sum} {apply(square, sum)}")
+}
+```

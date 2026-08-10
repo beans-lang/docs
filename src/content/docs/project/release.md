@@ -24,8 +24,8 @@ Alongside the packages, a release publishes:
 
 ## Full and slim packages
 
-- A **full package** bundles Clang, LLD, and llvm-ar, so a native build works
-  out of the box.
+- A **full package** bundles Clang, LLD, and llvm-ar, so a native build needs
+  nothing else installed.
 - A **slim package** does not; a native build then needs Clang on `PATH`.
 
 Which targets get which is covered on [Cross-compiling and
@@ -39,8 +39,5 @@ tiers are tracked separately in `targets/support.tsv`. See [Maturity and
 platforms](/intro/maturity/) for what production-tier means, and
 [Versioning](/project/versioning/) for the 1.0 release gates.
 
-## See also
-
-- [Versioning](/project/versioning/)
-- [Compatibility](/project/compatibility/)
-- [Install Beans](/start/install/)
+See [Compatibility](/project/compatibility/) and [Install Beans](/start/install/)
+for related detail.

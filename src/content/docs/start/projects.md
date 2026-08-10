@@ -10,7 +10,7 @@ and how to run it.
 ## What makes a project
 
 A module is a directory tree with a file named `beans.pot` at its root. That
-file is the manifest — it names your module. (The name POT is a pun; see
+file is the manifest. It names your module. (The name POT is a pun; see
 [Why it is called POT](/pot/why-pot/).)
 
 The smallest manifest just names the module:
@@ -21,7 +21,7 @@ module shop
 
 ## The main package
 
-An application's root package is `package main`, and it needs an `fn main()` —
+An application's root package is `package main`, and it needs an `fn main()`,
 the entry point. A minimal project looks like this:
 
 ```text
@@ -51,7 +51,7 @@ fn main() {
 ## One folder is one package
 
 The rule is simple: **one folder = one package.** Every `.b` file in a folder
-shares that package. Files in the same folder do not import each other — they
+shares that package. Files in the same folder do not import each other; they
 already see each other's names.
 
 So you can split `main` across files:
@@ -106,12 +106,10 @@ module, and runs it.
 ## Single-file mode
 
 Without a `beans.pot`, a lone `.b` file runs in **single-file mode**. Standard
-library imports (`std.io`) and Git imports still work. Local packages do not —
-there is no module for them to belong to. As soon as you want more than one
-package, add a `beans.pot`.
+library imports (`std.io`) and Git imports still work. Local packages do not,
+because there is no module for them to belong to. As soon as you want more than
+one package, add a `beans.pot`.
 
-## Where to go next
-
-- [Why it is called POT](/pot/why-pot/) — the manifest and how packages fit together.
-- [A local-package project](/examples/shop/) — a full three-package example walked through.
-- [The beans.pot manifest](/pot/manifest/) — every manifest field.
+For every manifest field, see [the beans.pot manifest](/pot/manifest/). For a
+full three-package project walked through end to end, see [the shop
+example](/examples/shop/).

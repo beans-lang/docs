@@ -39,7 +39,7 @@ beansc pot update github.com/acme/http
 ## What does not exist
 
 There is no `pot init`, no `pot add`, and no `pot remove`. You edit
-`beans.pot` by hand — add or delete a `require` line yourself — and then run
+`beans.pot` by hand, adding or deleting a `require` line yourself, and then run
 `beansc pot tidy` to update the lock. `tidy` and `update` are the only `pot`
 subcommands.
 
@@ -49,14 +49,11 @@ These two flags are not `pot` subcommands. They apply to `check`, `run`, and
 `build` (and the loading path underneath them), where they control how strictly
 the lock and the network are treated:
 
-- `--locked` — require exact `beans.lock` entries; reject a missing, stale, or
+- `--locked`: require exact `beans.lock` entries; reject a missing, stale, or
   changed lock.
-- `--offline` — forbid dependency network access; accept only a clean cached
+- `--offline`: forbid dependency network access; accept only a clean cached
   tree matching the locked hash.
 
-Full detail is on [Reproducible builds](/pot/reproducible/).
-
-## See also
-
-- [Dependencies and the lock file](/pot/dependencies/)
-- [The beansc command](/tools/beansc/)
+Full detail is on [Reproducible builds](/pot/reproducible/). See also
+[Dependencies and the lock file](/pot/dependencies/) and
+[the beansc command](/tools/beansc/).

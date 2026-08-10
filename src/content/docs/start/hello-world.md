@@ -25,7 +25,7 @@ A few things to notice:
 - `import std.io` pulls in the standard I/O package. `io.println` lives there.
 - `fn main()` is where the program starts.
 - `let name: string = "beans"` declares a value. `let` means it does not change.
-  The type, `string`, is written out — Beans does not infer it for you.
+  The type, `string`, is written out. Beans does not infer it for you.
 - `"hello from {name}"` is an interpolated string. `{name}` is replaced with the
   value of `name`.
 
@@ -45,7 +45,7 @@ hello.b: ok
 
 ## Run it
 
-Run the program on the reference interpreter — no build step:
+Run the program on the reference interpreter, with no build step:
 
 ```bash
 beansc run hello.b
@@ -71,7 +71,7 @@ hello from beans
 ```
 
 The interpreter (`run`) and the native binary (`build`) produce the same
-output. That is a core promise of Beans: the two backends behave identically.
+output. The two backends behave identically.
 
 ## Build an optimized binary
 
@@ -85,7 +85,7 @@ beansc build --release --lto --cpu native hello.b -o hello
 ## An example that does not compile
 
 Beans requires a function with a return type to return on every path. This
-program is **intentionally wrong** — the docs example checker confirms it fails
+program is **intentionally wrong**. The docs example checker confirms it fails
 to compile:
 
 <!-- beans:expect-error -->
@@ -102,8 +102,6 @@ error: 'total' must return int — the body can finish without a return
 
 The fix is to write `return sum`. See [Functions and closures](/guide/functions/).
 
-## Where to go next
-
-- [Create and run a project](/start/projects/) — grow past a single file.
-- [Checking and running](/tools/check-run/) — more on `check` and `run`.
-- [Building](/tools/build/) — every `build` flag.
+To grow past a single file, [create a project](/start/projects/). For more on
+the commands used here, see [Checking and running](/tools/check-run/) and
+[Building](/tools/build/).

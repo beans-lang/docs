@@ -3,6 +3,10 @@ title: Numbers and decimal
 description: How number literals, types, casts, and wrapping work in Beans, plus the exact base-10 decimal type.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 2 types · 2 instance methods · 5 enum variants.
+<!-- coverage:summary:end -->
+
 This page covers the rules for numbers in Beans: how a literal picks its type, how
 to convert between number types, and how the exact `decimal` type works. For the
 full list of number types, see [Primitive types](/reference/builtins/primitives/).
@@ -87,7 +91,10 @@ let sum: decimal = 0.1 + 0.2
 // sum == 0.3 is always true
 ```
 
-Use `decimal` for money.
+It suits values where a binary-float rounding error would be wrong, such as money.
+A `decimal` value does not carry a currency or a scale, though, so it cannot round
+for you. When you need a fixed number of places, you call `round` and pick the
+mode that fits your domain.
 
 The `1.0` contract keeps 38 significant digits. Going past that panics with
 `"decimal overflow"`. Division produces up to 38 significant digits and rounds the
@@ -103,13 +110,14 @@ let x: decimal = 2.675
 let y: decimal = x.round(2, RoundingMode.half_even)
 ```
 
-`RoundingMode` has exactly five selectors:
+`RoundingMode` has exactly five selectors, and the right one depends on your rule,
+not on the value:
 
-- `RoundingMode.half_even`
-- `RoundingMode.half_away`
-- `RoundingMode.toward_zero`
-- `RoundingMode.floor`
-- `RoundingMode.ceil`
+- `RoundingMode.half_even`: round half to the nearest even digit
+- `RoundingMode.half_away`: round half away from zero
+- `RoundingMode.toward_zero`: drop the extra digits
+- `RoundingMode.floor`: round toward negative infinity
+- `RoundingMode.ceil`: round toward positive infinity
 
 `abs()` returns the value without its sign.
 
@@ -131,4 +139,4 @@ the `Result`.
 ## See also
 
 - [Primitive types](/reference/builtins/primitives/)
-- [operators](/guide/operators/) — including `as`.
+- [operators](/guide/operators/), including `as`.

@@ -65,12 +65,12 @@ VERSION      the installed version
 
 The installer picks one of two package kinds for you:
 
-- **Full** — bundles Clang, LLD, and `llvm-ar` so native builds work out of the
-  box. Full packages exist for Linux x86-64 and ARM64 (GNU), and Windows x64,
+- **Full** packages bundle Clang, LLD, and `llvm-ar`, so native builds need no
+  extra tools. They ship for Linux x86-64 and ARM64 (GNU), and Windows x64,
   ARM64, and x86 (LLVM-MinGW).
-- **Slim** — everywhere else. With a slim package, `--version`, `doctor`,
-  `check`, `run`, `llvm`, and `build --emit ir` all work with nothing extra. A
-  **native** `build`, though, needs a C compiler (Clang) on your PATH.
+- **Slim** packages ship everywhere else. With a slim package, `--version`,
+  `doctor`, `check`, `run`, `llvm`, and `build --emit ir` all work with nothing
+  to install. A **native** `build` needs a C compiler (Clang) on your PATH.
 
 Two platform notes:
 
@@ -96,9 +96,9 @@ BEANS_TARGET=x86_64-unknown-linux-musl curl -fsSL https://github.com/beans-lang/
 
 Other installer options:
 
-- `--force` — reinstall even if a version is already present.
-- `--no-modify-path` — install without touching your PATH.
-- `--help` — list every option.
+- `--force`: reinstall even if a version is already present.
+- `--no-modify-path`: install without touching your PATH.
+- `--help`: list every option.
 
 ## Uninstalling
 
@@ -109,7 +109,7 @@ the installer added.
 
 If you would rather build the compiler yourself:
 
-1. Install a release compiler first (with the one-liner above) — you need a
+1. Install a release compiler first (with the one-liner above). You need a
    working `beansc` to build the self-hosted one.
 2. Clone and build:
 
@@ -120,8 +120,6 @@ make
 ./build/beansc --version
 ```
 
-## Where to go next
-
-- [Verify the install](/start/verify/) — confirm everything works.
-- [Hello world](/start/hello-world/) — write and run your first program.
-- [Upgrade beansc](/start/upgrade/) — move to a newer release later.
+With Beans installed, [verify the install](/start/verify/) and then [write your
+first program](/start/hello-world/). To move to a newer release later, see
+[Upgrade beansc](/start/upgrade/).

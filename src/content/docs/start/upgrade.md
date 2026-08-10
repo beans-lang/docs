@@ -34,7 +34,6 @@ files on Windows; the `.cmd` wrapper handles the swap.
 `beansc` from source (a `git clone` + `make`), there is no release package to
 replace, so `upgrade` has nothing to do. Pull new source and rebuild instead.
 
-## Where to go next
-
-- [doctor and upgrade](/tools/doctor-upgrade/) — full details on both commands.
-- [Verify the install](/start/verify/) — confirm the new version after upgrading.
+For the full details on `doctor` and `upgrade`, see [doctor and
+upgrade](/tools/doctor-upgrade/). After upgrading, [verify the
+install](/start/verify/) to confirm the new version.

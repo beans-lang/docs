@@ -3,6 +3,10 @@ title: std.encoding.base64
 description: Base64 encode and decode, with standard, URL-safe, and no-padding variants.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 3 package functions · 1 type · 3 instance methods · 4 enum variants.
+<!-- coverage:summary:end -->
+
 `std.encoding.base64` turns bytes into Base64 text and back. It supports the
 standard alphabet and the URL-safe alphabet, each with or without padding.
 Underneath it uses simdutf (MIT). Read the source at
@@ -14,29 +18,40 @@ import std.encoding.base64
 
 Note: a build made with `--runtime freestanding` refuses `std.encoding`.
 
-## The four encodings
+## Encoding
 
-`enum Encoding` has four members:
+`Encoding` is an enum with the four RFC 4648 alphabets and padding modes.
 
-- `standard` — the normal alphabet, with `=` padding.
-- `standard_no_pad` — normal alphabet, no padding.
-- `url_safe` — `-` and `_` instead of `+` and `/`, with padding.
-- `url_safe_no_pad` — URL-safe alphabet, no padding.
+```beans
+pub enum Encoding
+standard
+standard_no_pad
+url_safe
+url_safe_no_pad
+```
+
+- `standard` is the normal alphabet with `=` padding. `standard_no_pad` is the
+  normal alphabet without padding. `url_safe` uses `-` and `_` in place of `+` and
+  `/`, with padding. `url_safe_no_pad` is the URL-safe alphabet without padding.
 
 Each encoding value has three methods:
 
-| Method | Returns | What it does |
-| --- | --- | --- |
-| `encode(data: Bytes) -> string` | `string` | encode bytes to Base64 text |
-| `decode(text: string) -> Result<Bytes>` | `Bytes` | strict decode (RFC 4648) |
-| `decode_forgiving(text: string) -> Result<Bytes>` | `Bytes` | lenient decode (WHATWG rules) |
+```beans
+pub fn encode(data: Bytes) -> string
+pub fn decode(text: string) -> Result<Bytes>
+pub fn decode_forgiving(text: string) -> Result<Bytes>
+```
 
-`decode` is strict. On bad input it returns an error whose kind tells you what was
-wrong — `invalid`, `length`, `padding`, `bits`, or `whitespace` — along with the
-position.
-
-`decode_forgiving` follows the WHATWG "forgiving base64" rules: it skips ASCII
-whitespace, accepts a partial final group, and ignores non-zero trailing bits.
+- `encode` turns bytes into Base64 text. The output length is exact for the chosen
+  encoding.
+- `decode` is strict RFC 4648. On bad input it returns an error whose kind tells you
+  what was wrong: `invalid` (a byte outside the alphabet), `length` (a lone
+  trailing character), `padding` (padding that does not match the encoding), `bits`
+  (non-zero trailing padding bits), or `whitespace` (whitespace, which strict mode
+  rejects). The message carries the byte position.
+- `decode_forgiving` follows the WHATWG "forgiving base64" rules: it skips ASCII
+  whitespace, accepts a partial final group with or without padding, and ignores
+  non-zero trailing padding bits. Bytes outside the alphabet are still errors.
 
 ```beans
 import std.io
@@ -52,14 +67,15 @@ fn main() {
 
 ## Module-level shortcuts
 
-For the common case — standard alphabet, padded, strict decoding — call these
-directly without naming an encoding:
+For the common case (standard alphabet, padded, strict decoding) call these
+directly without naming an encoding. Each is the matching `Encoding.standard`
+method in one call.
 
-| Function | Same as |
-| --- | --- |
-| `encode(data: Bytes) -> string` | `Encoding.standard.encode` |
-| `decode(text: string) -> Result<Bytes>` | `Encoding.standard.decode` |
-| `decode_forgiving(text: string) -> Result<Bytes>` | `Encoding.standard.decode_forgiving` |
+```beans
+pub fn encode(data: Bytes) -> string
+pub fn decode(text: string) -> Result<Bytes>
+pub fn decode_forgiving(text: string) -> Result<Bytes>
+```
 
 ```beans
 import std.io

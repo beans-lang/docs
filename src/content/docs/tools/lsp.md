@@ -38,10 +38,11 @@ The server keeps one checked view of the whole project. It supports:
 - rename, with prepare
 
 Because the server tracks a package-aware view, two same-named methods on two
-same-named types in two different packages stay **distinct** symbols. That is
-why rename never over-reaches. An unsafe rename is refused with a reason.
+same-named types in two different packages stay **distinct** symbols, so a
+rename touches only the symbol you mean. An unsafe rename is refused with a
+reason.
 
-`$/cancelRequest` is accepted and ignored — requests are answered strictly in
+`$/cancelRequest` is accepted and ignored; requests are answered strictly in
 order.
 
 ## `lsp-probe`
@@ -54,9 +55,3 @@ beansc lsp-probe app.b:12:5
 ```
 
 The position is `file.b:line:col`.
-
-## See also
-
-- [Editor setup](/start/editors/)
-- [Debugger (DAP)](/tools/dap/)
-- [The beansc command](/tools/beansc/)

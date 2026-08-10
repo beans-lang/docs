@@ -54,11 +54,8 @@ When you write `import X`, Beans decides what `X` is by its shape:
 | `host/owner/repo[/sub...]` (first segment has a `.`, three or more segments) | A [Git dependency](/pot/dependencies/) cloned to the cache. |
 | anything else | An error. |
 
-The error for an unresolved import reads:
-
-```text
-unknown package '<x>' — expected std.*, <module>.*, or a git host path
-```
+When an import matches none of these shapes, Beans reports it as an unknown
+package and lists what it expected: `std.*`, `<module>.*`, or a git host path.
 
 ## Identity is the whole path
 
@@ -73,7 +70,9 @@ prints the full chain of import sites so you can see the cycle.
 ## Reaching across packages
 
 From another package you can reach anything marked `pub` on the imported
-package: functions, types, and `new` on a class.
+package: functions and types. To use `new` on a class, both the class and its
+`init` must be `pub`. A plain `fn init` remains usable throughout its own
+package.
 
 <!-- beans:fragment -->
 ```beans
@@ -90,10 +89,7 @@ fn main() {
 
 If there is **no `beans.pot` above a lone file**, you are in single-file mode.
 You can still import `std.*` and Git dependencies, but you cannot use local
-packages — there is no module root to hang them off of.
+packages, because there is no module root to hang them off of.
 
-## See also
-
-- [Imports guide](/guide/imports/) — imports in everyday code.
-- [The beans.pot manifest](/pot/manifest/)
-- [A local-package project](/examples/shop/) — a worked example.
+The [imports guide](/guide/imports/) covers imports in everyday code, and
+[a local-package project](/examples/shop/) works through a full example.

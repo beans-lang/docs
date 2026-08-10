@@ -1,10 +1,10 @@
 ---
-title: Imports and packages
-description: How imports work in Beans, and the four separate ideas — module path, import path, package name, and import binding.
+title: 'Imports and packages'
+description: 'How imports work in Beans, and the four separate ideas: module path, import path, package name, and import binding.'
 ---
 
-Beans imports are Go-style: the standard library by dot path, local packages by
-module path, and remote libraries straight from a Git host.
+Beans has one `import` keyword. It reaches the standard library by dot path,
+local packages by module path, and remote libraries straight from a Git host.
 
 ```beans
 import std.io
@@ -21,7 +21,7 @@ It pays to keep these apart:
 
 | Idea | Example | What it is |
 |---|---|---|
-| module path | `shop` | the `beans.pot` unit — one dependency, one lock row |
+| module path | `shop` | the `beans.pot` unit: one dependency, one lock row |
 | import path | `shop.money` | a package's globally unique identity |
 | package name | `money` | what the package calls itself in its `package` clause |
 | import binding | `cash` in `import shop.money as cash` | a name, in one file only |
@@ -42,8 +42,10 @@ let u: util.User = new util.User("jul")
 util.color.red
 ```
 
-The methods of a `pub interface` travel with it — an interface is its method
-set. `pub fn init(...)` is what lets another package write `new Conn(...)`.
+The methods of a `pub interface` travel with it; an interface is its method
+set. A plain `fn init(...)` can be used from any file in the class's own
+package. `pub fn init(...)` is needed only when another package writes
+`new Conn(...)`; the class itself must be `pub` too.
 
 ## Bindings are per file
 
@@ -67,7 +69,7 @@ let a: retail.Cart = new retail.Cart()
 let b: wholesale.Cart = new wholesale.Cart()
 ```
 
-They stay separate everywhere — separate types, separate private methods,
+They stay separate everywhere: separate types, separate private methods,
 separate generated symbols.
 
 ## No cycles
@@ -95,12 +97,6 @@ dependency once.
   segments) resolves to a Git dependency, cloned and cached on first build.
 
 Without a `beans.pot` above your file, you are in single-file mode: `std.*` and
-Git imports still work, but local packages do not.
-
-## Next
-
-- [POT package management](/pot/why-pot/) — the manifest, dependencies, and the lock file
-- [Local packages and imports](/pot/local-packages/)
-- [Standard library reference](/reference/stdlib/)
-
-Source: [`compiler/beans/module.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/module.b).
+Git imports still work, but local packages do not. The manifest, dependency
+resolution, and the lock file are covered in
+[POT package management](/pot/why-pot/).

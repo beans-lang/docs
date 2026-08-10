@@ -30,10 +30,10 @@ Ranges (`0..10`, `0..=10`) sit at the lowest level, alongside `||`. Use them in
 
 - Unary `-` (negate) and `!` (logical not).
 - Postfix `.field` / `.method(...)`, `[index]`, and call `(...)`.
-- `?` — error propagation on a `Result`/`Option`. On `err`/`none` it returns up;
+- `?` propagates errors on a `Result`/`Option`. On `err`/`none` it returns up;
   otherwise it unwraps. See [Option and Result](/guide/errors/).
-- `as` — explicit numeric cast or upcast: `qty as decimal`.
-- `as?` — checked downcast returning an `Option`. See
+- `as` is an explicit numeric cast or upcast: `qty as decimal`.
+- `as?` is a checked downcast returning an `Option`. See
   [Interfaces and inheritance](/guide/interfaces/).
 
 Postfix, `as`, `as?`, and `?` bind tighter than the binary operators above.
@@ -62,8 +62,8 @@ their element is a real inline place.
 - Fixed-width integer `+`, `-`, `*`, unary `-`, and the bit operations wrap to
   the type's width. Shift counts are masked by `width - 1`. Divide or modulo by
   zero panics.
-- There are **no implicit numeric conversions** — mix `int`/`float`/`decimal`
-  with `as`.
+- There are **no implicit numeric conversions**. Mixing `int`, `float`, and
+  `decimal` needs an explicit `as`.
 - Float comparisons follow IEEE-754: a NaN operand makes `==`, `<`, `<=`, `>`,
   `>=` false and `!=` true.
 
@@ -76,11 +76,3 @@ See [Numbers and decimal](/reference/builtins/numbers/).
 - **No `++` / `--`.** Use `+= 1` / `-= 1`.
 - **No ternary.** Use `if`/`match` in value position (see
   [Control flow](/guide/control-flow/)).
-
-## Next
-
-- [Numbers and decimal](/reference/builtins/numbers/)
-- [Control flow](/guide/control-flow/)
-- [Pattern matching](/guide/pattern-matching/)
-
-Source: [`compiler/beans/parser.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/parser.b).

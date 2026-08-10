@@ -1,6 +1,6 @@
 ---
-title: Enums
-description: User-defined enums in Beans — variants, payloads, methods, and matching.
+title: 'Enums'
+description: 'User-defined enums in Beans: variants, payloads, methods, and matching.'
 ---
 
 An enum is a type with a fixed set of named **variants**. Variant names are
@@ -35,8 +35,10 @@ fn describe(p: Payment) -> string {
 }
 ```
 
-Matching binds the payload fields positionally (`card(n)`), and the matched
-value pins their types — you do not restate them.
+Construct a variant with the enum name in front: `Payment.card("4242")`, or
+`Payment.cash` for a variant with no payload. Matching, by contrast, uses the
+bare variant name. It binds the payload fields positionally (`card(n)`), and the
+matched value pins their types, so you do not restate them.
 
 ## Methods
 
@@ -72,13 +74,33 @@ enum Result<T, E> {
 }
 ```
 
-That is why `some`, `none`, `ok`, and `err` are lowercase — they are variant
+That is why `some`, `none`, `ok`, and `err` are lowercase: they are variant
 values, and variants are snake_case. See [Option and Result](/guide/errors/).
 
-## Next
+## A complete example
 
-- [Pattern matching](/guide/pattern-matching/)
-- [Option and Result](/guide/errors/)
-- [Generics](/guide/generics/)
+An enum with payloads and a method, matched to compute a value:
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+```beans
+import std.io
+
+enum Shape {
+    circle(r: f64)
+    rect(w: f64, h: f64)
+
+    fn area() -> f64 {
+        return match self {
+            circle(r) => 3.14159 * r * r,
+            rect(w, h) => w * h,
+        }
+    }
+}
+
+fn main() {
+    let s: Shape = Shape.rect(3.0, 4.0)
+    io.println("{s.area()}")
+}
+```
+
+A `match` on an enum must cover every variant, or handle the rest with `_`. See
+[Pattern matching](/guide/pattern-matching/).

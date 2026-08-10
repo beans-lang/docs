@@ -25,7 +25,7 @@ The multi-package example is a project, so run it from its `main.b`:
 beansc run examples/shop/main.b
 ```
 
-Some examples are **target-gated** — they need a special target or CPU and will
+Some examples are **target-gated**: they need a special target or CPU and will
 not run on a plain desktop build. Those are marked below.
 
 ## Language basics
@@ -128,8 +128,8 @@ Walked through in [C interop (FFI)](/examples/ffi/).
 | [containers.b](https://github.com/beans-lang/beans/blob/main/examples/containers.b) | Collections | yes |
 | [stdlib_beans.b](https://github.com/beans-lang/beans/blob/main/examples/stdlib_beans.b) | A stdlib tour | yes |
 
-Some of these tours end in a deliberate panic — that is part of their job as a
-test, not a bug.
+Some of these tours end in a deliberate panic. That is part of their job as a
+test.
 
 ## Multi-package project
 
@@ -149,8 +149,6 @@ build:
 | [embedded.b](https://github.com/beans-lang/beans/blob/main/examples/embedded.b) | A 32-bit no-OS target (`decimal` is refused there) |
 | [freestanding.b](https://github.com/beans-lang/beans/blob/main/examples/freestanding.b) | `--runtime freestanding` |
 
-## Where to go next
-
-- [The language guide](/guide/modules/) — every feature in order.
-- [Builtin reference](/reference/builtins/) and
-  [standard library reference](/reference/stdlib/) — look things up.
+The [language guide](/guide/modules/) covers every feature in order, and the
+[builtin reference](/reference/builtins/) and
+[standard library reference](/reference/stdlib/) are there to look things up.

@@ -51,9 +51,5 @@ beansc build --locked --offline app.b -o app
 
 Together with a pinned compiler (see [Compatibility](/project/compatibility/)),
 a committed `beans.lock` and `--locked --offline` give you a build that does not
-change under you.
-
-## See also
-
-- [Dependencies and the lock file](/pot/dependencies/)
-- [The pot command reference](/pot/commands/)
+change under you. See [Dependencies and the lock file](/pot/dependencies/) and
+[the pot command reference](/pot/commands/) for the pieces this builds on.

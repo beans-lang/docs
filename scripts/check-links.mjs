@@ -9,7 +9,7 @@ import { DOCS_DIR, walk } from './lib/paths.mjs';
 // The configured base path. Content links are written base-less and a rehype
 // plugin prepends this at build time, so a link that already hard-codes it is a
 // bug. Kept in sync with astro.config.mjs via the BASE env var.
-const BASE = (process.env.BASE ?? '/website').replace(/\/+$/, '');
+const BASE = (process.env.BASE ?? '/docs').replace(/\/+$/, '');
 
 // Build the set of valid page slugs from the doc files on disk.
 function collectSlugs() {

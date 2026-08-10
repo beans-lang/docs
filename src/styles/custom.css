@@ -1,15 +1,35 @@
-/* Beans docs theme. Warm accent, easy on the eyes in light and dark. */
+/* Beans docs theme: a roasted-coffee accent. Brown, cream, and roasted, not
+   yellow. Starlight derives links, active navigation, buttons, focus rings and
+   accent backgrounds from these three accent variables. */
+
+/* Dark is Starlight's default (bare :root). */
 :root {
-  --sl-color-accent-low: #3a2a00;
-  --sl-color-accent: #c98a12;
-  --sl-color-accent-high: #f0d89a;
+  --sl-color-accent-low: #2a1812;
+  --sl-color-accent: #c58a62;
+  --sl-color-accent-high: #f2ddd0;
   --sl-color-white: #ffffff;
 }
 
+/* Light theme, chosen explicitly with the toggle. */
 :root[data-theme='light'] {
-  --sl-color-accent-low: #f7e9c5;
-  --sl-color-accent: #a6720a;
-  --sl-color-accent-high: #4a3200;
+  --sl-color-accent-low: #efe2d8;
+  --sl-color-accent: #6f4e37;
+  --sl-color-accent-high: #2f1b13;
+}
+
+/* Light theme from the system preference, before any explicit choice. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --sl-color-accent-low: #efe2d8;
+    --sl-color-accent: #6f4e37;
+    --sl-color-accent-high: #2f1b13;
+  }
+}
+
+/* Selected text in the roasted-coffee accent, with a readable foreground. */
+::selection {
+  background-color: #6f4e37;
+  color: #ffffff;
 }
 
 /* Slightly tighter reference tables. */

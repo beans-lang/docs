@@ -3,106 +3,214 @@ title: Files and mapping
 description: The built-in File, Dir, and MMap types for reading, writing, listing, and memory-mapping files.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 16 static methods · 31 instance methods.
+<!-- coverage:summary:end -->
+
 Beans has three builtin types for working with the file system: `File` for a single
 file, `Dir` for directories, and `MMap` for memory-mapped files and shared memory.
-These are native builtins, reached through the runtime ABI table at
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+They are native builtins with no `.b` source, reached through the runtime ABI table
+in [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
 
-Most calls return a [`Result`](/reference/builtins/option-result/) because file work
-can fail. Reads and writes use [`Bytes`](/reference/builtins/bytes/).
+Because these are builtins, their signatures are positional: the parameter types
+are fixed, the names are not part of the signature. Most calls return a
+[`Result`](/reference/builtins/option-result/) because file work can fail. Reads and
+writes move [`Bytes`](/reference/builtins/bytes/).
 
 ## File
 
+An open file with a read/write cursor.
+
 ### Statics
 
-You call these on the `File` type itself.
-
-| Static | Returns | Notes |
-| --- | --- | --- |
-| `File.exists(path)` | `bool` | is there a file at `path` |
-| `File.size(path)` | `Result<int>` | size in bytes |
-| `File.remove(path)` | `Result<bool>` | delete the file |
-| `File.rename(a, b)` | `Result<bool>` | move `a` to `b` |
-| `File.open(path, mode)` | `Result<File>` | open a file |
-
-The `mode` for `File.open` is one of:
-
-- `"r"` — read only
-- `"rw"` — read and write
-- `"create"` — create (or truncate) for read and write
-- `"append"` — open for adding at the end
+Call these on the `File` type itself. Opening is the fallible constructor: it
+returns `Result<File>`.
 
 ```beans
-let f: File = File.open("data.bin", "rw")?
+File.exists(string) -> bool
+File.size(string) -> Result<int>
+File.open(string, string) -> Result<File>
+File.remove(string) -> Result<bool>
+File.rename(string, string) -> Result<bool>
 ```
+
+The second argument to `File.open` is the mode, one of:
+
+- `"r"`: read only
+- `"rw"`: read and write, must already exist
+- `"create"`: create, or truncate an existing file, for read and write
+- `"append"`: open for adding at the end
+
+`File.exists` answers whether a file is there without opening it. `File.size` also
+works as a static that takes a path, so you can read a file's length without an
+open handle; the same call exists as a method on an open file (below).
 
 ### Methods
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `read_at(pos, n)` | `Result<Bytes>` | read `n` bytes at `pos`; a short read at EOF returns what is there |
-| `write_at(pos, b)` | `Result<int>` | write bytes at `pos`; returns bytes written |
-| `read(n)` | `Result<Bytes>` | read `n` bytes from the current position |
-| `write(b)` | `Result<int>` | write from the current position; returns bytes written |
-| `seek(pos)` | `int` | move to `pos`; panics if the file is closed |
-| `seek_from_end(off)` | `int` | move to `off` bytes before the end |
-| `tell()` | `int` | current position |
-| `size()` | `Result<int>` | size in bytes |
-| `truncate(n)` | `Result<bool>` | cut or extend the file to `n` bytes |
-| `sync()` | `Result<bool>` | flush to disk (fsync) |
-| `close()` | `Result<bool>` | close the file; closing twice is an error |
-| `lock()` | `Result<bool>` | take an advisory lock (flock) |
-| `try_lock()` | `Result<bool>` | try to lock; `ok(false)` means someone else holds it |
-| `unlock()` | `Result<bool>` | release the lock |
+```beans
+File.read(int) -> Result<Bytes>
+File.read_at(int, int) -> Result<Bytes>
+File.write(Bytes) -> Result<int>
+File.write_at(int, Bytes) -> Result<int>
+File.seek(int) -> int
+File.seek_from_end(int) -> int
+File.tell() -> int
+File.size() -> Result<int>
+File.truncate(int) -> Result<bool>
+File.sync() -> Result<bool>
+File.close() -> Result<bool>
+File.lock() -> Result<bool>
+File.try_lock() -> Result<bool>
+File.unlock() -> Result<bool>
+```
+
+- `read(n)` reads up to `n` bytes from the current cursor and moves the cursor
+  forward; a short read at end of file returns the bytes that are there.
+  `write(b)` writes from the cursor, returns how many bytes went out, and moves the
+  cursor forward.
+- `read_at(pos, n)` and `write_at(pos, b)` take an absolute position and do not use
+  or move the cursor, so they are safe to call from more than one place in the file.
+- `seek(pos)` moves the cursor to `pos`; `seek_from_end(off)` moves it to `off`
+  bytes before the end. Both return the new position and panic if the file is
+  closed. `tell()` returns the current position.
+- `truncate(n)` cuts or extends the file to exactly `n` bytes. `sync()` flushes the
+  file's data to disk (fsync). `close()` releases the descriptor; closing a file
+  that is already closed is an error.
+- `lock`, `try_lock`, and `unlock` take and release an advisory whole-file lock
+  (flock). `lock` blocks until it gets the lock; `try_lock` returns `ok(false)`
+  when another holder has it, rather than waiting.
 
 Every file descriptor Beans owns is close-on-exec.
+
+Write a file, then read part of it back through the cursor:
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn main() {
+    let f: File = File.open("greeting.txt", "create").expect("open")
+    f.write(Bytes.from("hello world")).expect("write")
+
+    f.seek(0)
+    let head: Bytes = f.read(5).expect("read")
+    io.println(head.to_string())
+    io.println("cursor now at {f.tell()}")
+
+    f.close().expect("close")
+}
+```
 
 ## Dir
 
 All directory work is on statics of the `Dir` type.
 
-| Static | Returns | Notes |
-| --- | --- | --- |
-| `Dir.create(path)` | `Result<bool>` | make one directory |
-| `Dir.create_all(path)` | `Result<bool>` | make a directory and any missing parents |
-| `Dir.list(path)` | `Result<List<string>>` | names in the directory, sorted |
-| `Dir.remove(path)` | `Result<bool>` | remove an empty directory |
-| `Dir.remove_all(path)` | `Result<bool>` | remove a directory and all its contents |
-| `Dir.exists(path)` | `bool` | is there a directory at `path` |
-| `Dir.temp_path()` | `string` | the system temporary directory |
-| `Dir.sync(path)` | `Result<bool>` | flush the directory entry |
-| `Dir.walk(path)` | `Result<List<string>>` | every file and symlink underneath, recursive, sorted, relative to `path` |
-
 ```beans
-let names: List<string> = Dir.list(".")?
+Dir.create(string) -> Result<bool>
+Dir.create_all(string) -> Result<bool>
+Dir.exists(string) -> bool
+Dir.list(string) -> Result<List<string>>
+Dir.walk(string) -> Result<List<string>>
+Dir.remove(string) -> Result<bool>
+Dir.remove_all(string) -> Result<bool>
+Dir.sync(string) -> Result<bool>
+Dir.temp_path() -> string
+```
+
+- `create` makes one directory and fails if a parent is missing; `create_all`
+  makes the directory and any missing parents.
+- `list` returns the names directly inside a directory, sorted. `walk` returns every
+  file and symlink underneath it, recursive, sorted, each path relative to the
+  directory you passed.
+- `remove` removes an empty directory; `remove_all` removes a directory and
+  everything in it.
+- `sync` flushes the directory entry itself. `temp_path` returns the system
+  temporary directory as a plain string; it does not touch the disk.
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn main() {
+    let base: string = "{Dir.temp_path()}/beans_docs_demo"
+    Dir.create_all(base).expect("create")
+
+    let names: List<string> = Dir.list(Dir.temp_path()).expect("list")
+    io.println("{names.len()} entries in the temp directory")
+
+    Dir.remove_all(base).expect("clean up")
+}
 ```
 
 ## MMap
 
-`MMap` maps a file (or shared memory) into memory so you can read and write it like
-a buffer.
+`MMap` maps a file, or a POSIX shared memory object, into memory so you read and
+write it like a buffer.
 
 ### Statics
 
-| Static | Returns | Notes |
-| --- | --- | --- |
-| `MMap.open(path, writable)` | `Result<MMap>` | map the whole file (MAP_SHARED) |
-| `MMap.open_shared_memory(name, size, create)` | `Result<MMap>` | POSIX shared memory; you give `size` on every open |
-| `MMap.unlink_shared_memory(name)` | `Result<bool>` | remove a shared memory object |
+```beans
+MMap.open(string, bool) -> Result<MMap>
+MMap.open_shared_memory(string, int, bool) -> Result<MMap>
+MMap.unlink_shared_memory(string) -> Result<bool>
+```
+
+- `MMap.open(path, writable)` maps the whole file with `MAP_SHARED`. Pass `true` for
+  a writable mapping, `false` for read only.
+- `MMap.open_shared_memory(name, size, create)` opens a named shared memory object.
+  You give the `size` on every open, and `create` chooses whether to create it if it
+  does not exist.
+- `MMap.unlink_shared_memory(name)` removes a shared memory object by name.
 
 ### Methods
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `len()` | `int` | mapped size in bytes |
-| `get_u8(pos)` `get_u16(pos)` `get_u32(pos)` `get_u64(pos)` `get_i64(pos)` | `int` | read an integer (little-endian); bounds-checked, panics if out of range |
-| `put_u8(pos, v)` `put_u16(pos, v)` `put_u32(pos, v)` `put_u64(pos, v)` `put_i64(pos, v)` | self | write an integer (little-endian); bounds-checked, panics if out of range |
-| `read(pos, n)` | `Bytes` | read `n` bytes at `pos` |
-| `write(pos, b)` | | write bytes at `pos` |
-| `flush()` | `Result<bool>` | flush all changes (msync) |
-| `flush_range(pos, n)` | `Result<bool>` | flush only `[pos, pos + n)` |
-| `resize(n)` | `Result<bool>` | resize the mapping; not available on shared memory |
-| `close()` | `Result<bool>` | unmap |
+```beans
+MMap.len() -> int
+MMap.get_u8(int) -> int
+MMap.get_u16(int) -> int
+MMap.get_u32(int) -> int
+MMap.get_u64(int) -> int
+MMap.get_i64(int) -> int
+MMap.put_u8(int, int) -> MMap
+MMap.put_u16(int, int) -> MMap
+MMap.put_u32(int, int) -> MMap
+MMap.put_u64(int, int) -> MMap
+MMap.put_i64(int, int) -> MMap
+MMap.read(int, int) -> Bytes
+MMap.write(int, Bytes) -> MMap
+MMap.flush() -> Result<bool>
+MMap.flush_range(int, int) -> Result<bool>
+MMap.resize(int) -> Result<bool>
+MMap.close() -> Result<bool>
+```
+
+- `len()` is the mapped size in bytes.
+- The `get_*` readers return an integer read at a byte position, little-endian and
+  bounds-checked; an out-of-range position panics. The `put_*` writers write an
+  integer at a position, little-endian and bounds-checked, and return the same
+  mapping so you can chain them.
+- `read(pos, n)` copies `n` bytes at `pos` into a new `Bytes`. `write(pos, b)`
+  copies `b` into the mapping at `pos` and returns the mapping.
+- `flush()` writes all changes back (msync); `flush_range(pos, n)` flushes only
+  `[pos, pos + n)`. `resize(n)` resizes the mapping and is not available on shared
+  memory. `close()` unmaps it.
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn main() {
+    let name: string = "beans_docs_shm"
+    let m: MMap = MMap.open_shared_memory(name, 64, true).expect("open")
+
+    m.put_u32(0, 123456789).put_u64(8, 42)
+    io.println("{m.get_u32(0)} {m.get_u64(8)} over {m.len()} bytes")
+
+    m.flush().expect("flush")
+    m.close().expect("close")
+    MMap.unlink_shared_memory(name).expect("unlink")
+}
+```
 
 ## Error kinds
 
@@ -116,6 +224,6 @@ You can match on the kind to decide what to do. See
 
 ## See also
 
-- [Bytes](/reference/builtins/bytes/) — the buffer reads and writes use.
-- [Option, Result, and Error](/reference/builtins/option-result/) — handling failures.
-- [The standard library](/reference/stdlib/) — higher-level I/O modules.
+- [Bytes](/reference/builtins/bytes/), the buffer reads and writes use.
+- [Option, Result, and Error](/reference/builtins/option-result/), handling failures.
+- [The standard library](/reference/stdlib/), higher-level I/O modules.

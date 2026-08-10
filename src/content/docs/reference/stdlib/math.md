@@ -1,7 +1,11 @@
 ---
 title: std.math
-description: Small integer helpers — clamp a value into a range, and greatest common divisor.
+description: Small integer helpers, clamp a value into a range, and greatest common divisor.
 ---
+
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions.
+<!-- coverage:summary:end -->
 
 `std.math` is a small package of integer helpers written in Beans. Read the
 source at
@@ -11,16 +15,16 @@ source at
 import std.math
 ```
 
-| Function | What it does |
-| --- | --- |
-| `clamp(value: int, low: int, high: int) -> int` | force `value` into the range `[low, high]` |
-| `gcd(a: int, b: int) -> int` | greatest common divisor |
+```beans
+pub fn clamp(value: int, low: int, high: int) -> int
+pub fn gcd(a: int, b: int) -> int
+```
 
-`clamp` returns `low` if `value` is below `low`, `high` if it is above `high`,
-and `value` otherwise.
-
-`gcd` uses Euclid's algorithm on the absolute values of `a` and `b`, so the signs
-of the inputs do not matter. `gcd(0, 0)` is `0`.
+- `clamp` forces `value` into the inclusive range `[low, high]`. It returns `low`
+  if `value` is below `low`, `high` if it is above `high`, and `value` otherwise.
+- `gcd` is the greatest common divisor, using Euclid's algorithm on the absolute
+  values of `a` and `b`, so the signs of the inputs do not matter. `gcd(0, 0)` is
+  `0`.
 
 ```beans
 import std.io
@@ -36,5 +40,5 @@ fn main() {
 
 ## See also
 
-- [Numbers and decimal](/reference/builtins/numbers/) — the integer and float
+- [Numbers and decimal](/reference/builtins/numbers/), the integer and float
   types and their own methods.

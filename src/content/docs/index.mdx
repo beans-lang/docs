@@ -1,9 +1,9 @@
 ---
 title: Beans
-description: A small OOP systems language with Java-style objects, a Go-sized grammar, predictable ownership, and native systems access.
+description: A small object-oriented systems language with classes and interfaces, exact decimal arithmetic, predictable memory, and direct systems access.
 template: splash
 hero:
-  tagline: A small object-oriented systems language. Java-style objects, a Go-sized grammar, predictable ownership, no null, no exceptions, and native systems access.
+  tagline: A small object-oriented systems language with predictable memory, no null, no exceptions, and direct systems access.
 ---
 
 import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
@@ -18,15 +18,16 @@ export const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 ## What is Beans?
 
-Beans is a small programming language for two jobs: **business apps** (accounting,
-billing, ERP) and **systems work** (databases, OS and hardware control). Files end
-in `.b`.
+Beans is a small programming language for two kinds of work: business apps
+(accounting, billing, ERP) and systems work (databases, operating systems, and
+hardware control). Files end in `.b`.
 
-It gives you Java-style classes and interfaces, a grammar about the size of Go's,
-exact `decimal` money math, no null and no exceptions, predictable object
-lifetimes with no garbage-collector pauses, and a low-level `unsafe` layer for raw
-memory and C interop. One compiler, `beansc`, checks your program and either runs
-it on a reference interpreter or compiles it to a native binary through LLVM.
+It has classes, interfaces, and inheritance with reference semantics; a small
+grammar; exact `decimal` arithmetic; no null and no exceptions, only `Option` and
+`Result`; deterministic object lifetimes with no garbage-collector pauses; and a
+low-level `unsafe` layer for raw memory and C interop. One compiler, `beansc`,
+checks your program and either runs it on a reference interpreter or compiles it
+to a native binary through LLVM.
 
 ```beans
 import std.io
@@ -39,33 +40,26 @@ fn main() {
 
 <CardGrid stagger>
   <Card title="Small and explicit" icon="approve-check">
-    Every name states its type. No inference, no null, no exceptions — just
-    `Option` and `Result`. The whole grammar fits in your head.
+    Every name states its type. There is no null and no exceptions: missing
+    values are `Option`, failures are `Result`. The grammar is small.
   </Card>
   <Card title="Predictable memory" icon="setting">
-    Automatic reference counting plus a cycle collector. No tracing GC, no pauses
-    on the straight-line path. Deterministic destructors.
+    Automatic reference counting with a cycle collector. There is no tracing
+    garbage collector, so the straight-line path has no pauses, and destructors
+    run deterministically.
   </Card>
-  <Card title="Real systems access" icon="laptop">
+  <Card title="Systems access" icon="laptop">
     Files, sockets, threads, atomics, SIMD, shared memory, dynamic libraries,
-    and a full C ABI — all through the standard library.
+    and a full C ABI, all through the standard library.
   </Card>
-  <Card title="One toolchain" icon="rocket">
-    `beansc` bundles the checker, interpreter, native backend, package manager,
+  <Card title="One command" icon="rocket">
+    `beansc` is the checker, interpreter, native backend, package manager,
     language server, and debugger. One command installs it.
   </Card>
 </CardGrid>
 
-## Where to go next
-
-- New here? Start with [Install Beans](/start/install/) and [Hello world](/start/hello-world/).
-- Learning the language? The [language guide](/guide/modules/) walks through every feature.
-- Looking something up? See the [builtin reference](/reference/builtins/) and the
-  [standard library reference](/reference/stdlib/).
-- Managing dependencies? Read about [POT package management](/pot/why-pot/).
-
 :::note[Maturity]
-Beans is a **production preview on the 1.0 stabilization line**. The language
-contract is frozen at `1.0`; the latest compiler release is `0.1.7`.
-See [Maturity and platforms](/intro/maturity/) for what that means.
+Beans is a production preview on the 1.0 stabilization line. The language
+contract is frozen at `1.0`; the latest compiler release is `0.1.7`. See
+[Maturity and platforms](/intro/maturity/) for what that means.
 :::

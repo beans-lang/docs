@@ -3,6 +3,10 @@ title: std.collections
 description: Generic helper functions over List and Map, for counting, filtering, transforming, and merging.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 11 package functions.
+<!-- coverage:summary:end -->
+
 `std.collections` adds common algorithms on top of the builtin `List` and `Map`
 types. The storage lives in the compiler; these functions are plain Beans on top.
 Read the source at
@@ -19,14 +23,20 @@ already support these.
 
 ## List helpers
 
-| Function | What it does |
-| --- | --- |
-| `sum_int(values: List<int>) -> int` | add up a list of ints |
-| `frequencies(values: List<string>) -> Map<string, int>` | count how often each string appears |
-| `count<T implements Eq>(values: List<T>, needle: T) -> int` | count how many items equal `needle` |
-| `filter<T implements Clone>(values: List<T>, keep: fn(T) -> bool) -> List<T>` | keep items for which `keep` returns true |
-| `transform<T implements Clone, U>(values: List<T>, apply: fn(T) -> U) -> List<U>` | make a new list by applying `apply` to each item |
-| `unique<T implements Eq & Hash & Clone>(values: List<T>) -> List<T>` | drop duplicates, keeping first-seen order |
+```beans
+pub fn sum_int(values: List<int>) -> int
+pub fn frequencies(values: List<string>) -> Map<string, int>
+pub fn count<T implements Eq>(values: List<T>, needle: T) -> int
+pub fn filter<T implements Clone>(values: List<T>, keep: fn(T) -> bool) -> List<T>
+pub fn transform<T implements Clone, U>(values: List<T>, apply: fn(T) -> U) -> List<U>
+pub fn unique<T implements Eq & Hash & Clone>(values: List<T>) -> List<T>
+```
+
+- `sum_int` adds up a list of ints. `frequencies` counts how often each string
+  appears. `count` counts how many items equal `needle`.
+- `filter` keeps the items for which `keep` returns true. `transform` makes a new
+  list by applying `apply` to each item. `unique` drops duplicates, keeping
+  first-seen order.
 
 ```beans
 import std.io
@@ -48,13 +58,24 @@ Several of these take `inout` maps. `inout` means the function changes the
 caller's own map in place; you do not get a copy back. After the call, your map
 holds the new state.
 
-| Function | What it does |
-| --- | --- |
-| `increment<K implements Eq & Hash>(inout values: Map<K, int>, key: K, delta: int) -> int` | add `delta` to `key`'s count (starting from 0), return the new count |
-| `get_or_insert_with<K implements Eq & Hash, V implements Clone>(inout values: Map<K, V>, key: K, make: fn() -> V) -> V` | return the value at `key`, or insert what `make()` gives and return that |
-| `merge_with<K implements Eq & Hash & Clone, V implements Clone>(inout target: Map<K, V>, source: Map<K, V>, combine: fn(V, V) -> V)` | fold `source` into `target`; on a key clash, keep `combine(old, new)` |
-| `remove_if<K implements Eq & Hash & Clone, V implements Clone>(inout values: Map<K, V>, remove: fn(K, V) -> bool) -> int` | drop each entry where `remove` returns true; return how many were dropped |
-| `map_values_with_key<K implements Eq & Hash & Clone, V implements Clone, U>(values: Map<K, V>, apply: fn(K, V) -> U) -> Map<K, U>` | build a new map with the same keys and values from `apply(key, value)` |
+```beans
+pub fn increment<K implements Eq & Hash>(inout values: Map<K, int>, key: K, delta: int) -> int
+pub fn get_or_insert_with<K implements Eq & Hash, V implements Clone>(inout values: Map<K, V>, key: K, make: fn() -> V) -> V
+pub fn merge_with<K implements Eq & Hash & Clone, V implements Clone>(inout target: Map<K, V>, source: Map<K, V>, combine: fn(V, V) -> V)
+pub fn remove_if<K implements Eq & Hash & Clone, V implements Clone>(inout values: Map<K, V>, remove: fn(K, V) -> bool) -> int
+pub fn map_values_with_key<K implements Eq & Hash & Clone, V implements Clone, U>(values: Map<K, V>, apply: fn(K, V) -> U) -> Map<K, U>
+```
+
+- `increment` adds `delta` to `key`'s value, starting from 0 for a missing key, and
+  returns the new count.
+- `get_or_insert_with` returns the value at `key`, or inserts what `make()` gives
+  and returns that.
+- `merge_with` folds `source` into `target`. On a key that exists in both, it keeps
+  `combine(old, new)`.
+- `remove_if` drops each entry where `remove` returns true and returns how many were
+  dropped.
+- `map_values_with_key` builds a new map with the same keys and values taken from
+  `apply(key, value)`.
 
 ```beans
 import std.io
@@ -70,5 +91,5 @@ fn main() {
 
 ## See also
 
-- [Collections](/reference/builtins/collections/) — the builtin `List` and `Map`
+- [Collections](/reference/builtins/collections/), the builtin `List` and `Map`
   types these helpers work on.

@@ -68,9 +68,5 @@ and keeps going.
 bindgen produces usable bindings for the supported parts of real libraries such
 as SQLite, zlib, and curl.
 
-## See also
-
-- [FFI guide](/guide/ffi/) — calling C from Beans.
-- [Building](/tools/build/) — the `--header` flag goes the other way, exporting
-  a C header from a Beans library.
-- [The beansc command](/tools/beansc/)
+The reverse direction, exporting a C header from a Beans library, is the
+`--header` flag on [`beansc build`](/tools/build/).

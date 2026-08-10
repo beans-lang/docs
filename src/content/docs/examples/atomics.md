@@ -1,6 +1,6 @@
 ---
 title: Atomics
-description: A line-by-line walk through examples/atomics.b — typed atomic cells with explicit memory ordering.
+description: A line-by-line walk through examples/atomics.b, covering typed atomic cells with explicit memory ordering.
 ---
 
 An atomic is a shared cell holding one integer or bool that several threads may
@@ -11,11 +11,10 @@ walks through all of it. This page follows the file in order.
 
 ## What the ordering is for
 
-The file's own header says it best: the order says what else the processor and
-compiler may move across this access. The order is written at the call site and
-**cannot be a variable** — LLVM puts the ordering inside the instruction, so one
-call site is one instruction, and the compiler can reject a combination that
-makes no sense.
+The order says what else the processor and compiler may move across this access.
+It is written at the call site and **cannot be a variable**, because LLVM puts
+the ordering inside the instruction. One call site is one instruction, and the
+compiler can reject a combination that makes no sense.
 
 The orders are `MemoryOrder.relaxed`, `.release`, `.acquire`, `.acq_rel`, and
 `.seq_cst`.
@@ -40,12 +39,12 @@ second.join()
 io.println("counted {counter.load(MemoryOrder.seq_cst)}")
 ```
 
-Two threads each add 1 ten thousand times. `fetch_add` is one indivisible
-add — no update is lost. `relaxed` is the right order here: nobody reads the
+Two threads each add 1 ten thousand times. `fetch_add` is one indivisible add,
+so no update is lost. `relaxed` is the right order here: nobody reads the
 counter until both threads have finished, so no ordering guarantee is needed,
 only the indivisibility. The final `load` prints `20000`.
 
-## Release / acquire — the classic handoff
+## Release and acquire
 
 ```beans
 let payload: Atomic<i64> = new Atomic<i64>(0)
@@ -145,8 +144,8 @@ io.println("worker saw {worker.join()}")
 ```
 
 `wait(value, order)` blocks while the cell still holds `value`; `notify_all`
-wakes waiters. A wakeup is a hint, never a promise — the value may have moved and
-moved back, or the wakeup may be meant for another cell — so the check goes in a
+wakes waiters. A wakeup is a hint, never a promise: the value may have moved and
+moved back, or the wakeup may be meant for another cell, so the check goes in a
 loop. This is cheaper than spinning because the waiter is parked by the OS
 instead of burning a core.
 
@@ -170,8 +169,6 @@ Run it:
 beansc run examples/atomics.b
 ```
 
-## Where to go next
-
-- [Atomics and MemoryOrder](/reference/builtins/atomics/) — the full reference.
-- [Threads and channels](/examples/threads/) — the higher-level tools.
-- [Concurrency](/guide/concurrency/) — the concurrency guide.
+[Atomics and MemoryOrder](/reference/builtins/atomics/) is the full reference.
+[Threads and channels](/examples/threads/) covers the higher-level tools, and
+the [concurrency guide](/guide/concurrency/) puts them in context.

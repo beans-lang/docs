@@ -45,10 +45,10 @@ Each dependency row is:
 module <path> <requested-ref> <commit> <tree>
 ```
 
-- `<path>` — the module path from `require`.
-- `<requested-ref>` — the ref you asked for (`v1.2`).
-- `<commit>` — the exact Git commit SHA it resolved to.
-- `<tree>` — the Git tree hash of that commit's contents.
+- `<path>`: the module path from `require`.
+- `<requested-ref>`: the ref you asked for (`v1.2`).
+- `<commit>`: the exact Git commit SHA it resolved to.
+- `<tree>`: the Git tree hash of that commit's contents.
 
 The file is written safely: Beans writes a temporary file and then atomically
 renames it into place, so you never see a half-written lock.

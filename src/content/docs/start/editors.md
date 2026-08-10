@@ -4,7 +4,7 @@ description: Set up Beans support in VS Code and Zed, both driven by the compile
 ---
 
 Beans has editor integrations for **VS Code** and **Zed**. Both are thin
-clients over `beansc lsp` — the compiler's built-in language server. That means
+clients over `beansc lsp`, the compiler's built-in language server. That means
 every answer (errors, completion, go-to-definition) comes from the same
 compiler that builds your code, so the editor never disagrees with the build.
 
@@ -36,7 +36,7 @@ code --install-extension beans-vscode-<version>.vsix
 ### What you get
 
 Diagnostics, completion, hover, signature help, go-to-definition (across
-packages), find references, document symbols, rename, and syntax highlighting —
+packages), find references, document symbols, rename, and syntax highlighting,
 plus anything else the compiler exposes through the LSP. Press **F5** to debug
 a `.b` file.
 
@@ -72,13 +72,13 @@ Both editors resolve `beansc` and use the first one they find, in this order:
 
 1. the editor setting (`beans.compiler.path` in VS Code),
 2. the `BEANSC` environment variable,
-3. your **official Beans installation** — the toolchain the one-line installer
+3. your **official Beans installation**, the toolchain the one-line installer
    sets up under `$BEANS_HOME` (default `~/.beans` on macOS and Linux,
    `%LOCALAPPDATA%\Beans` on Windows). This lookup is what makes a released
-   `beansc` work out of the box, with no setting to configure,
+   `beansc` work with no setting to configure,
 4. `beansc` at a workspace root, then on your `PATH`,
 5. a source build next to the workspace (`build/beansc`, `beans/build/beansc`,
-   `../beans/build/beansc`) — for working on the compiler itself.
+   `../beans/build/beansc`), for working on the compiler itself.
 
 If nothing is found, the extension turns Beans features off and tells you what
 it looked for. The exact, current lookup is documented in the
@@ -94,8 +94,6 @@ them yet:
 - code actions,
 - inlay hints.
 
-## Where to go next
-
-- [Language server (LSP)](/tools/lsp/) — what the server provides.
-- [Debugger (DAP)](/tools/dap/) — debugging Beans programs.
-- [Verify the install](/start/verify/) — make sure `beansc` is on your PATH first.
+For what the server provides, see [Language server (LSP)](/tools/lsp/) and
+[Debugger (DAP)](/tools/dap/). Both need `beansc` on your `PATH`, so
+[verify the install](/start/verify/) first.

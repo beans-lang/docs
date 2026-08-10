@@ -17,9 +17,9 @@ language_version     = "1.0"
 runtime_abi_version  = 4
 ```
 
-- **version** — the compiler version (`0.1.7`).
-- **language_version** — the language version (`1.0`).
-- **runtime_abi_version** — the runtime ABI number (`4`).
+- **version**: the compiler version (`0.1.7`).
+- **language_version**: the language version (`1.0`).
+- **runtime_abi_version**: the runtime ABI number (`4`).
 
 From that header, `compiler/beans/version.b` is generated. A test
 (`test/version.sh`) refuses a stale copy, so the generated Beans file can never
@@ -33,7 +33,7 @@ Beans follows [Semantic Versioning](https://semver.org/).
 
 - **Before 1.0**, the language, standard library, CLI, module format, and ABI
   may change between minor releases. Pin the compiler and commit `beans.lock`
-  for serious projects — see [Compatibility](/project/compatibility/).
+  for serious projects. See [Compatibility](/project/compatibility/).
 - **After 1.0**, a breaking public change needs a new major version, and both
   the current and previous minor lines get fixes.
 
@@ -47,15 +47,11 @@ solid enough to build on, but it is not 1.0 and you should not call it 1.0.0.
 
 Reaching 1.0 requires every release gate in the roadmap to pass:
 
-- performance gates at 90% or more of tuned C++
+- the performance gates pass
 - a 24-hour fuzz campaign
 - a 30-clean-day beta, then a 14-clean-day release candidate
 - no open critical or high correctness bugs
 - the full 26-target release manifest published
 
-See [Maturity and platforms](/intro/maturity/) for the wider picture.
-
-## See also
-
-- [Compatibility](/project/compatibility/)
-- [Release process](/project/release/)
+See [Maturity and platforms](/intro/maturity/) for the wider picture, and the
+[release process](/project/release/) for how a version is built and published.

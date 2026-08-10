@@ -3,11 +3,14 @@ title: std.encoding.json
 description: Parse and build JSON with a DOM-style Value API backed by yyjson.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 6 package functions · 4 types · 8 static methods · 15 instance methods · 5 public fields · 8 enum variants.
+<!-- coverage:summary:end -->
+
 `std.encoding.json` reads and writes JSON. Parsing gives you a `Value`, a cheap
-view over an immutable document. You read fields and elements off that value, and
-you can also build new values and turn them into text. Underneath it uses yyjson
-(MIT). Read the source at
-[`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b).
+view over an immutable document; you read fields and elements off that value, or
+build new values and turn them into text. It is backed by yyjson (MIT). The
+source is [`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b).
 
 ```beans
 import std.encoding.json
@@ -15,117 +18,187 @@ import std.encoding.json
 
 A `Value` holds a shared reference to the whole document. Child values keep the
 document alive, so a value pulled out of a parse stays valid as long as you hold
-it. Parsing is strict RFC 8259 by default.
+it. Copying a `Value` is cheap. Parsing is strict RFC 8259 by default.
 
-Note: a build made with `--runtime freestanding` refuses `std.encoding`. These
-packages need the hosted runtime.
+A build made with `--runtime freestanding` refuses `std.encoding`; these packages
+need the hosted runtime.
 
-## Kinds
+## Kind
 
-`enum Kind` names the type of a value: `null`, `boolean`, `integer`,
-`unsigned_integer`, `floating`, `text`, `array`, `object`.
+`Kind` names what a value holds.
+
+```beans
+pub enum Kind
+null
+boolean
+integer
+unsigned_integer
+floating
+text
+array
+object
+```
+
+Numbers keep their parsed kind: signed integers, unsigned integers, and
+floating-point values stay distinct rather than collapsing to `f64`. An integer
+too large for both `i64` and `u64` parses as `floating`.
 
 ## Options
 
-`class Options` loosens the parser. Every field is off by default:
+`Options` opts into three extensions. Every field is off by default, so the
+parser is strict RFC 8259 until you turn one on.
 
-- `pub allow_comments: bool = false`
-- `pub allow_trailing_commas: bool = false`
-- `pub allow_inf_nan: bool = false`
+```beans
+pub class Options
+allow_comments: bool = false
+allow_trailing_commas: bool = false
+allow_inf_nan: bool = false
+```
 
-These are a small subset of JSON5, not full JSON5.
+These three flags are a small subset of JSON5, deliberately not full JSON5:
+unquoted keys and single quotes are still rejected.
 
 ## Entry
 
-`struct Entry` is one key/value pair from an object:
+One key/value pair from an object, as returned by `entries()`.
 
-- `pub key: string`
-- `pub value: Value`
+```beans
+pub struct Entry
+pub key: string
+pub value: Value
+```
 
 ## Reading a value
 
-`class Value` methods for inspecting and pulling data out:
+```beans
+pub fn kind() -> Kind
+pub fn is_null() -> bool
+pub fn to_bool() -> Result<bool>
+pub fn to_int() -> Result<int>
+pub fn to_uint() -> Result<u64>
+pub fn to_float() -> Result<float>
+pub fn number() -> Result<float>
+pub fn to_string() -> Result<string>
+pub fn len() -> Result<int>
+pub fn at(index: int) -> Result<Value>
+pub fn elements() -> Result<List<Value>>
+pub fn get(key: string) -> Option<Value>
+pub fn entries() -> Result<List<Entry>>
+```
 
-| Method | Returns | What it does |
-| --- | --- | --- |
-| `kind()` | `Kind` | the value's kind |
-| `is_null()` | `bool` | whether it is JSON `null` |
-| `to_bool()` | `Result<bool>` | the boolean value |
-| `to_int()` | `Result<int>` | the value as a signed int |
-| `to_uint()` | `Result<u64>` | the value as an unsigned int |
-| `to_float()` | `Result<float>` | the value as a float |
-| `number()` | `Result<float>` | any numeric value as a float |
-| `to_string()` | `Result<string>` | the string value |
-| `len()` | `Result<int>` | length of an array or object |
-| `at(index)` | `Result<Value>` | element at `index` in an array |
-| `elements()` | `Result<List<Value>>` | all array elements |
-| `get(key)` | `Option<Value>` | first value for `key` in an object |
-| `entries()` | `Result<List<Entry>>` | all key/value pairs, in document order |
+- The `to_*` readers fail with kind `type` when the value is the wrong kind.
+  `to_int` accepts an unsigned integer when it fits in `i64`; `to_uint` accepts a
+  signed integer when it is not negative; `number` accepts any numeric kind and
+  returns it as a float.
+- `at` fails with kind `range` when the index is out of bounds.
+- `get` returns `none` for a missing key, or when the value is not an object. A
+  missing field is not an error. With duplicate keys it returns the first;
+  `entries()` reports them all in document order.
 
-`get` returns the first match for a key. `entries` keeps document order and
-includes duplicate keys if the input had them.
+Read a field, and treat a missing one as absent rather than an error:
 
+<!-- beans:compile -->
 ```beans
 import std.io
 import std.encoding.json
 
 fn main() {
     let doc: json.Value = json.parse("\{\"name\": \"beans\", \"stars\": 3\}").expect("parse")
-    let name: Option<json.Value> = doc.get("name")
-    match name {
-        some(value) => io.println(value.to_string().expect("string")),   // beans
+
+    match doc.get("name") {
+        some(value) => io.println(value.to_string().expect("name is text")),
         none => io.println("no name"),
+    }
+    match doc.get("website") {
+        some(value) => io.println(value.to_string().expect("website is text")),
+        none => io.println("no website field"),
     }
 }
 ```
 
 ## Building a value
 
-Static builders and mutators let you make a document:
+Values built with these constructors live in mutable documents. `push` and `add`
+deep-copy their argument, so one value can be inserted twice or shared freely.
 
-| Call | What it does |
-| --- | --- |
-| `Value.null()` | a JSON null |
-| `Value.from_bool(b)` | a boolean |
-| `Value.from_int(i)` | a signed integer |
-| `Value.from_uint(u)` | an unsigned integer |
-| `Value.from_float(f)` | a float |
-| `Value.from_string(s)` | a string |
-| `Value.array()` | an empty array |
-| `Value.object()` | an empty object |
-| `push(item) -> Result<bool>` | add `item` to an array |
-| `add(key, item) -> Result<bool>` | add `key`/`item` to an object |
+```beans
+pub static fn null() -> Value
+pub static fn from_bool(value: bool) -> Value
+pub static fn from_int(value: int) -> Value
+pub static fn from_uint(value: u64) -> Value
+pub static fn from_float(value: float) -> Value
+pub static fn from_string(value: string) -> Value
+pub static fn array() -> Value
+pub static fn object() -> Value
+pub fn push(item: Value) -> Result<bool>
+pub fn add(key: string, item: Value) -> Result<bool>
+```
 
-`push` and `add` deep-copy the item they take. Values that came from a parse are
-read-only, so their kind reports as `immutable` if you try to change them; build
-fresh values when you want to mutate.
+Values that came from `parse` are read-only: calling `push` or `add` on them
+returns an `err` with kind `immutable`. (`immutable` is an error kind, not a
+`Kind` variant.) Build fresh values when you need to mutate.
 
+<!-- beans:compile -->
 ```beans
 import std.io
 import std.encoding.json
 
 fn main() {
     let obj: json.Value = json.Value.object()
-    obj.add("name", json.Value.from_string("beans")).expect("add")
-    obj.add("stars", json.Value.from_int(3)).expect("add")
-    io.println(json.stringify(obj).expect("stringify"))   // {"name":"beans","stars":3}
+    obj.add("name", json.Value.from_string("beans")).expect("add name")
+    obj.add("stars", json.Value.from_int(3)).expect("add stars")
+
+    let tags: json.Value = json.Value.array()
+    tags.push(json.Value.from_string("small")).expect("push tag")
+    obj.add("tags", tags).expect("add tags")
+
+    io.println(json.stringify(obj).expect("stringify"))
 }
 ```
 
-## Parsing and printing functions
+## Parsing and printing
 
-| Function | Returns | What it does |
-| --- | --- | --- |
-| `parse(text) -> Result<Value>` | `Value` | parse a JSON string |
-| `parse_bytes(data: Bytes) -> Result<Value>` | `Value` | parse JSON bytes |
-| `parse_with_options(text, options: Options) -> Result<Value>` | `Value` | parse with relaxed rules |
-| `parse_bytes_with_options(data, options) -> Result<Value>` | `Value` | same, from bytes |
-| `stringify(value) -> Result<string>` | `string` | compact JSON text |
-| `stringify_pretty(value, indent) -> Result<string>` | `string` | pretty JSON text |
+```beans
+pub fn parse(text: string) -> Result<Value>
+pub fn parse_bytes(data: Bytes) -> Result<Value>
+pub fn parse_with_options(text: string, options: Options) -> Result<Value>
+pub fn parse_bytes_with_options(data: Bytes, options: Options) -> Result<Value>
+pub fn stringify(value: Value) -> Result<string>
+pub fn stringify_pretty(value: Value, indent: string) -> Result<string>
+```
 
-`stringify` writes compact JSON; a NaN or infinite number makes the result kind
-`invalid`. `stringify_pretty` indents; the `indent` string must be exactly two
-spaces (`"  "`) or four spaces (`"    "`).
+- The whole input must be one document; trailing content is an error.
+- `stringify` writes compact JSON. A NaN or infinite number makes the result kind
+  `invalid`. `stringify_pretty` indents; the `indent` string must be exactly two
+  spaces (`"  "`) or four spaces (`"    "`), or you get kind `invalid`.
+- Parse errors come back with kind `invalid`, `eof`, or `memory`, and the message
+  carries the byte position where the problem was found.
 
-Parse errors come back with kind `invalid`, `eof`, or `memory`, and carry the
-byte position where the problem was found.
+Handle a parse error instead of crashing:
+
+<!-- beans:compile -->
+```beans
+import std.io
+import std.encoding.json
+
+fn main() {
+    match json.parse("\{ not valid ]") {
+        ok(value) => io.println("parsed a document with {value.len().expect("len")} entries"),
+        err(problem) => io.println("bad JSON ({problem.kind}): {problem.msg}"),
+    }
+}
+```
+
+To accept comments and trailing commas, pass `Options`:
+
+<!-- beans:compile -->
+```beans
+import std.encoding.json
+
+fn main() {
+    var options: json.Options = new json.Options()
+    options.allow_comments = true
+    options.allow_trailing_commas = true
+    let doc: json.Value = json.parse_with_options("[1, 2, 3,] // ok", options).expect("parse")
+}
+```

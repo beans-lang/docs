@@ -33,9 +33,9 @@ The runtime ABI version for this compiler is `4`. The compiler reports version
 Beans has no null and no exceptions. Instead it gives you three builtin types for
 "maybe" and "failed" answers, and you will see them all over this reference:
 
-- `Option<T>` — a value that may be missing.
-- `Result<T, E>` — a value or an error.
-- `Error` — the standard error class.
+- `Option<T>`: a value that may be missing.
+- `Result<T, E>`: a value or an error.
+- `Error`: the standard error class.
 
 These, and the collection types like `List` and `Map`, are all builtin. Read
 [Option, Result, and Error](/reference/builtins/option-result/) for the full story.

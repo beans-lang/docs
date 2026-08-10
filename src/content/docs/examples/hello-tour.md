@@ -22,8 +22,8 @@ fn main() {
 
 - `import std.io` brings in the I/O package; `io.println` lives there.
 - `fn main()` is the entry point.
-- `let name: string = "beans"` — `let` is a value that will not change, and its
-  type `string` is written out. Beans does not infer types on `let`.
+- `let name: string = "beans"` declares a `let`, a value that will not change,
+  with its type `string` written out. Beans does not infer types on `let`.
 - `"hello from {name}"` interpolates: `{name}` becomes the value.
 
 Run it:
@@ -43,7 +43,7 @@ parts worth reading, quoted from the real file.
 interface Shape {
     fn area() -> f64
 
-    // default method body — most "abstract class" jobs die here
+    // default method body: implementers get this unless they override it
     fn describe() -> string {
         return "shape with area {self.area()}"
     }
@@ -51,8 +51,7 @@ interface Shape {
 ```
 
 An interface can carry a **default method body**. Any type implementing `Shape`
-gets `describe()` for free unless it overrides it. This covers most of what
-other languages need abstract classes for.
+gets `describe()` unless it overrides it.
 
 ### Classes, inheritance, and override
 
@@ -98,10 +97,10 @@ fn describe_payment(p: Payment) -> string {
 ```
 
 Enum variants are `snake_case` and can carry payloads. `match` pulls the payload
-apart. Note the match bindings (`n`, `iban`, `amt`) do not repeat their types —
+apart. Note the match bindings (`n`, `iban`, `amt`) do not repeat their types;
 the matched value pins them. That is the one place Beans infers a type.
 
-### Result and Option — no exceptions, no null
+### Result and Option
 
 ```beans
 fn parse_age(s: string) -> Result<int> {
@@ -138,7 +137,7 @@ class Stack<T> {
 }
 ```
 
-Generics are monomorphized — the compiler makes a specialized copy per type, so
+Generics are monomorphized: the compiler makes a specialized copy per type, so
 there is no run-time cost.
 
 ### Highlights from `main`
@@ -148,7 +147,7 @@ there is no run-time cost.
 io.println((-5).abs())           // 5
 io.println("42".to_int().or(0))  // 42
 
-// decimal: exact money math. floats can't do this.
+// decimal: exact base-10 arithmetic
 let price: decimal = 19.99
 let qty: int = 3
 let total: decimal = price * (qty as decimal)
@@ -157,11 +156,11 @@ io.println("total: {total}")     // total: 59.97, exactly
 
 - Primitives are objects: `(-5).abs()` works.
 - `decimal` is exact. `19.99 * 3` is `59.97`, not a float approximation.
-- `qty as decimal` is an explicit conversion — Beans never converts number types
+- `qty as decimal` is an explicit conversion; Beans never converts number types
   for you.
 
 ```beans
-// as? — checked downcast, returns Option, never crashes
+// as?: checked downcast, returns Option
 let first: Shape = new Circle(1.0)
 match first as? LoudCircle {
     some(lc) => io.println("loud: {lc.describe()}"),
@@ -182,7 +181,7 @@ for i < 3 {
 }
 ```
 
-`if` is an expression — it produces a value. And there is one loop keyword,
+`if` is an expression: it produces a value. And there is one loop keyword,
 `for`, used for both a condition (`for i < 3`) and iteration.
 
 Run the whole tour:
@@ -191,8 +190,7 @@ Run the whole tour:
 beansc run examples/tour.b
 ```
 
-## Where to go next
-
-- [Threads and channels](/examples/threads/) — the same ideas plus concurrency.
-- [The language guide](/guide/modules/) — each of these features in full.
-- [Option and Result](/guide/errors/) — the error model in depth.
+For the same ideas plus concurrency, read
+[Threads and channels](/examples/threads/). The
+[language guide](/guide/modules/) covers each of these features in full, and
+[Option and Result](/guide/errors/) goes into the error model in depth.

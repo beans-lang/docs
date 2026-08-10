@@ -55,10 +55,6 @@ beansc run hello.b
 hello from beans
 ```
 
-If all three checks worked, your install is good.
-
-## Where to go next
-
-- [Hello world](/start/hello-world/) — check, run, and build the program in more detail.
-- [Create and run a project](/start/projects/) — go beyond a single file.
-- [doctor and upgrade](/tools/doctor-upgrade/) — more on `beansc doctor`.
+If all three checks worked, your install is good. Next, [write and run your
+first program](/start/hello-world/) or [set up a project](/start/projects/). For
+more on `beansc doctor`, see [doctor and upgrade](/tools/doctor-upgrade/).

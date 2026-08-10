@@ -14,7 +14,7 @@ beansc doctor
 
 `doctor` prints a banner, then a report. Every row is either `ready` or names
 the one command that fixes it. It **always exits 0**, even when something is not
-ready — it is a report, not a gate.
+ready. It is a report, not a gate.
 
 It reports:
 
@@ -39,7 +39,7 @@ Then it checks capability rows:
 | bindgen | clang |
 | static library | native build + archiver |
 
-Where a row is not ready, the fix names the exact command — for example
+Where a row is not ready, the fix names the exact command, for example
 `xcode-select --install`.
 
 ## `beansc upgrade`
@@ -64,9 +64,5 @@ What it does:
 On Windows, run it through the installed `beansc.cmd` launcher.
 
 See [Upgrade beansc](/start/upgrade/) for the getting-started view, and
-[Install Beans](/start/install/) for a first install.
-
-## See also
-
-- [Exit codes and troubleshooting](/tools/exit-codes/)
-- [The beansc command](/tools/beansc/)
+[Install Beans](/start/install/) for a first install. When a command fails, the
+[exit codes](/tools/exit-codes/) tell you why.

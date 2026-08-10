@@ -43,7 +43,7 @@ shared.with_lock(fn(c: Counter) {
 ```
 
 A `Mutex<Counter>` wraps a value so only one thread touches it at a time. You do
-not lock and unlock by hand — you call `with_lock` with a function, and the lock
+not lock and unlock by hand. You call `with_lock` with a function, and the lock
 is held for exactly that function and released after. The locked value is passed
 in as `c`.
 
@@ -57,7 +57,7 @@ defer ch.close()
 
 A `Channel<string>` is a queue between threads. `new Channel(8)` makes one with
 room for 8 buffered messages. `send` puts a value in. `defer ch.close()` closes
-the channel when the current scope ends — `defer` runs its statement on the way
+the channel when the current scope ends; `defer` runs its statement on the way
 out, no matter how you leave.
 
 Run it:
@@ -68,9 +68,9 @@ beansc run examples/threads.b
 
 ## Wide values across a channel: wide_concurrency.b
 
-"Wide" means a full value type — a `struct` or an `enum` with payload — not just
-a number or a pointer. `wide_concurrency.b` proves these travel across channels
-and thread boundaries intact.
+A "wide" value is a full value type: a `struct` or an `enum` with a payload,
+rather than a single number or pointer. `wide_concurrency.b` shows these travel
+across channels and thread boundaries intact.
 
 ```beans
 import std.io
@@ -103,13 +103,13 @@ fn main() {
 Things to notice:
 
 - The channel carries a whole `Event` struct. `receive()` returns an
-  `Option<Event>` — `.expect("event")` unwraps it or panics with that message.
+  `Option<Event>`, and `.expect("event")` unwraps it or panics with that message.
 - A thread can return a fixed-size array (`[i64; 2]`); `join()` gives it back.
 - After `close()`, `receive()` returns `none`, so `.is_none()` is `true`. That
   is how a reader learns the channel is done.
 
 The example also sends `int`, `decimal`, and even a `Result<Pair>` through
-channels — any type works:
+channels; any type works:
 
 ```beans
 let guarded: Channel<Result<Pair>> = new Channel(1)
@@ -158,8 +158,7 @@ Run it:
 beansc run examples/wide_sync.b
 ```
 
-## Where to go next
-
-- [Atomics](/examples/atomics/) — lock-free shared cells with explicit ordering.
-- [Concurrency](/guide/concurrency/) — the full concurrency guide.
-- [Ownership handles](/reference/builtins/handles/) — `Shared`, `Weak`, `Box`, and friends.
+[Atomics](/examples/atomics/) covers lock-free shared cells with explicit
+ordering, and the [concurrency guide](/guide/concurrency/) is the full picture.
+[Ownership handles](/reference/builtins/handles/) documents `Shared`, `Weak`,
+`Box`, and friends.

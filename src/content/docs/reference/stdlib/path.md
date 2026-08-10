@@ -1,7 +1,11 @@
 ---
 title: std.path
-description: Pure path string math — join, parent, name, extension, and stem. No filesystem access.
+description: Pure path string math, join, parent, name, extension, and stem. No filesystem access.
 ---
+
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 5 package functions.
+<!-- coverage:summary:end -->
 
 `std.path` works on path strings only. It never touches the filesystem, and it
 always uses `/` as the separator on every supported target. Think of it as string
@@ -12,23 +16,25 @@ math for paths. Read the source at
 import std.path
 ```
 
-| Function | What it does |
-| --- | --- |
-| `join(first: string, second: string) -> string` | join two path parts with a single `/` |
-| `parent(value: string) -> string` | everything before the last segment |
-| `name(value: string) -> string` | the final segment |
-| `extension(value: string) -> string` | the file extension, including the leading dot |
-| `stem(value: string) -> string` | the final segment without its extension |
+```beans
+pub fn join(first: string, second: string) -> string
+pub fn parent(value: string) -> string
+pub fn name(value: string) -> string
+pub fn extension(value: string) -> string
+pub fn stem(value: string) -> string
+```
 
-Details:
-
-- `join` uses exactly one `/` between the parts and skips empty segments. If
-  `second` is an absolute path, it wins and is returned as-is.
-- `parent` returns `/` for the root and `""` when there is no parent.
-- `name` ignores trailing slashes, so `name("a/b/")` is `"b"`.
-- `extension` includes the leading dot, like `".txt"`. A dotfile such as `.env`
-  is treated as a name, not an extension, so its extension is empty.
-- `stem` is the final segment with the extension removed.
+- `join` puts exactly one `/` between the two parts and skips empty segments. If
+  `second` is an absolute path (starts with `/`), it wins and is returned as-is.
+- `parent` returns everything before the last segment. Trailing slashes are
+  ignored. It returns `/` for a root-level path and `""` when there is no parent.
+- `name` returns the final segment. Trailing slashes are ignored, so `name("a/b/")`
+  is `"b"`.
+- `extension` returns the file extension including the leading dot, like `".txt"`,
+  or `""` if there is none. A dotfile such as `.env` is treated as a name, not an
+  extension, so its extension is empty.
+- `stem` returns the final segment with its extension removed. `stem` and
+  `extension` together reconstruct `name`.
 
 ```beans
 import std.io
@@ -45,10 +51,7 @@ fn main() {
 }
 ```
 
-The real function names are `name`, `extension`, and `stem`. An older draft spec
-used `base`, `ext`, and similar names; those are not the real names.
-
 ## See also
 
-- [std.fs](/reference/stdlib/fs/) — read and write the files these paths point
+- [std.fs](/reference/stdlib/fs/), read and write the files these paths point
   at.

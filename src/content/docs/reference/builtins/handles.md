@@ -3,6 +3,10 @@ title: Ownership handles
 description: The built-in handle types for owning, sharing, locking, and moving values across threads.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 21 instance methods.
+<!-- coverage:summary:end -->
+
 An **ownership handle** is a builtin type that owns a value and controls how you
 reach it. Different handles give different rules: one owner, shared owners,
 locked access, or a value sent between threads. This page lists each handle and
@@ -17,11 +21,14 @@ by default.
 
 `Box<T>` owns one value on the heap. It is a move-only handle.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new Box(value)` | takes ownership of `value` |
-| `get()` | `-> T` | read the value |
-| `set(value)` | | replace the value |
+```beans
+new Box(value)
+Box<T>.get() -> T
+Box<T>.set(T)
+```
+
+- `new Box(value)` allocates one heap slot and takes ownership of `value`.
+- `get()` returns a copy of the value; `set(value)` replaces it.
 
 ```beans
 let b: Box<int> = new Box(10)
@@ -34,25 +41,35 @@ let n: int = b.get()
 `Arena<T>` holds many values and hands back a stable integer handle for each. It is
 move-only.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new Arena(capacity)` | start with room for `capacity` items |
-| `add(value)` | `-> int` | store `value`, return its handle |
-| `at(handle)` | `-> T` | read by handle; panics if the handle is bad |
-| `get(handle)` | `-> Option<T>` | read by handle, or `none` |
-| `len()` | `-> int` | number of items |
-| `clear()` | | remove all items |
+```beans
+new Arena(capacity)
+Arena<T>.add(T) -> int
+Arena<T>.at(int) -> T
+Arena<T>.get(int) -> Option<T>
+Arena<T>.len() -> int
+Arena<T>.clear()
+```
+
+- `new Arena(capacity)` starts with room for `capacity` items.
+- `add(value)` stores `value` and returns its handle.
+- `at(handle)` reads by handle and panics if the handle is bad; `get(handle)`
+  reads by handle and returns `none` instead of panicking.
+- `len()` is the number of items; `clear()` removes them all.
 
 ## Shared&lt;T&gt;
 
 `Shared<T>` gives thread-safe shared ownership. Many owners can hold the same
-value; the value lives until the last owner is gone.
+value; the value lives until the last owner is gone. Copying the handle adds an
+owner.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new Shared(value)` | |
-| `get()` | `-> T` | read the value |
-| `downgrade()` | `-> Weak<T>` | make a weak reference that does not keep the value alive |
+```beans
+new Shared(value)
+Shared<T>.get() -> T
+Shared<T>.downgrade() -> Weak<T>
+```
+
+- `get()` returns a copy of the value.
+- `downgrade()` makes a `Weak<T>` that does not keep the value alive.
 
 `Shared<T>` is `Send` and `Sync` only when `T` is both.
 
@@ -61,10 +78,13 @@ value; the value lives until the last owner is gone.
 `Weak<T>` points at a `Shared<T>` value without keeping it alive. Use it to break
 reference cycles.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| `upgrade()` | `-> Option<Shared<T>>` | get a real owner back, or `none` if the value is gone |
-| `is_expired()` | `-> bool` | true if the value is already gone |
+```beans
+Weak<T>.upgrade() -> Option<Shared<T>>
+Weak<T>.is_expired() -> bool
+```
+
+- `upgrade()` returns a real owner again, or `none` if the value is already gone.
+- `is_expired()` is true once the value is gone.
 
 ```beans
 let s: Shared<int> = new Shared(1)
@@ -79,10 +99,13 @@ match w.upgrade() {
 
 `Mutex<T>` guards a value so only one thread touches it at a time. It is move-only.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new Mutex(value)` | |
-| `with_lock(fn(T) -> unit)` | | lock, run your function on the value, then unlock |
+```beans
+new Mutex(value)
+Mutex<T>.with_lock(fn(T) -> unit)
+```
+
+- `with_lock` takes the lock, runs your function on the value, then releases the
+  lock. The lock is held only for the length of the call.
 
 ```beans
 let m: Mutex<int> = new Mutex(0)
@@ -95,12 +118,17 @@ m.with_lock(fn(v: int) -> unit {
 
 `Channel<T>` sends values between threads. It holds up to `capacity` items.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new Channel(capacity)` | |
-| `send(x)` | | put a value in |
-| `receive()` | `-> Option<T>` | take a value out; `none` when the channel is closed and empty |
-| `close()` | | no more values will be sent |
+```beans
+new Channel(capacity)
+Channel<T>.send(T)
+Channel<T>.receive() -> Option<T>
+Channel<T>.close()
+```
+
+- `send(x)` puts a value in.
+- `receive()` takes a value out; it returns `none` once the channel is closed and
+  empty.
+- `close()` says no more values will be sent.
 
 ## Thread&lt;T&gt;
 
@@ -108,21 +136,27 @@ m.with_lock(fn(v: int) -> unit {
 `thread.spawn` (see [concurrency](/guide/concurrency/) and the
 [standard library](/reference/stdlib/)).
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| `join()` | `-> T` | wait for the thread to finish and get its result |
+```beans
+Thread<T>.join() -> T
+```
+
+- `join()` waits for the thread to finish and returns its result.
 
 ## AtomicInt
 
 `AtomicInt` is a single integer that many threads can update safely. Its
 operations are sequentially consistent.
 
-| Member | Signature | Notes |
-| --- | --- | --- |
-| make | `new AtomicInt(0)` | start at a value |
-| `load()` | `-> int` | read |
-| `store(v)` | | write |
-| `add_and_get(v)` | `-> int` | add `v` and return the new value |
+```beans
+new AtomicInt(0)
+AtomicInt.load() -> int
+AtomicInt.store(int)
+AtomicInt.add_and_get(int) -> int
+```
+
+- `new AtomicInt(0)` starts the counter at a value.
+- `load()` reads it; `store(v)` writes it.
+- `add_and_get(v)` adds `v` and returns the new value.
 
 ```beans
 let count: AtomicInt = new AtomicInt(0)
@@ -135,8 +169,43 @@ over memory ordering and more operations, use
 [`Atomic<T>`](/reference/builtins/atomics/) instead.
 :::
 
+## Handles working together
+
+A counter guarded across two threads, joined with `Thread.join`:
+
+<!-- beans:compile -->
+```beans
+import std.io
+import std.thread
+
+fn main() {
+    let counter: AtomicInt = new AtomicInt(0)
+
+    let a: Thread<int> = thread.spawn(fn() -> int {
+        var i: int = 0
+        for i < 1000 {
+            counter.add_and_get(1)
+            i += 1
+        }
+        return 0
+    })
+    let b: Thread<int> = thread.spawn(fn() -> int {
+        var i: int = 0
+        for i < 1000 {
+            counter.add_and_get(1)
+            i += 1
+        }
+        return 0
+    })
+    a.join()
+    b.join()
+
+    io.println("counted {counter.load()}")
+}
+```
+
 ## See also
 
-- [The memory model](/guide/memory/) — ownership, move, and borrowing.
-- [Concurrency](/guide/concurrency/) — threads, channels, and locks in use.
-- [Atomics](/reference/builtins/atomics/) — `Atomic<T>` and `MemoryOrder`.
+- [The memory model](/guide/memory/), ownership, move, and borrowing.
+- [Concurrency](/guide/concurrency/), threads, channels, and locks in use.
+- [Atomics](/reference/builtins/atomics/), `Atomic<T>` and `MemoryOrder`.

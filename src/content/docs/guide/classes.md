@@ -1,6 +1,6 @@
 ---
 title: Classes
-description: Classes in Beans — fields, methods, statics, construction with new, and the init/deinit lifecycle.
+description: Classes in Beans, covering fields, methods, statics, construction with new, and the init/deinit lifecycle.
 ---
 
 A class is a reference type with fields and methods.
@@ -11,7 +11,7 @@ class User {
     age: int = 0            // default value
     pub email: string       // fields are private to the package unless pub
 
-    pub fn init(name: string) {
+    fn init(name: string) {
         self.name = name
     }
 
@@ -35,7 +35,7 @@ let u: User = new User("jul")
   class's `init`. Class field literals and plain `Class(...)` calls are errors.
 - Fields are private to the package unless marked `pub`.
 
-Anything that produces an object belongs on that object's class — as `new` or as
+Anything that produces an object belongs on that object's class, as `new` or as
 a named static (for fallible construction, like `File.open`). A module-level
 function is only for work that yields no object.
 
@@ -49,7 +49,7 @@ class Conn {
     host: string
     hits: int = 0
 
-    pub fn init(host: string) {
+    fn init(host: string) {
         self.host = host
     }
 }
@@ -60,11 +60,14 @@ let c: Conn = new Conn("db1")
 - A class whose fields all have defaults gets an implicit zero-argument
   initializer. A class with any required field must declare `init`.
 - Until every field is assigned, the `init` body is a straight-line prefix:
-  each statement either assigns a field or reads a field already assigned — no
-  method calls, no passing `self` on, no `return`, no string interpolation. The
-  checker proves this, so a half-built object can never escape. After the last
-  field is assigned, anything goes.
-- `pub fn init` is what lets another package write `new Conn(...)`.
+  each statement either assigns a field or reads a field already assigned. No
+  method calls, no passing `self` on, no `return`, and no string interpolation.
+  The checker proves this, so a half-built object can never escape. After the
+  last field is assigned, anything goes.
+- A plain `fn init` is package-private. Any file in the same package can write
+  `new Conn(...)`.
+- Use `pub fn init` only when another package must construct the class. The
+  class itself must be `pub` too.
 - Construction that can fail stays a named static returning a `Result`, such as
   `static fn open(...) -> Result<Conn>`, which may call `new Conn(...)` after
   validation.
@@ -72,8 +75,9 @@ let c: Conn = new Conn("db1")
 ## deinit: the destructor
 
 `deinit` runs exactly once, on whichever thread drops the last reference, the
-moment the count hits zero — and before the fields are released, so the body can
-still read them. It is deterministic, like C++ or Swift: no GC pause.
+moment the count hits zero, and before the fields are released, so the body can
+still read them. Destruction is deterministic: it happens at that point, not at
+some later garbage-collector pause.
 
 ```beans
 class Conn {
@@ -86,10 +90,10 @@ class Conn {
 ```
 
 - No parameters, no return value, never called by hand.
-- A subclass `deinit` runs first, then its parent's, automatically — no
+- A subclass `deinit` runs first, then its parent's, automatically, with no
   `override`.
 - `self` must not escape a `deinit`.
-- An object that dies inside a reference cycle does not get its `deinit` — break
+- An object that dies inside a reference cycle does not get its `deinit`. Break
   the cycle by hand (see [Memory and ownership](/guide/memory/)).
 
 ## Inheritance and interfaces
@@ -98,10 +102,35 @@ Classes take one base class with `extends` and implement interfaces with
 `implements`. Construction chains through `super.init(...)`. That is covered in
 [Interfaces and inheritance](/guide/interfaces/).
 
-## Next
+## A complete example
 
-- [Interfaces and inheritance](/guide/interfaces/)
-- [Structs and unions](/guide/structs/)
-- [Memory and ownership](/guide/memory/)
+```beans
+import std.io
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+class Account {
+    owner: string
+    balance: decimal = 0.0
+
+    fn init(owner: string) {
+        self.owner = owner
+    }
+
+    fn deposit(amount: decimal) {
+        self.balance = self.balance + amount
+    }
+
+    fn summary() -> string {
+        return "{self.owner}: {self.balance}"
+    }
+
+    static fn empty(owner: string) -> Account {
+        return new Account(owner)
+    }
+}
+
+fn main() {
+    let a: Account = Account.empty("jul")
+    a.deposit(19.99)
+    io.println(a.summary())
+}
+```

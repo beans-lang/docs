@@ -1,11 +1,11 @@
 ---
 title: Generics
-description: Type parameters and interface bounds in Beans. Generics are monomorphized for speed.
+description: Type parameters and interface bounds in Beans, and how monomorphization compiles a separate copy per concrete type.
 ---
 
 Generic code takes type parameters in angle brackets. Beans **monomorphizes**
-generics — it compiles a real copy per concrete type, like C++ templates. This
-is a speed feature: no boxing, no dynamic dispatch for the generic itself.
+generics: it compiles a separate copy for each concrete type a generic is used
+with. There is no boxing, and no dynamic dispatch for the generic itself.
 
 ```beans
 class Stack<T> {
@@ -26,12 +26,12 @@ A type parameter can require one or more interfaces with `implements`, joined by
 
 The compiler-known interfaces are:
 
-- `Clone` — the value can be copied.
-- `Eq` — values can be compared for equality.
-- `Hash` — values can be hashed (needed for `Map`/`OrderedMap` keys).
-- `Order` — values have an ordering (`Order` also promises `Eq`).
-- `Send` — the value can move to another thread.
-- `Sync` — the value can be shared between threads.
+- `Clone`: the value can be copied.
+- `Eq`: values can be compared for equality.
+- `Hash`: values can be hashed (needed for `Map`/`OrderedMap` keys).
+- `Order`: values have an ordering (`Order` also promises `Eq`).
+- `Send`: the value can move to another thread.
+- `Sync`: the value can be shared between threads.
 
 Your own interfaces, including imported ones, can also be bounds. Generic code
 may call the instance methods those interfaces promise.
@@ -55,9 +55,9 @@ ordering or equality methods require `Order` or `Eq`.
 
 Inside a type's own body, `Self` names that type. It is a builtin type name, so
 it works in method signatures and generic code without repeating the concrete
-name — useful for a method that returns the same type it is called on. Like the
-marker interfaces above, `Self` is recognized by the compiler's builtin-type
-registry rather than being something you declare.
+name. This is useful for a method that returns the same type it is called on.
+Like the marker interfaces above, `Self` is recognized by the compiler's
+builtin-type registry rather than being something you declare.
 
 ## Constructing generics
 
@@ -68,10 +68,29 @@ let a: Stack<int> = new Stack()      // T from the declaration
 let b: Stack<int> = new Stack<int>() // T stated explicitly
 ```
 
-## Next
+## A complete example
 
-- [Interfaces and inheritance](/guide/interfaces/)
-- [Collections](/reference/builtins/collections/)
-- [Concurrency](/guide/concurrency/) — where `Send` and `Sync` matter
+```beans
+import std.io
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+class Stack<T> {
+    items: List<T> = []
+
+    fn push(x: T) { self.items.push(x) }
+    fn pop() -> Option<T> { return self.items.pop() }
+    fn len() -> int { return self.items.len() }
+}
+
+fn main() {
+    let s: Stack<int> = new Stack()
+    s.push(1)
+    s.push(2)
+    io.println("{s.len()}")
+    match s.pop() {
+        some(v) => io.println("top {v}"),
+        none    => io.println("empty"),
+    }
+}
+```
+
+`Send` and `Sync` matter most in [Concurrency](/guide/concurrency/).

@@ -8,18 +8,18 @@ type.** There is no type inference for `let`, `var`, parameters, fields, or loop
 variables.
 
 ```beans
-let x: int = 5              // cannot be reassigned (like Java final)
+let x: int = 5              // cannot be reassigned
 var total: decimal = 0.0    // can be reassigned
 ```
 
 `let` means the *variable* cannot be rebound to a new value. The object it
-points to can still change inside — this is Java-style, with no borrow checker
-and no `mut` markers.
+points to can still change inside. Beans has no borrow checker and no `mut`
+markers.
 
 ```beans
 let xs: List<int> = [1, 2, 3]
-xs.push(4)                  // fine — the list changes, the binding does not
-// xs = [9]                 // error — cannot rebind a let
+xs.push(4)                  // fine: the list changes, the binding does not
+// xs = [9]                 // error: cannot rebind a let
 ```
 
 ## Literals build values, not classes
@@ -62,6 +62,10 @@ var batch: List<Job> = make_batch()
 enqueue(move batch)              // batch is moved in
 ```
 
+A fresh result can be passed straight into a `move` parameter without the
+keyword (`enqueue(make_batch())`); only an existing move-only local needs `move`.
+Move modes must match across interface methods and overrides.
+
 An `inout` parameter aliases one mutable caller local for the duration of the
 call. It is not copy-in/copy-out:
 
@@ -102,13 +106,5 @@ rules.
 `clone()` makes an independent copy of a collection, so changing the clone does
 not change the original (it needs every stored type to implement `Clone`).
 
-The full ownership model — reference counting, the cycle collector, `Shared`,
-`Weak`, and `deinit` — is in [Memory and ownership](/guide/memory/).
-
-## Next
-
-- [Types](/guide/types/)
-- [Functions and closures](/guide/functions/)
-- [Memory and ownership](/guide/memory/)
-
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+The full ownership model (reference counting, the cycle collector, `Shared`,
+`Weak`, and `deinit`) is covered in [Memory and ownership](/guide/memory/).

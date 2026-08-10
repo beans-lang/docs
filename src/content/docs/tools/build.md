@@ -11,7 +11,7 @@ beansc build app.b -o app
 ```
 
 Every setting is validated before Clang runs, and every tool is executed
-directly — never through a shell.
+directly, never through a shell.
 
 ## Options
 
@@ -59,7 +59,7 @@ covered on [Reproducible builds](/pot/reproducible/).
   optimization.
 - `--debug` produces an unoptimized `-O0` binary that keeps frame pointers and
   carries platform debug info (DWARF on Unix, CodeView on Windows). This debug
-  info is for the C runtime — good for native backtraces and profilers. It is
+  info is for the C runtime, good for native backtraces and profilers. It is
   **not** source-level debugging of Beans code; see [Debugger
   (DAP)](/tools/dap/).
 
@@ -82,18 +82,12 @@ and no `main`.
 
 Note: Beans-to-Beans libraries stay **source packages**, imported through
 [`beans.pot`](/pot/manifest/). The static and shared artifacts are the stable
-**C ABI** path — how you hand a library to C, or take one across a stable
+**C ABI** path: how you hand a library to C, or take one across a stable
 boundary. See the [FFI guide](/guide/ffi/).
 
 ## A cross compile versus a cross link
 
 A cross **compile** needs no target libraries: `--emit obj` and `--emit ir`
-work without a sysroot. Only a cross **link** — producing a linked binary or
-shared library for another target — needs `--sysroot`. See
-[targets](/tools/targets/).
-
-## See also
-
-- [Checking and running](/tools/check-run/)
-- [Cross-compiling and targets](/tools/targets/)
-- [The beansc command](/tools/beansc/)
+work without a sysroot. Only a cross **link**, producing a linked binary or
+shared library for another target, needs `--sysroot`. See
+[Cross-compiling and targets](/tools/targets/).

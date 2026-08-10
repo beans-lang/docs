@@ -28,7 +28,7 @@ The compiler's own manifest is just `module compiler`.
 ### `module <name>` (required)
 
 Names the module. Exactly one `module` line is required. The name is the
-**module path** — the root that local packages and the lock file hang off of.
+**module path**: the root that local packages and the lock file hang off of.
 
 ```beans-pot
 module shop
@@ -38,8 +38,8 @@ module shop
 
 Says what the module builds. The default is `application`.
 
-- `kind application` — the module needs an `fn main()`.
-- `kind library` — the module must **not** have a `main`.
+- `kind application`: the module needs an `fn main()`.
+- `kind library`: the module must **not** have a `main`.
 
 ```beans-pot
 module shop
@@ -69,10 +69,10 @@ Passes a native linker directive, for modules that link against C libraries.
 - `selector` is `all`, an OS name (for example `macos`, `linux`, `windows`),
   or an exact target triple (for example `x86_64-unknown-linux-gnu`).
 - The kind is one of:
-  - `search` — a library search directory. Search paths are **relative to the
+  - `search`: a library search directory. Search paths are **relative to the
     `beans.pot` file**.
-  - `library` — a library to link (by name).
-  - `framework` — a framework to link (macOS).
+  - `library`: a library to link (by name).
+  - `framework`: a framework to link (macOS).
 - The value is a quoted string.
 
 Entries pass to the linker in the order you declare them.
@@ -93,9 +93,6 @@ This module is an application, pulls in one Git dependency, and links a native
 library it ships under `native/lib`, plus a macOS framework and one
 Linux-only helper.
 
-## See also
-
-- [Dependencies and the lock file](/pot/dependencies/)
-- [Local packages and imports](/pot/local-packages/)
-- [The pot command reference](/pot/commands/)
-- The [FFI guide](/guide/ffi/) for how `link` fits with C interop.
+See [Dependencies and the lock file](/pot/dependencies/) for how `require` feeds
+`beans.lock`, and the [FFI guide](/guide/ffi/) for how `link` fits with C
+interop.

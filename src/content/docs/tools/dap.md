@@ -10,7 +10,7 @@ is how an editor debugs a Beans program.
 beansc debug-adapter
 ```
 
-It compiles and runs your program on the **reference interpreter** — there is no
+It compiles and runs your program on the **reference interpreter**, with no
 build step. In VS Code, press F5 on a `.b` file to start a session.
 
 ## What it supports
@@ -41,14 +41,8 @@ process to attach to.
 
 You cannot yet step through Beans source in lldb or gdb on a native binary.
 
-`beansc build --debug` gives you an unoptimized binary that carries platform
-debug info (DWARF or CodeView) for the **C runtime**. That is good for native
-backtraces and profilers. But the emitter writes **no line table for Beans
-statements**, so lldb and gdb cannot stop on a Beans line. For source-level
-Beans debugging today, use the DAP debugger above.
-
-## See also
-
-- [Building](/tools/build/) — the `--debug` flag.
-- [Language server (LSP)](/tools/lsp/)
-- [The beansc command](/tools/beansc/)
+[`beansc build --debug`](/tools/build/) gives you an unoptimized binary that
+carries platform debug info (DWARF or CodeView) for the **C runtime**. That is
+good for native backtraces and profilers. But the emitter writes **no line
+table for Beans statements**, so lldb and gdb cannot stop on a Beans line. For
+source-level Beans debugging today, use the DAP debugger above.

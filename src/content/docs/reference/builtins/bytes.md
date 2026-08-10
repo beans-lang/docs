@@ -3,100 +3,172 @@ title: Bytes
 description: The growable, mutable byte buffer Bytes and its methods for building and reading binary data.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 2 static methods · 28 instance methods.
+<!-- coverage:summary:end -->
+
 `Bytes` is a growable, changeable buffer of raw bytes. Use it to build binary
 data, read fixed-width integers out of a buffer, or collect text before turning it
 into a `string`.
 
 Unlike [`string`](/reference/builtins/string/), a `Bytes` value can change in
-place. Methods that change the buffer return the same buffer, so you can chain
-them.
+place. Every method that changes the buffer returns the same buffer, so you can
+chain calls.
 
-`Bytes` is a native builtin, reached through the runtime ABI table at
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+`Bytes` is a native builtin with no `.b` source, reached through the runtime ABI
+table in [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+Its signatures are positional: the type in each slot is fixed, the names are not.
 
 ## Making a Bytes
 
-| Form | Result |
-| --- | --- |
-| `new Bytes(n)` | a buffer of `n` zeroed bytes; panics on negative `n` |
-| `Bytes.from(s)` | a new buffer holding a copy of string `s`'s bytes |
-| `Bytes.uvarint_size(v)` | static; how many bytes `v` takes as an unsigned varint |
+Construct a fresh buffer with `new Bytes(n)`, which gives `n` zeroed bytes and
+panics on a negative `n`. Two statics build or measure buffers:
+
+```beans
+Bytes.from(string) -> Bytes
+Bytes.uvarint_size(int) -> int
+```
+
+- `Bytes.from(s)` returns a new buffer holding a copy of string `s`'s bytes.
+- `Bytes.uvarint_size(v)` returns how many bytes `v` would take as an unsigned
+  varint, without writing anything.
 
 ```beans
 let buf: Bytes = new Bytes(0)
 let text: Bytes = Bytes.from("hello")
 ```
 
-## Size and shape
+## Methods
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `len()` | `int` | number of bytes |
-| `reserve(n)` | self | make room for at least `n` bytes |
-| `resize(n)` | self | grow or shrink to `n` bytes; new bytes read as zero |
-| `fill(v)` | self | set every byte to `v` |
+```beans
+Bytes.len() -> int
+Bytes.reserve(int) -> Bytes
+Bytes.resize(int) -> Bytes
+Bytes.fill(int) -> Bytes
+Bytes.get(int) -> int
+Bytes.set(int, int) -> Bytes
+Bytes.push(int) -> Bytes
+Bytes.get_u8(int) -> int
+Bytes.get_u16(int) -> int
+Bytes.get_u32(int) -> int
+Bytes.get_u64(int) -> int
+Bytes.get_i64(int) -> int
+Bytes.put_u8(int, int) -> Bytes
+Bytes.put_u16(int, int) -> Bytes
+Bytes.put_u32(int, int) -> Bytes
+Bytes.put_u64(int, int) -> Bytes
+Bytes.put_i64(int, int) -> Bytes
+Bytes.slice(int, int) -> Bytes
+Bytes.copy_from(Bytes, int) -> Bytes
+Bytes.append(Bytes) -> Bytes
+Bytes.append_string(string) -> Bytes
+Bytes.append_i64(int) -> Bytes
+Bytes.append_range(Bytes, int, int) -> Bytes
+Bytes.to_string() -> string
+Bytes.to_string_until_nul() -> string
+Bytes.append_uvarint(int) -> Bytes
+Bytes.get_uvarint(int) -> int
+Bytes.crc32(int, int) -> int
+```
 
-## Reading and writing single bytes
+### Size and shape
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `get(i)` | `int` | byte at `i`; panics if out of range |
-| `set(i, v)` | self | set byte at `i`; panics if out of range |
-| `push(v)` | self | add one byte at the end |
+- `len()` is the number of bytes.
+- `reserve(n)` makes room for at least `n` bytes without changing the length.
+- `resize(n)` grows or shrinks the buffer to `n` bytes; new bytes read as zero.
+- `fill(v)` sets every existing byte to `v`.
 
-## Fixed-width integers (little-endian)
+### Single bytes
 
-These read and write whole numbers at a byte position. All are little-endian and
-panic if the position is out of range.
+- `get(i)` returns the byte at `i` as an integer, and panics if `i` is out of
+  range.
+- `set(i, v)` writes the byte at `i`, and panics if `i` is out of range.
+- `push(v)` adds one byte at the end, growing the buffer.
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `get_u8(pos)` `get_u16(pos)` `get_u32(pos)` `get_u64(pos)` `get_i64(pos)` | `int` | read an integer |
-| `put_u8(pos, v)` `put_u16(pos, v)` `put_u32(pos, v)` `put_u64(pos, v)` `put_i64(pos, v)` | self | write an integer |
+### Fixed-width integers (little-endian)
 
-## Copying and appending
+The `get_*` readers return a whole number read at a byte position, and the `put_*`
+writers write one at a position. All are little-endian and panic when the position
+plus the width runs past the end of the buffer. `put_*` returns the buffer, so
+writes chain.
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `slice(from, to)` | `Bytes` | a new buffer with the bytes in `[from, to)` |
-| `copy_from(src, at)` | self | copy `src`'s bytes into this buffer starting at `at` |
-| `append(other)` | self | add another `Bytes` at the end |
-| `append_string(s)` | self | add a string's bytes at the end |
-| `append_i64(v)` | self | add `v` as 8 little-endian bytes |
-| `append_range(src, from, to)` | self | add `src`'s bytes in `[from, to)` |
+### Copying and appending
 
-## Turning bytes into text
+- `slice(from, to)` returns a new buffer with the bytes in `[from, to)`.
+- `copy_from(src, at)` copies all of `src`'s bytes into this buffer starting at
+  `at`.
+- `append(other)` adds another buffer's bytes at the end; `append_string(s)` adds a
+  string's bytes; `append_i64(v)` adds `v` as 8 little-endian bytes; and
+  `append_range(src, from, to)` adds `src`'s bytes in `[from, to)`.
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `to_string()` | `string` | every byte, including any NUL bytes |
-| `to_string_until_nul()` | `string` | stops at the first NUL byte |
+### Turning bytes into text
 
-## Varints and checksums
+- `to_string()` returns every byte as a string, including any NUL bytes.
+- `to_string_until_nul()` stops at the first NUL byte. The names say which one you
+  get, so a binary-safe reader cannot pick the truncating form by accident.
+
+### Varints and checksums
 
 A varint is a compact way to store an integer using fewer bytes for small values.
-Beans uses unsigned LEB128 over the full 64-bit pattern; a negative value takes 10
-bytes.
+Beans uses unsigned LEB128 over the full 64-bit pattern, so a negative value takes
+10 bytes.
 
-| Method | Returns | Notes |
-| --- | --- | --- |
-| `append_uvarint(v)` | self | add `v` as an unsigned varint |
-| `get_uvarint(pos)` | `int` | read an unsigned varint starting at `pos` |
-| `crc32(from, to)` | `int` | IEEE CRC-32 checksum of bytes `[from, to)` |
+- `append_uvarint(v)` adds `v` as an unsigned varint.
+- `get_uvarint(pos)` reads an unsigned varint that starts at `pos`. Advance your
+  own position by `Bytes.uvarint_size(v)` to read the next one.
+- `crc32(from, to)` returns the IEEE CRC-32 checksum of the bytes in `[from, to)`.
 
 ## Comparing
 
 `==` and `!=` compare two `Bytes` by value: same length and same bytes.
 
-## Chaining example
+## Examples
 
+Build a record by chaining, then read it back:
+
+<!-- beans:compile -->
 ```beans
-let buf: Bytes = new Bytes(0)
-buf.append_string("id=").append_i64(42).push(10)
-let out: string = buf.to_string()
+import std.io
+
+fn main() {
+    let buf: Bytes = new Bytes(0)
+    buf.append_string("id=").append_i64(42).push(10)
+    io.println("{buf.len()} bytes")
+
+    let header: Bytes = new Bytes(8)
+    header.put_u32(0, 65535).put_u32(4, 7)
+    io.println("{header.get_u32(0)} {header.get_u32(4)}")
+
+    let text: Bytes = Bytes.from("hello")
+    io.println(text.to_string())
+}
+```
+
+Write a run of varints, then walk them back out with `uvarint_size`:
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn main() {
+    var rec: Bytes = new Bytes(0)
+    rec.append_uvarint(1).append_uvarint(300).append_uvarint(70000)
+
+    var pos: int = 0
+    var seen: List<int> = []
+    for seen.len() < 3 {
+        let v: int = rec.get_uvarint(pos)
+        seen.push(v)
+        pos = pos + Bytes.uvarint_size(v)
+    }
+    io.println(seen)
+
+    let check: Bytes = Bytes.from("123456789")
+    io.println("crc32 {check.crc32(0, check.len())}")
+}
 ```
 
 ## See also
 
-- [string](/reference/builtins/string/) — immutable text.
-- [Files and mapping](/reference/builtins/files/) — `File.read` and `File.write` use `Bytes`.
+- [string](/reference/builtins/string/), immutable text.
+- [Files and mapping](/reference/builtins/files/), `File.read` and `File.write` use `Bytes`.

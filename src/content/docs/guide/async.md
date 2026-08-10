@@ -1,14 +1,14 @@
 ---
 title: Async and await
-description: Structured async/await in Beans — an effect on the callable, driven by a hidden single-threaded executor.
+description: Structured async/await in Beans, an effect on the callable, driven by a hidden single-threaded executor.
 ---
 
 Async in Beans is an **effect on the callable**, not a type. `async fn f() -> R`
 declares a function whose calls must be waited on; the call still has type `R`.
-There is no public task, future, executor, or polling protocol — the compiler
+There is no public task, future, executor, or polling protocol. The compiler
 and runtime schedule everything behind the scenes, on the one thread that
 entered `main`. Use [`thread.spawn`](/guide/concurrency/) for CPU-heavy or
-blocking work.
+blocking work, which the async executor does not do.
 
 ```beans
 import std.io
@@ -33,7 +33,7 @@ async fn main() {
 `async` and `await` are **not keywords**. `async` means something only
 immediately before `fn`; `await` only inside an async body. Everywhere else
 both stay ordinary identifiers, so existing functions, locals, and fields by
-those names keep working — including user classes named `Task` or `Future`.
+those names keep working, including user classes named `Task` or `Future`.
 
 ## Every async call is waited on
 
@@ -68,17 +68,18 @@ arguments evaluate right there in the parent, and the child belongs to the
 enclosing lexical scope. The written type is the eventual result: `await x`
 produces `R` exactly once.
 
-Leaving the scope without awaiting — an early `return`, `?`, `break`,
-`continue`, or falling off the end — **cancels** the unfinished child before the
-parent's own result lands. Its armed `defer`s run newest first, then its live
-values drop last-created-first, and children it started cancel in cascade. The
-parent never finishes while a child is still running or cleaning up.
+Leaving the scope without awaiting **cancels** the unfinished child before the
+parent's own result lands. That covers an early `return`, `?`, `break`,
+`continue`, or falling off the end. Its armed `defer`s run newest first, then
+its live values drop last-created-first, and children it started cancel in
+cascade. The parent never finishes while a child is still running or cleaning
+up.
 
 ## Scheduling is hidden and cooperative
 
 - An async call suspends only at `await` points; between them it runs
   synchronously on the executor's one thread. Long CPU work blocks every other
-  task — put it on `std.thread`.
+  task, so put it on `std.thread`.
 - Cancellation is cooperative: it takes effect at suspension points, never
   mid-statement.
 - `async fn main()` drives itself: declare the entry point `async` and a hidden
@@ -88,7 +89,7 @@ parent never finishes while a child is still running or cleaning up.
 ## Readiness
 
 `await net.readable(handle)` (and `writable`) suspends until a descriptor is
-ready — a socket's `poll_handle()`, or any pollable descriptor on POSIX
+ready. Pass a socket's `poll_handle()`, or any pollable descriptor on POSIX
 (Windows readiness is socket-handle only). While one child is parked, its
 runnable siblings keep running; when nothing can move and something is parked,
 the hidden driver blocks in the platform poller. When nothing can move and
@@ -114,10 +115,27 @@ closures, and `inout` on a directly awaited call are **not yet** available. They
 layer on this model without changing it.
 :::
 
-## Next
+## A complete program
 
-- [Concurrency](/guide/concurrency/)
-- [std.net](/reference/stdlib/net/)
-- [std.poll](/reference/stdlib/poll/)
+`async let` starts each child right away, so the two run concurrently and only
+the `await` waits:
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+<!-- beans:compile -->
+```beans
+import std.io
+
+async fn work(id: int, n: int) -> int {
+    return id * n
+}
+
+async fn main() {
+    async let a: int = work(2, 10)
+    async let b: int = work(3, 10)
+    let sum: int = await a + await b
+    io.println("sum {sum}")
+}
+```
+
+For readiness helpers on real sockets, see [std.net](/reference/stdlib/net/). To
+wait on many descriptors from one thread without async, see
+[std.poll](/reference/stdlib/poll/).

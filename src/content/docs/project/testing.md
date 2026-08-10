@@ -27,18 +27,16 @@ When you change behavior, run tests in this order:
 
 1. The **smallest focused test** for what you touched.
 2. `make test`.
-3. `make test-sanitize` — for ownership, runtime, concurrency, FFI, or codegen
+3. `make test-sanitize`, for ownership, runtime, concurrency, FFI, or codegen
    changes.
-4. `make test-bootstrap` — for frontend, MIR, or compiler changes.
+4. `make test-bootstrap`, for frontend, MIR, or compiler changes.
 
 ## What is not here
 
-- There is **no `make fmt`** — Beans has no formatter. See [Exit codes and
+- There is **no `make fmt`**. Beans has no formatter. See [Exit codes and
   troubleshooting](/tools/exit-codes/).
 - There is **no `beansc test`** subcommand. These Makefile targets are for
   working on the compiler itself, not a per-project test runner.
 
-## See also
-
-- [Building the compiler](/project/building/)
-- [Contributing](/project/contributing/)
+See [Building the compiler](/project/building/) and
+[Contributing](/project/contributing/) for the surrounding workflow.

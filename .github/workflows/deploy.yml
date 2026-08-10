@@ -1,7 +1,7 @@
 # Build the Beans documentation site, run its checks, and deploy to GitHub Pages.
 #
-# This workflow lives in the website repository. It only builds and publishes the
-# static docs — it never runs the compiler's own CI, tests, or release jobs.
+# This workflow lives in the docs repository. It only builds and publishes the
+# static docs. It never runs the compiler's own CI, tests, or release jobs.
 name: Deploy docs
 
 on:
@@ -39,9 +39,10 @@ jobs:
       - name: Checkout website
         uses: actions/checkout@v4
 
-      # The coverage check reads the Beans stdlib source (public) to build its
-      # inventory. The builtin C++ ABI comes from the committed snapshot at
-      # data/builtin-abi.json, so the private bootstrap submodule is not needed.
+      # The coverage check reads the public Beans source to build its inventory:
+      # the stdlib packages, the self-hosted checker (compiler/beans), and the
+      # builtin type registry. Everything it needs is in this public checkout;
+      # the private bootstrap submodule is not required.
       - name: Checkout Beans compiler (coverage source)
         uses: actions/checkout@v4
         with:
@@ -68,6 +69,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Signature extractor tests
+        env:
+          BEANS_REPO: ${{ github.workspace }}/beans-src
+        run: npm run test:signatures
+
       - name: Coverage check
         env:
           BEANS_REPO: ${{ github.workspace }}/beans-src
@@ -79,8 +85,8 @@ jobs:
       - name: Build site
         env:
           # Project page base path for GitHub Pages
-          # (https://beans-lang.github.io/website/).
-          BASE: /website
+          # (https://beans-lang.github.io/docs/).
+          BASE: /docs
         run: npm run build
 
       - name: Example check

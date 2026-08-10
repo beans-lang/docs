@@ -64,12 +64,12 @@ build options:
 
 Pages for each area:
 
-- [Building](/tools/build/) — `beansc build`, `--emit`, release and library builds.
-- [Checking and running](/tools/check-run/) — `check`, `run`, and the `lex`/`parse`/`mir`/`llvm` inspection commands.
-- [Cross-compiling and targets](/tools/targets/) — `--target` and friends, `beansc target`, runtime profiles.
-- [bindgen](/tools/bindgen/) — generate C bindings.
-- [Language server (LSP)](/tools/lsp/) — `beansc lsp` and `lsp-probe`.
-- [Debugger (DAP)](/tools/dap/) — `beansc debug-adapter`.
+- [Building](/tools/build/): `beansc build`, `--emit`, release and library builds.
+- [Checking and running](/tools/check-run/): `check`, `run`, and the `lex`/`parse`/`mir`/`llvm` inspection commands.
+- [Cross-compiling and targets](/tools/targets/): `--target` and friends, `beansc target`, runtime profiles.
+- [bindgen](/tools/bindgen/): generate C bindings.
+- [Language server (LSP)](/tools/lsp/): `beansc lsp` and `lsp-probe`.
+- [Debugger (DAP)](/tools/dap/): `beansc debug-adapter`.
 - [doctor and upgrade](/tools/doctor-upgrade/).
 - [Exit codes and troubleshooting](/tools/exit-codes/).
 - [The pot command reference](/pot/commands/).

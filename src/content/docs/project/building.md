@@ -29,7 +29,7 @@ xcode-select --install
 ## Building on a public checkout
 
 A public checkout has no private bootstrap, so `make` builds `build/beansc`
-using an **already-installed** `beansc` — the one on your `PATH`, or at
+using an **already-installed** `beansc`: the one on your `PATH`, or at
 `$BEANS_HOME/bin/beansc`. Under the hood it runs:
 
 ```bash
@@ -64,7 +64,7 @@ With the private C++ bootstrap submodule present, `make` runs the full
 stage0 -> stage1 -> stage2 -> stage3 chain:
 
 - `beansc0` is the C++ stage-0 compiler.
-- Stages 2 and 3 must be **byte-identical** — that fixed point proves the
+- Stages 2 and 3 must be **byte-identical**. That fixed point proves the
   self-hosted compiler reproduces itself.
 
 `make test` adds the differential gates on top (see [Running the
@@ -82,8 +82,5 @@ sudo make install PREFIX=/usr/local
 This installs `beansc` (never `beansc0`), the runtime sources, and the standard
 library.
 
-## See also
-
-- [Running the tests](/project/testing/)
-- [Contributing](/project/contributing/)
-- [Versioning](/project/versioning/)
+See [Running the tests](/project/testing/) and
+[Contributing](/project/contributing/) for the change workflow.

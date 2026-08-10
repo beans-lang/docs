@@ -99,6 +99,6 @@ Ignore it.
 
 ## See also
 
-- [Builtins](/reference/builtins/) — the types the compiler gives you without an
+- [Builtins](/reference/builtins/), the types the compiler gives you without an
   import.
 - The [language guide](/guide/errors/) for how `Option`, `Result`, and `?` work.

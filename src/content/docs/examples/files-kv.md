@@ -83,7 +83,7 @@ match f.close() {
 }
 ```
 
-Closing twice is an error, not a silent no-op — the second call is a bug in the
+Closing twice is an error, not a silent no-op. The second call is a bug in the
 caller, and `Error.kind` names it.
 
 Run it:
@@ -92,11 +92,10 @@ Run it:
 beansc run examples/files.b
 ```
 
-## kv.b — an append-only key-value store
+## kv.b: an append-only key-value store
 
-`kv.b` is the proof the database story holds. It is a small key-value store
-where every write is appended to one file, and a `compact()` step rewrites the
-file durably.
+`kv.b` is a small key-value store where every write is appended to one file,
+and a `compact()` step rewrites the file durably.
 
 The record format, from the file's own comment: `[u32 klen][u32 vlen][key][value]`,
 and **last write wins**.
@@ -112,8 +111,8 @@ pub fn set(key: string, value: string) -> Result<int> {
 }
 ```
 
-Each `set` builds one record — an 8-byte header (two lengths) followed by the
-key and value bytes — and appends it. No seeking, no rewriting; appends are
+Each `set` builds one record, an 8-byte header (two lengths) followed by the
+key and value bytes, and appends it. No seeking, no rewriting; appends are
 cheap and crash-safe.
 
 ### Reading scans the log
@@ -166,12 +165,12 @@ it durably. The four-step durable-commit pattern is the point:
 4. `Dir.sync` the **parent directory** so the rename itself is durable.
 
 After that sequence, a crash at any moment leaves either the old file or the new
-one — never a half-written file.
+one, never a half-written file.
 
 ### The crash test
 
-`main` deliberately appends a torn record — a full 8-byte header claiming a
-100-byte key and 100-byte value that were never written — then confirms `get`
+`main` deliberately appends a torn record, a full 8-byte header claiming a
+100-byte key and 100-byte value that were never written, then confirms `get`
 and `compact` treat it as EOF and recover:
 
 ```beans
@@ -188,7 +187,7 @@ Run it:
 beansc run examples/kv.b
 ```
 
-## locks.b — advisory file locks
+## locks.b: advisory file locks
 
 `locks.b` shows the single-writer database pattern with advisory locks
 (`flock`). The key fact, from the file: locks belong to the **open file
@@ -205,8 +204,8 @@ io.println("{rival.try_lock().expect("try after release")}")
 ```
 
 - `lock()` blocks until it gets the lock; it retries through `EINTR`.
-- `try_lock()` returns right away. `ok(false)` means "someone else holds it" —
-  that is why this example uses it, so the output stays deterministic.
+- `try_lock()` returns right away. `ok(false)` means "someone else holds it",
+  which is why this example uses it, so the output stays deterministic.
 
 A warning from the file's comment: a single thread that calls the blocking
 `lock()` on a description it already holds through another handle would wait
@@ -228,8 +227,7 @@ Run it:
 beansc run examples/locks.b
 ```
 
-## Where to go next
-
-- [Files and mappings](/reference/builtins/files/) — the `File`, `Dir`, and `MMap` reference.
-- [std.fs](/reference/stdlib/fs/) — the filesystem package.
-- [Bytes](/reference/builtins/bytes/) — the byte buffer used throughout.
+[Files and mappings](/reference/builtins/files/) is the `File`, `Dir`, and
+`MMap` reference. [std.fs](/reference/stdlib/fs/) documents the filesystem
+package, and [Bytes](/reference/builtins/bytes/) documents the byte buffer used
+throughout.

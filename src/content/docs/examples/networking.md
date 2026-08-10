@@ -1,6 +1,6 @@
 ---
 title: Networking
-description: A walk through examples/net.b — TCP and UDP on loopback in one process — and a look at examples/poller.b.
+description: A walk through examples/net.b, which runs TCP and UDP on loopback in one process, and a look at examples/poller.b.
 ---
 
 Beans' networking lives in `std.net`.
@@ -20,7 +20,7 @@ Two rules from the file's header explain the whole API:
 
 - **Making a socket is named construction on the class it produces**, because it
   can fail and so cannot be a plain constructor. You call `TcpListener.bind`,
-  `TcpStream.connect`, `UdpSocket.bind`, `Address.resolve` — the same shape as
+  `TcpStream.connect`, `UdpSocket.bind`, and `Address.resolve`, the same shape as
   `File.open`. There are no module-level functions in `std.net`.
 - **Sockets are `unique class`:** move-only, closed by `deinit`. One owner, one
   close.
@@ -60,7 +60,7 @@ io.println("server read [{asked.to_string()}]")
 
 The client connects and the server accepts (with a 2-second timeout, so a stuck
 test fails instead of hanging). `write_text` sends. `shutdown_write` says
-"nothing more from me" without closing the half we still read from — the peer's
+"nothing more from me" without closing the half we still read from. The peer's
 next read returns empty, which is how EOF arrives. `read_to_end` reads until
 that EOF.
 
@@ -75,7 +75,7 @@ let got: Bytes = session.read_exact(4096)?
 
 A short write and a partial read are both normal on a real socket, so there are
 looping forms. `write_all` keeps writing until everything is sent. `read_exact`
-keeps reading until it has the exact count you asked for — and fails with kind
+keeps reading until it has the exact count you asked for, and fails with kind
 `eof` if the peer stops early, which is what code reading a fixed-size header
 needs.
 
@@ -109,7 +109,7 @@ io.println("v6 is detected {six.is_ipv6()} and v4 is not {four.is_ipv6()}")
 
 `Address.resolve` turns a name into a list of addresses (`localhost` is in every
 hosts file, so this needs no network). An `Address` is an ordinary value with a
-readable `to_string()` — IPv6 gets brackets so the port stays readable — and
+readable `to_string()`, where IPv6 gets brackets so the port stays readable, and
 `is_ipv6()` / `is_loopback()` to inspect it.
 
 ## Failures are Results, never panics
@@ -132,7 +132,7 @@ Run it:
 beansc run examples/net.b
 ```
 
-## poller.b — waiting on many descriptors
+## poller.b: waiting on many descriptors
 
 `poller.b` is the shape a server has: one thread, many connections, and a call
 that sleeps until something needs attention. The poller is `epoll` on Linux and
@@ -141,7 +141,7 @@ that sleeps until something needs attention. The poller is `epoll` on Linux and
 Two design decisions from the file's header:
 
 - **Level-triggered.** While a socket has data, every `wait` reports it. A
-  handler that reads only some of what arrived is still correct — it just gets
+  handler that reads only some of what arrived is still correct; it just gets
   told again.
 - **Events carry your token, not a descriptor.** A descriptor number is reused
   the instant it is closed, so an event holding one could name something else by
@@ -164,7 +164,7 @@ io.println("it is our token {first.token == 100}, readable {first.readable}")
 ```
 
 `watch.add` registers a descriptor with a token (`100`) and an interest
-(`read_only`). `wait(max, timeout_ms)` returns the events that are ready — an
+(`read_only`). `wait(max, timeout_ms)` returns the events that are ready; an
 empty list is an ordinary "nothing is ready" answer, not an error. Each `Event`
 carries the token you set and flags like `readable`.
 
@@ -174,8 +174,7 @@ Run it:
 beansc run examples/poller.b
 ```
 
-## Where to go next
-
-- [std.net](/reference/stdlib/net/) — the networking reference.
-- [std.poll](/reference/stdlib/poll/) — the poller reference.
-- [Files and a KV store](/examples/files-kv/) — the same error and resource style on disk.
+[std.net](/reference/stdlib/net/) is the networking reference and
+[std.poll](/reference/stdlib/poll/) is the poller reference.
+[Files and a KV store](/examples/files-kv/) shows the same error and resource
+style on disk.

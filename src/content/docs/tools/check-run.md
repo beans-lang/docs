@@ -3,9 +3,9 @@ title: Checking and running
 description: beansc check and run, plus the lex, parse, mir, and llvm inspection commands.
 ---
 
-Before you build a native binary you usually check the code, and often run it on
-the reference interpreter. `beansc` also exposes each compiler stage so you can
-see what it produced.
+Before you [build a native binary](/tools/build/) you usually check the code,
+and often run it on the reference interpreter. `beansc` also exposes each
+compiler stage so you can see what it produced.
 
 ## `beansc check`
 
@@ -21,7 +21,7 @@ beansc check app.b
 `check` accepts `--target`, `--cpu`, `--features`, and `--runtime`, so you can
 check that code is valid for a specific target and runtime profile without
 building. A capability a runtime profile lacks is refused here, at check time,
-by name — see [targets](/tools/targets/).
+by name. See [targets](/tools/targets/).
 
 ## `beansc run`
 
@@ -60,9 +60,3 @@ beansc llvm app.b
 ```
 
 `lex` and `parse` take one or more files. `mir` and `llvm` take one file.
-
-## See also
-
-- [Building](/tools/build/) — turning code into a native binary.
-- [Cross-compiling and targets](/tools/targets/)
-- [The beansc command](/tools/beansc/)

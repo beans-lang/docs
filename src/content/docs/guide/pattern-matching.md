@@ -1,6 +1,6 @@
 ---
 title: Pattern matching
-description: match in Beans — variants, literals, ranges, or-patterns, wildcards, and block arms.
+description: match in Beans, covering variants, literals, ranges, or-patterns, wildcards, exhaustiveness, and block arms.
 ---
 
 `match` chooses an arm based on the shape of a value. Each arm is
@@ -52,13 +52,29 @@ match parse_age(input) {
 
 If you want to name a payload's type explicitly, you may: `some(u: User) =>`.
 
+## Exhaustiveness
+
+A `match` must handle every case. Leaving one out is a compile error that names
+the uncovered case and tells you to add it or a `_` arm. Matching an enum means
+covering every variant or adding a `_`. Matching a literal or a range never
+covers the whole type on its own, so those always need a `_` to catch the rest:
+
+```beans
+let label: string = match code {
+    200        => "ok",
+    404        => "not found",
+    _          => "other",
+}
+```
+
 ## Value position vs statement position
 
 Like `if`, `match` has two positions:
 
 - **Value position:** each arm is exactly one expression, and the whole `match`
   is that value. A block arm here is an error.
-- **Statement position:** arms may be blocks — several statements, no value:
+- **Statement position:** arms may be blocks that hold several statements and
+  produce no value:
 
 ```beans
 match ch.receive() {
@@ -85,10 +101,5 @@ match shape as? Circle {
 }
 ```
 
-## Next
-
-- [Enums](/guide/enums/)
-- [Option and Result](/guide/errors/)
-- [Control flow](/guide/control-flow/)
-
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+For the enums you match on, see [Enums](/guide/enums/); for `Option` and
+`Result`, see [Option and Result](/guide/errors/).

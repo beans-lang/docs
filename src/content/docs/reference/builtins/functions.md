@@ -3,6 +3,10 @@ title: Prelude functions
 description: The free functions Beans gives you everywhere, including panic, size_of, and how to print.
 ---
 
+<!-- coverage:summary -->
+**API summary** (generated from the Beans source by `npm run coverage`): 8 package functions.
+<!-- coverage:summary:end -->
+
 The **prelude** is the set of names available in every file without an import.
 Besides the builtin types, it gives you a few free functions. This page covers
 them. For the printing functions, which live in the `io` module, see the note
@@ -62,10 +66,10 @@ fn main() {
 
 The four printing functions are:
 
-- `io.println` — print a line to standard output
-- `io.print` — print without a newline
-- `io.eprintln` — print a line to standard error
-- `io.eprint` — print to standard error without a newline
+- `io.println`: print a line to standard output
+- `io.print`: print without a newline
+- `io.eprintln`: print a line to standard error
+- `io.eprint`: print to standard error without a newline
 
 What can print:
 
@@ -81,6 +85,6 @@ What cannot print directly:
 
 ## See also
 
-- [Option, Result, and Error](/reference/builtins/option-result/) — `panic` alongside error handling.
-- [Compile-time](/guide/compile-time/) — build-time constants.
-- [The standard library reference](/reference/stdlib/) — the `io` module and other `std.*` functions.
+- [Option, Result, and Error](/reference/builtins/option-result/), `panic` alongside error handling.
+- [Compile-time](/guide/compile-time/), build-time constants.
+- [The standard library reference](/reference/stdlib/), the `io` module and other `std.*` functions.

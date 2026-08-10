@@ -1,6 +1,6 @@
 ---
-title: Structs and unions
-description: Inline value types in Beans — plain structs, extern "C" structs and unions, and how they differ from classes.
+title: 'Structs and unions'
+description: 'Inline value types in Beans: plain structs, extern "C" structs and unions, and how they differ from classes.'
 ---
 
 A `struct` is an **inline value type**. It copies by value and is passed and
@@ -20,9 +20,9 @@ let p: Point = Point { x: 3, y: 4 }   // named field literal
   which construct only with `new`.
 - Fields are private unless marked `pub`, as with classes.
 - A field can be changed only through a `var` local.
-- An ordinary struct can own ARC values — strings, classes, collections,
-  Options and Results, other structs — and the compiler retains and drops those
-  fields recursively through copies, arrays, and storage.
+- An ordinary struct can own ARC values (strings, classes, collections, Options
+  and Results, other structs), and the compiler retains and drops those fields
+  recursively through copies, arrays, and storage.
 - A directly recursive value edge is rejected (it has no finite size); use
   `RawPtr` or `Box` for that edge.
 - An ordinary struct that satisfies `Eq` and `Hash` can be a `Map` key.
@@ -48,7 +48,8 @@ records may be passed and returned by value across an `extern "C"` boundary.
 Two contextual modifiers apply only to `extern "C"` records:
 
 - `packed` removes all padding between fields.
-- `align(N)` raises a record's — or one field's — alignment (`N` a power of two).
+- `align(N)` raises the alignment of a record, or of one field, to `N` (a power
+  of two).
 
 ```beans
 pub extern "C" packed struct Header { kind: u8  length: u32  checksum: u32 }
@@ -90,10 +91,28 @@ are rejected. This is how you bind a C type whose layout you never see.
 | methods, inheritance | not yet | yes |
 | C layout | with `extern "C"` | never |
 
-## Next
+Structs carry no methods yet. Put behaviour in free functions that take the
+struct, or reach for a `class` when you need methods or inheritance.
 
-- [Unsafe and raw memory](/guide/unsafe/)
-- [Foreign function interface](/guide/ffi/)
-- [Compile-time features](/guide/compile-time/)
+## A complete example
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+```beans
+import std.io
+
+struct Point {
+    x: int
+    y: int
+}
+
+fn shift(p: Point, dx: int) -> Point {
+    return Point { x: p.x + dx, y: p.y }
+}
+
+fn main() {
+    let a: Point = Point { x: 3, y: 4 }
+    let b: Point = shift(a, 10)
+    io.println("{a.x},{a.y} -> {b.x},{b.y}")
+}
+```
+
+`a` is unchanged by `shift`: a struct is copied when passed and returned.

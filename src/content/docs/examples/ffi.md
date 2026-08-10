@@ -1,6 +1,6 @@
 ---
 title: C interop (FFI)
-description: A line-by-line walk through examples/ffi.b — calling C from Beans — plus C struct layout and loading a library at run time.
+description: A line-by-line walk through examples/ffi.b, calling C from Beans, plus C struct layout and loading a library at run time.
 ---
 
 Beans can call C directly. The core example is
@@ -24,7 +24,7 @@ extern "C" fn ldexpf(value: f32, exponent: i32) -> f32
 ```
 
 `extern "C" fn` declares a function that lives in C, not Beans. There is no
-body — you are telling the compiler the name and the signature, and it links to
+body: you are telling the compiler the name and the signature, and it links to
 the C library at build time (or resolves it with `dlsym` in the interpreter).
 The types are sized: `i64`, `f64`, `f32`, `i32`. These are libc math functions
 (`llabs` is long-long absolute value, `ldexp` multiplies by a power of two).
@@ -43,11 +43,11 @@ fn main() {
         memory.offset(4).write(0)
 ```
 
-`RawPtr<u8>` is a raw pointer — unmanaged memory the compiler will not track for
+`RawPtr<u8>` is a raw pointer: unmanaged memory the compiler will not track for
 you. That is why everything here is inside `unsafe { ... }`: you are taking
 responsibility. `RawPtr.alloc(5)` allocates 5 bytes. `write(65)` stores a byte
 (65 is ASCII `A`), and `offset(n)` moves the pointer forward `n` elements. The
-last byte is set to `0` — a C string terminator.
+last byte is set to `0`, a C string terminator.
 
 ### Reading it back
 
@@ -76,8 +76,8 @@ yourself.
 
 The file's own comment explains why it avoids `memset`: an older version
 declared `memset`'s `size_t` as `u64`, which is the wrong declaration on every
-32-bit target. Getting an `extern "C"` signature wrong is a real trap — the
-compiler believes what you write.
+32-bit target. Getting an `extern "C"` signature wrong is a real trap, because
+the compiler believes what you write.
 
 Run it:
 
@@ -88,7 +88,7 @@ beansc run examples/ffi.b
 ## C struct layout: c_layout_structs.b
 
 [`c_layout_structs.b`](https://github.com/beans-lang/beans/blob/main/examples/c_layout_structs.b)
-shows `extern "C" struct` — a struct laid out exactly the way a C compiler would
+shows `extern "C" struct`, a struct laid out exactly the way a C compiler would
 lay it out, so you can pass it to and from C:
 
 ```beans
@@ -126,7 +126,7 @@ Two rules from the file's header:
 
 - **Probing is safe; calling is not.** `lib.has(...)` and `lib.find(...)` do not
   need `unsafe`. Only *calling* an address does, because a symbol is just an
-  address — nothing about it proves what arguments it takes, and a wrong guess
+  address: nothing about it proves what arguments it takes, and a wrong guess
   corrupts the stack. So the call goes straight to `std.dl` inside a visible
   `unsafe` block; there is no wrapper hiding it.
 - **The library opens `RTLD_LOCAL`**, so its symbols never leak into the global
@@ -136,9 +136,7 @@ Because a library binary cannot be committed to the repo, this example takes its
 path from the `BEANS_DYLIB_EXAMPLE` environment variable. Without it, the
 example still exercises every failure path.
 
-## Where to go next
-
-- [Foreign function interface](/guide/ffi/) — the FFI guide.
-- [Unsafe and raw memory](/guide/unsafe/) — what `unsafe` and `RawPtr` mean.
-- [std.dylib](/reference/stdlib/dylib/) — loading libraries at run time.
-- [bindgen](/tools/bindgen/) — generating `extern "C"` declarations from C headers.
+[Foreign function interface](/guide/ffi/) is the FFI guide, and
+[Unsafe and raw memory](/guide/unsafe/) explains what `unsafe` and `RawPtr` mean.
+[std.dylib](/reference/stdlib/dylib/) covers loading libraries at run time, and
+[bindgen](/tools/bindgen/) generates `extern "C"` declarations from C headers.

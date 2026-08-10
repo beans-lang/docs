@@ -4,8 +4,8 @@ description: The unsafe block, RawPtr, Slice, fixed arrays, SIMD, intrinsics, an
 ---
 
 Most Beans code is safe: no null, checked indexing, and ownership the compiler
-proves. When you need raw memory — for a device, a database page, or C interop
-— you enter an `unsafe { }` block. Inside it, some low-level operations become
+proves. When you need raw memory, for a device, a database page, or C interop,
+you enter an `unsafe { }` block. Inside it, some low-level operations become
 available, and their safety becomes **your** responsibility.
 
 ```beans
@@ -17,8 +17,8 @@ unsafe {
 }
 ```
 
-`unsafe` gates the operation, not a function — there is no `unsafe fn`, so the
-block sits at the call site.
+`unsafe` gates the operation, not the function. There is no `unsafe fn`, so the
+block always sits at the call site where the raw operation happens.
 
 ## RawPtr
 
@@ -28,11 +28,13 @@ nest).
 
 Construct (all `unsafe`):
 
-- `RawPtr.alloc(count)` — zeroed unmanaged storage with the element type's own
-  alignment.
-- `RawPtr.alloc_aligned(count, align)` — a stricter alignment (`align` a power of
-  two, never weaker than the element's; checked at run time).
-- `RawPtr.null()`, `RawPtr.from_address(addr)`.
+- `RawPtr.alloc(count)` gives zeroed unmanaged storage with the element type's
+  own alignment.
+- `RawPtr.alloc_aligned(count, align)` asks for a stricter alignment. `align`
+  must be a power of two and never weaker than the element's own; both are
+  checked at run time.
+- `RawPtr.null()` and `RawPtr.from_address(addr)` build pointer values without
+  allocating.
 
 Methods (all `unsafe`): `read()`, `write(v)`, `read_volatile()`,
 `write_volatile(v)`, `offset(n)`, `address()`, `is_null()`, `element_size()`,
@@ -83,10 +85,32 @@ inside `unsafe`. A vector's name is its shape. See
 - `std.asm` allows a small, per-architecture allowlist of assembly templates
   inside `unsafe`. See [std.asm](/reference/stdlib/asm/).
 
-## Next
+## A complete program
 
-- [Foreign function interface](/guide/ffi/)
-- [SIMD, arrays, slices](/reference/builtins/simd/)
-- [Structs and unions](/guide/structs/)
+Allocate, write, read back, then free. Every raw step is inside the `unsafe`
+block, and the one `alloc` is matched by one `free`:
 
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn main() {
+    unsafe {
+        let cells: RawPtr<i32> = RawPtr.alloc(3)
+        cells.write(10)
+        cells.offset(1).write(20)
+        cells.offset(2).write(30)
+
+        let sum: i32 = cells.read() + cells.offset(1).read() +
+                       cells.offset(2).read()
+        io.println("sum {sum}")
+
+        cells.free()
+    }
+}
+```
+
+Prefer a **fixed array** or a safe collection when you can: they give checked
+indexing and automatic cleanup with no `unsafe`. Reach for `RawPtr` and `Slice`
+only for device memory, a hand-laid file format, or
+[C interop](/guide/ffi/), where the raw layout is the point.

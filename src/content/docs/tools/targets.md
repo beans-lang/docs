@@ -3,9 +3,9 @@ title: Cross-compiling and targets
 description: Selecting a target, the cross-build options, runtime profiles, and the supported target list.
 ---
 
-`beansc build` compiles for exactly one target. The host is the default. You
-pick another target with `--target`, and shape the build with the CPU, sysroot,
-and runtime options below.
+[`beansc build`](/tools/build/) compiles for exactly one target. The host is
+the default. You pick another target with `--target`, and shape the build with
+the CPU, sysroot, and runtime options below.
 
 ## Selecting a target
 
@@ -14,7 +14,7 @@ beansc build app.b --target x86_64-unknown-linux-gnu -o app
 ```
 
 Thirty triples are registered. Common alternate spellings normalize to a
-supported one — for example `aarch64-apple-darwin` and
+supported one, for example `aarch64-apple-darwin` and
 `riscv64gc-unknown-linux-musl`.
 
 Inspect one target's facts with:
@@ -40,16 +40,16 @@ beansc target x86_64-unknown-linux-gnu
 ## Compile versus link
 
 A cross **compile** needs no target libraries: `--emit obj` and `--emit ir`
-work without a sysroot. Only a cross **link** — producing a finished binary or
-shared library for another target — needs `--sysroot`. Every setting is
+work without a sysroot. Only a cross **link**, producing a finished binary or
+shared library for another target, needs `--sysroot`. Every setting is
 validated before Clang runs, and tools are executed directly, never through a
 shell.
 
 ## Runtime profiles
 
 `--runtime` chooses how much runtime the build includes. A capability a profile
-drops is refused at **check** time, by name — so you find out early, not at
-link time.
+drops is refused at **check** time, by name, so you find out early rather than
+at link time.
 
 | Profile | What you get |
 | --- | --- |
@@ -86,7 +86,7 @@ Beans install packages come in two shapes:
 
 - **Full packages** bundle Clang, LLD, and llvm-ar. They ship for Linux
   x86-64 and ARM64 GNU, and Windows x64, ARM64, and x86 (LLVM-MinGW). A native
-  build works out of the box.
+  build needs no extra tools.
 - **Slim packages** ship everywhere else. A native build then needs Clang on
   your `PATH`.
 
@@ -95,9 +95,3 @@ already has.
 
 The required native 1.0 CI hosts are macOS arm64, Linux x86-64 GNU, and Linux
 arm64 GNU. See [Maturity and platforms](/intro/maturity/).
-
-## See also
-
-- [Building](/tools/build/)
-- [Checking and running](/tools/check-run/)
-- [The beansc command](/tools/beansc/)

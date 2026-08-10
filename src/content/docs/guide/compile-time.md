@@ -1,6 +1,6 @@
 ---
 title: Compile-time features
-description: Layout queries (size_of, align_of, offset_of), the selected target, and CPU feature dispatch — all resolved at compile time.
+description: Layout queries (size_of, align_of, offset_of), the selected target, and CPU feature dispatch, all resolved at compile time.
 ---
 
 Beans folds a few things to constants at compile time, always for the **selected
@@ -20,7 +20,8 @@ let at: int    = offset_of(Packet, count)
 ```
 
 - `size_of(T)`, `align_of(T)`, and `offset_of(T, field)` are contextual forms
-  taking a type — they mean this only immediately before `(`.
+  that take a type. Each name has this meaning only immediately before `(`, so
+  the same words stay usable as ordinary identifiers elsewhere.
 - The values are compile-time constants of the selected target.
   `beansc build --target X` reports X's layout, not the host's.
 - Supported types: integers, floats, `bool`, `decimal`, `string`, `RawPtr<T>`,
@@ -28,9 +29,9 @@ let at: int    = offset_of(Packet, count)
   `extern "C"` struct/union, and class or interface references (a reference is
   one pointer).
 - Rejected, with a specific message: a type parameter (`size_of(T)` inside a
-  generic body), and `Option`/`Result`/user enums — they pick between a null
+  generic body), and `Option`/`Result`/user enums. Those pick between a null
   niche, an inline aggregate, and a boxed form depending on payload, so there is
-  no single number.
+  no single number to report.
 - `offset_of` needs a `struct`/`union` and a real field name.
 
 For `extern "C"` records these numbers match C's `sizeof`/`alignof`/`offsetof`,
@@ -75,7 +76,7 @@ fn mix(seed: int) -> int {
 - The feature name is validated against the **selected target's** feature set,
   so asking about `avx2` while targeting arm64 is a compile error, not a
   permanent `false`.
-- `CpuFeature` is neither a declarable type nor a storable value — like a memory
+- `CpuFeature` is neither a declarable type nor a storable value. Like a memory
   order, it is written at the call site.
 - `feature "x" fn` marks a body as allowed to use that feature's instructions.
   Calling it (or storing it as a function value) requires the feature to be
@@ -85,13 +86,7 @@ fn mix(seed: int) -> int {
   `CpuFeature.sse4_2`. The string forms (`--features`, `feature "x" fn`) keep
   the dot.
 
-See [std.cpu and std.intrinsic](/reference/stdlib/cpu-intrinsic/) and
-[Attributes and modifiers](/guide/attributes/).
-
-## Next
-
-- [Attributes and modifiers](/guide/attributes/)
-- [Unsafe and raw memory](/guide/unsafe/)
-- [std.target](/reference/stdlib/target/)
-
-Source: [`spec/SYNTAX.md`](https://github.com/beans-lang/beans/blob/main/spec/SYNTAX.md).
+The full operation set is in
+[std.cpu and std.intrinsic](/reference/stdlib/cpu-intrinsic/). The
+[attributes and modifiers](/guide/attributes/) page lists `feature` alongside
+the other declaration modifiers.
