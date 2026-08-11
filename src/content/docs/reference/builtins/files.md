@@ -4,7 +4,7 @@ description: The built-in File, Dir, and MMap types for reading, writing, listin
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 16 static methods · 31 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 17 static methods · 31 instance methods.
 <!-- coverage:summary:end -->
 
 Beans has three builtin types for working with the file system: `File` for a single
@@ -108,6 +108,7 @@ All directory work is on statics of the `Dir` type.
 ```beans
 Dir.create(string) -> Result<bool>
 Dir.create_all(string) -> Result<bool>
+Dir.current() -> string
 Dir.exists(string) -> bool
 Dir.list(string) -> Result<List<string>>
 Dir.walk(string) -> Result<List<string>>
@@ -119,6 +120,8 @@ Dir.temp_path() -> string
 
 - `create` makes one directory and fails if a parent is missing; `create_all`
   makes the directory and any missing parents.
+- `current()` returns the process's current working directory as an absolute
+  path.
 - `list` returns the names directly inside a directory, sorted. `walk` returns every
   file and symlink underneath it, recursive, sorted, each path relative to the
   directory you passed.

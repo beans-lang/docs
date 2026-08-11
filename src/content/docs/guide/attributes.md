@@ -1,11 +1,12 @@
 ---
 title: Attributes and modifiers
-description: The declaration modifiers Beans has, covering pub, extern "C", packed, align(N), opaque, feature, unique, move, and inout. Beans has no @-style attributes.
+description: The built-in declaration modifiers Beans has, covering pub, extern "C", packed, align(N), opaque, feature, unique, move, and inout.
 ---
 
-Beans has **no `@`-style attributes**. Instead it has a small set of
-**declaration modifiers**: words that sit before a declaration and change how it
-is treated. This page lists them all.
+Beans has custom [annotations](/guide/annotations/) for typed metadata and a
+small set of built-in **declaration modifiers**. Modifiers are words that sit
+before a declaration and change language behavior such as visibility, layout,
+ownership, or CPU requirements. This page lists those modifiers.
 
 ## Visibility
 
@@ -81,7 +82,9 @@ The standard order places visibility first, then the kind modifiers:
 `pub unique class`, `pub extern "C" struct`. The C interop modifiers and layout
 modifiers stack in the same chain: `pub extern "C" packed struct`.
 
-These modifiers are the whole set; there is no way to add your own. The
-[foreign function interface](/guide/ffi/) page shows `extern "C"` and `opaque`
-in use, and [structs and unions](/guide/structs/) shows the layout modifiers on
-real records.
+These modifiers are the whole built-in set; there is no way to add a new
+modifier. Custom annotations can describe declarations, parameters, and locals,
+but they do not replace language rules such as `pub`, `unique`, or `extern
+"C"`. The [foreign function interface](/guide/ffi/) page shows `extern "C"`
+and `opaque` in use, and [structs and unions](/guide/structs/) shows the layout
+modifiers on real records.

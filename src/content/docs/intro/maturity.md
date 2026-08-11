@@ -13,7 +13,7 @@ phrase means something specific:
 
 - **The language contract is frozen at `1.0`.** The syntax and semantics you
   write against are settled. Code you write now is meant to keep working.
-- **The latest compiler release is `0.1.7`.** The language is `1.0`; the tool
+- **The latest compiler release is `0.1.12`.** The language is `1.0`; the tool
   that implements it is still on its way to a matching release number.
 - **The runtime ABI is `4`.**
 
@@ -27,9 +27,9 @@ The list below is what works today:
 - **A self-hosted compiler.** `beansc` is written in Beans. Its stage 2 and
   stage 3 builds are byte-identical, the standard proof that a compiler
   reproduces itself.
-- **A full front end.** Whole-program loader and resolver, a generic checker, a
-  high-level IR (HIR), and a checked mid-level IR (MIR) with ownership
-  verification.
+- **A full front end.** Whole-program loader and resolver, a generic checker,
+  typed custom annotations, a high-level IR (HIR), and a checked mid-level IR
+  (MIR) with ownership verification.
 - **A native backend.** MIR compiled to LLVM for debug, release, and LTO builds,
   with automatic reference counting plus a cycle collector.
 - **A reference interpreter** with behavior identical to the native backend.

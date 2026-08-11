@@ -90,3 +90,7 @@ The full operation set is in
 [std.cpu and std.intrinsic](/reference/stdlib/cpu-intrinsic/). The
 [attributes and modifiers](/guide/attributes/) page lists `feature` alongside
 the other declaration modifiers.
+
+[Annotation arguments](/guide/annotations/) are also checked at compile time.
+They accept constant booleans, numbers, strings, enum variants, and lists, but
+not calls or reads of runtime values.

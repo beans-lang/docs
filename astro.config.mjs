@@ -121,6 +121,7 @@ export default defineConfig({
             { label: 'Concurrency', slug: 'guide/concurrency' },
             { label: 'Async and await', slug: 'guide/async' },
             { label: 'Compile-time features', slug: 'guide/compile-time' },
+            { label: 'Annotations', slug: 'guide/annotations' },
             { label: 'Attributes and modifiers', slug: 'guide/attributes' },
             { label: 'Unsafe and raw memory', slug: 'guide/unsafe' },
             { label: 'Foreign function interface', slug: 'guide/ffi' },

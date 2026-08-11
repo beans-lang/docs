@@ -8,9 +8,9 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **735**
-- Symbols with an enforced signature: **534**
-- Builtin reference symbols: **306**
+- Total public symbols: **738**
+- Symbols with an enforced signature: **537**
+- Builtin reference symbols: **309**
 - Standard-library symbols: **415**
 - Coverage gaps: **0**
 
@@ -73,10 +73,12 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Bytes.append_range` | method | `Bytes.append_range(Bytes, int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.append_string` | method | `Bytes.append_string(string) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.append_uvarint` | method | `Bytes.append_uvarint(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.as_ptr` | method | `Bytes.as_ptr() -> RawPtr<u8>` | `reference/builtins/bytes` | ✓ |
 | `Bytes.copy_from` | method | `Bytes.copy_from(Bytes, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.crc32` | method | `Bytes.crc32(int, int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.fill` | method | `Bytes.fill(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.from` | static | `Bytes.from(string) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.from_raw` | static | `Bytes.from_raw(RawPtr<u8>, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get` | method | `Bytes.get(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_i64` | method | `Bytes.get_i64(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_u16` | method | `Bytes.get_u16(int) -> int` | `reference/builtins/bytes` | ✓ |
@@ -113,6 +115,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 |---|---|---|---|---|
 | `Dir.create` | static | `Dir.create(string) -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `Dir.create_all` | static | `Dir.create_all(string) -> Result<bool>` | `reference/builtins/files` | ✓ |
+| `Dir.current` | static | `Dir.current() -> string` | `reference/builtins/files` | ✓ |
 | `Dir.exists` | static | `Dir.exists(string) -> bool` | `reference/builtins/files` | ✓ |
 | `Dir.list` | static | `Dir.list(string) -> Result<List<string>>` | `reference/builtins/files` | ✓ |
 | `Dir.remove` | static | `Dir.remove(string) -> Result<bool>` | `reference/builtins/files` | ✓ |

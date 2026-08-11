@@ -4,7 +4,7 @@ description: The growable, mutable byte buffer Bytes and its methods for buildin
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 2 static methods · 28 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 3 static methods · 29 instance methods.
 <!-- coverage:summary:end -->
 
 `Bytes` is a growable, changeable buffer of raw bytes. Use it to build binary
@@ -22,14 +22,18 @@ Its signatures are positional: the type in each slot is fixed, the names are not
 ## Making a Bytes
 
 Construct a fresh buffer with `new Bytes(n)`, which gives `n` zeroed bytes and
-panics on a negative `n`. Two statics build or measure buffers:
+panics on a negative `n`. Three statics build or measure buffers:
 
 ```beans
 Bytes.from(string) -> Bytes
+Bytes.from_raw(RawPtr<u8>, int) -> Bytes
 Bytes.uvarint_size(int) -> int
 ```
 
 - `Bytes.from(s)` returns a new buffer holding a copy of string `s`'s bytes.
+- `Bytes.from_raw(pointer, len)` copies `len` bytes from a raw pointer without
+  taking ownership. It requires `unsafe`; a null pointer is accepted only when
+  `len` is zero.
 - `Bytes.uvarint_size(v)` returns how many bytes `v` would take as an unsigned
   varint, without writing anything.
 
@@ -42,6 +46,7 @@ let text: Bytes = Bytes.from("hello")
 
 ```beans
 Bytes.len() -> int
+Bytes.as_ptr() -> RawPtr<u8>
 Bytes.reserve(int) -> Bytes
 Bytes.resize(int) -> Bytes
 Bytes.fill(int) -> Bytes
@@ -74,6 +79,9 @@ Bytes.crc32(int, int) -> int
 ### Size and shape
 
 - `len()` is the number of bytes.
+- `as_ptr()` borrows the buffer's raw pointer and requires `unsafe`. The pointer
+  is null for an empty buffer. Keep the `Bytes` alive, do not free the pointer,
+  and do not resize, reserve, append, or push while using it.
 - `reserve(n)` makes room for at least `n` bytes without changing the length.
 - `resize(n)` grows or shrinks the buffer to `n` bytes; new bytes read as zero.
 - `fill(v)` sets every existing byte to `v`.
