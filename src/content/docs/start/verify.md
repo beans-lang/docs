@@ -13,7 +13,7 @@ beansc --version
 ```
 
 ```text
-beansc 0.1.12 (language 1.0, runtime ABI 4)
+beansc 0.1.12 (language 1.0, runtime ABI 5)
 ```
 
 This tells you three things: the compiler version (`0.1.12`), the language
