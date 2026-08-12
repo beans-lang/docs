@@ -82,6 +82,7 @@ Ignore it.
 | [std.path](/reference/stdlib/path/) | path string math, no filesystem |
 | [std.fs](/reference/stdlib/fs/) | read and write whole files |
 | [std.reader](/reference/stdlib/reader/) | buffered line reading over a `File` |
+| [std.reflect](/reference/stdlib/reflect/) | runtime types, members, annotations, checked field access and calls |
 | [std.encoding.json](/reference/stdlib/json/) | JSON parsing and building |
 | [std.encoding.xml](/reference/stdlib/xml/) | XML parsing and building |
 | [std.encoding.base64](/reference/stdlib/base64/) | Base64 encode and decode |
