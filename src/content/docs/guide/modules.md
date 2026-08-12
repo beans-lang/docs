@@ -84,21 +84,29 @@ Subdirectories under the module root are sub-packages. `shop/money/` is imported
 as `import shop.money`. See [The beans.pot manifest](/pot/manifest/) and
 [Local packages and imports](/pot/local-packages/) for the full rules.
 
-## Visibility: private by default
+## Visibility: package-private by default
 
-Classes, interfaces, enums, functions, methods, and fields are all **private**
-unless marked `pub`. `pub` is the only way to expose a name outside its package.
-Private means the same import path, not the same package name.
+Classes, interfaces, enums, functions, methods, and fields are
+**package-private** unless marked `pub`. `pub` is the only way to expose a name
+outside its package. Package-private means the same import path, not merely the
+same package name written in source.
+
+Fields and methods have one stricter option: `priv` makes a member visible only
+inside the class or struct that declares it. A peer type, subclass, or free
+function cannot access that member, even from the same package.
 
 ```beans
 package money
 
 pub class Money {       // usable from other packages
     pub amount: decimal // public field
-    currency: string    // private field
+    currency: string    // visible inside package money
+    priv checksum: int  // visible only inside Money
+
+    priv fn valid_checksum() -> bool { return self.checksum >= 0 }
 }
 
-fn round_rule() {}      // private helper
+fn round_rule() {}      // package-private helper
 ```
 
 ## Lexical rules
@@ -116,14 +124,14 @@ fn round_rule() {}      // private helper
 ## Keywords
 
 ```text
-class struct union interface enum fn let var pub override
+class struct union interface enum fn let var pub priv override
 if else for in match return break continue move inout
 import as defer unsafe extern new extends implements static
-self true false unique
+self true false unique abstract singleton
 ```
 
 `some`, `none`, `ok`, and `err` are ordinary prelude names, not keywords.
-`super` is contextual. `async`, `await`, and `package` are contextual too:
-`async` means something only right before `fn`, `await` only inside an async
-body, and `package` only as `package <name>` at the top of a file. All three
-stay usable as ordinary identifiers elsewhere.
+`super` is contextual. `priv`, `abstract`, `singleton`, `async`, `await`, and
+`package` are contextual too. They take their special meaning only in the
+matching field, class, function, or package position and stay usable as normal
+identifiers elsewhere.

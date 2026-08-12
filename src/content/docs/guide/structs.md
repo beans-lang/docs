@@ -1,6 +1,6 @@
 ---
 title: 'Structs and unions'
-description: 'Inline value types in Beans: plain structs, extern "C" structs and unions, and how they differ from classes.'
+description: 'Inline value types in Beans: generic structs, methods, mutation, extern "C" records, and how structs differ from classes.'
 ---
 
 A `struct` is an **inline value type**. It copies by value and is passed and
@@ -8,18 +8,39 @@ returned as a plain aggregate, with no reference-count header and no heap
 allocation.
 
 ```beans
-struct Point {
-    x: int
-    y: int
+struct Point<T> {
+    value: T
+    moves: int = 0
+
+    priv inout fn add_move() {
+        self.moves += 1
+    }
+
+    fn current() -> T {
+        return self.value
+    }
+
+    inout fn moved() {
+        self.add_move()
+    }
 }
 
-let p: Point = Point { x: 3, y: 4 }   // named field literal
+var p: Point<int> = Point { value: 3 }
+p.moved()
 ```
 
 - Structs use named field literals (`Point { x: 3, y: 4 }`), unlike classes,
   which construct only with `new`.
-- Fields are private unless marked `pub`, as with classes.
+- An unmarked field is visible in its package. `pub` exposes it to every
+  package. `priv` limits it to the declaring struct, even inside the same
+  package.
 - A field can be changed only through a `var` local.
+- A normal method gets read-only `self`. Mark the method `inout fn` when it
+  needs to change fields; call it on a `var` local.
+- `priv` works on normal, static, and `inout` methods. It limits the method to
+  code inside the exact declaring struct, including against same-package peers.
+- A static method has no `self` and can be used as a named factory.
+- A generic struct gets a separate inline layout for each concrete type.
 - An ordinary struct can own ARC values (strings, classes, collections, Options
   and Results, other structs), and the compiler retains and drops those fields
   recursively through copies, arrays, and storage.
@@ -88,11 +109,72 @@ are rejected. This is how you bind a C type whose layout you never see.
 | identity | value (copied) | reference (shared) |
 | allocation | inline, no header | heap, 16-byte ARC header |
 | construction | field literal | `new Class(...)` |
-| methods, inheritance | not yet | yes |
+| methods | read-only, `inout`, and static | instance and static |
+| inheritance | no | one base class, many interfaces |
 | C layout | with `extern "C"` | never |
 
-Structs carry no methods yet. Put behaviour in free functions that take the
-struct, or reach for a `class` when you need methods or inheritance.
+Use a struct when copying the whole value is its meaning. Use a class when
+objects need shared identity, inheritance, or reference-counted lifetime.
+
+## Methods and mutation
+
+A normal struct method may read `self`, but cannot change it. An `inout fn`
+method may change fields and must be called on a mutable local:
+
+```beans
+struct Point {
+    x: int
+    y: int
+
+    fn total() -> int {
+        return self.sum()
+    }
+
+    priv fn sum() -> int {
+        return self.x + self.y
+    }
+
+    inout fn translate(dx: int, dy: int) {
+        self.move_by(dx, dy)
+    }
+
+    priv inout fn move_by(dx: int, dy: int) {
+        self.x += dx
+        self.y += dy
+    }
+
+    static fn origin() -> Point {
+        return Point { x: 0, y: 0 }
+    }
+}
+
+var point: Point = Point.origin()
+point.translate(3, 4)
+```
+
+Calling `translate` on a `let`, a temporary field literal, or a non-local value
+is an error. Structs use field literals, so they do not have `init` or `deinit`.
+
+## Generic structs
+
+Type parameters work on structs as they do on classes and functions:
+
+```beans
+struct Cell<T> {
+    value: T
+    previous: Option<T> = none
+
+    fn current() -> T {
+        return self.value
+    }
+}
+
+let number: Cell<int> = Cell { value: 7 }
+let word: Cell<string> = Cell { value: "beans" }
+```
+
+The declared type supplies the type argument for the field literal. `Cell<int>`
+and `Cell<string>` have separate compiled layouts and method copies.
 
 ## A complete example
 
@@ -102,17 +184,23 @@ import std.io
 struct Point {
     x: int
     y: int
-}
 
-fn shift(p: Point, dx: int) -> Point {
-    return Point { x: p.x + dx, y: p.y }
+    fn total() -> int {
+        return self.x + self.y
+    }
+
+    inout fn shift(dx: int) {
+        self.x += dx
+    }
 }
 
 fn main() {
-    let a: Point = Point { x: 3, y: 4 }
-    let b: Point = shift(a, 10)
-    io.println("{a.x},{a.y} -> {b.x},{b.y}")
+    var point: Point = Point { x: 3, y: 4 }
+    io.println("{point.x},{point.y}: {point.total()}")
+    point.shift(10)
+    io.println("{point.x},{point.y}: {point.total()}")
 }
 ```
 
-`a` is unchanged by `shift`: a struct is copied when passed and returned.
+The value still lives inline. `inout fn` changes that local value in place; a
+normal pass or return still copies it.

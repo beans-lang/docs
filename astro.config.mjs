@@ -205,6 +205,7 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'examples' },
             { label: 'Hello and the tour', slug: 'examples/hello-tour' },
+            { label: 'OOP classes and value types', slug: 'examples/oop' },
             { label: 'Threads and channels', slug: 'examples/threads' },
             { label: 'Atomics', slug: 'examples/atomics' },
             { label: 'Files and a KV store', slug: 'examples/files-kv' },

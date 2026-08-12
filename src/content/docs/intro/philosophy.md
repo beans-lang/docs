@@ -51,11 +51,12 @@ match find_user(id) {
 
 The casing tells you what a name is before you read anything else.
 
-### 6. Private by default
+### 6. Package-private by default
 
-Classes, interfaces, enums, functions, methods, and fields are all private unless
-you say otherwise. `pub` is the only way to expose something outside its package,
-so you never leak API by accident.
+Classes, interfaces, enums, functions, methods, and fields stay inside their
+package unless you mark them `pub`, so you do not leak API by accident. A field
+or method that must stay inside its own declaring type uses `priv`; same-package
+code and subclasses still cannot access it.
 
 ### 7. If two designs work, pick the one with less syntax
 

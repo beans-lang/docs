@@ -15,6 +15,11 @@ class Stack<T> {
     fn pop() -> Option<T> { return self.items.pop() }
 }
 
+struct Pair<T> {
+    first: T
+    second: T
+}
+
 fn largest<T implements Order>(xs: List<T>) -> Option<T> { /* ... */ }
 fn index<K implements Eq & Hash, V>(key: K, value: V) -> Map<K, V> { /* ... */ }
 ```
@@ -66,7 +71,37 @@ Type arguments come from the declared spot or an explicit constructor type:
 ```beans
 let a: Stack<int> = new Stack()      // T from the declaration
 let b: Stack<int> = new Stack<int>() // T stated explicitly
+
+let p: Pair<int> = Pair { first: 1, second: 2 }
 ```
+
+For a generic struct field literal, the declared result type supplies the type
+argument. Write `Pair<int>` on the binding; bare `Pair` is incomplete.
+
+Generic structs can use their type parameter in fields, defaults, and methods:
+
+```beans
+struct Tagged<T> {
+    value: T
+    previous: Option<T> = none
+    tag: int
+
+    fn current() -> T {
+        return self.value
+    }
+
+    inout fn retag(tag: int) {
+        self.tag = tag
+    }
+}
+
+var item: Tagged<string> = Tagged { value: "beans", tag: 1 }
+item.retag(2)
+```
+
+Monomorphization gives `Tagged<int>` and `Tagged<string>` separate inline
+layouts and separate compiled method copies. Static fields belong only to
+non-generic classes. A struct may still declare static methods.
 
 ## A complete example
 

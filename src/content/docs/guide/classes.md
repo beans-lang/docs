@@ -1,43 +1,132 @@
 ---
 title: Classes
-description: Classes in Beans, covering fields, methods, statics, construction with new, and the init/deinit lifecycle.
+description: Classes in Beans, including private methods and fields, static state, singleton classes, construction, and the init/deinit lifecycle.
 ---
 
 A class is a reference type with fields and methods.
 
 ```beans
 class User {
+    static created: int = 0
     name: string
-    age: int = 0            // default value
-    pub email: string       // fields are private to the package unless pub
+    age: int = 0              // visible inside this package
+    pub email: string = ""    // visible in every package
+    priv token: string        // visible only inside User
 
-    fn init(name: string) {
+    fn init(name: string, token: string) {
         self.name = name
+        self.token = token
+        User.created += 1
     }
 
     fn greet() -> string {
+        return self.private_greeting()
+    }
+
+    priv fn private_greeting() -> string {
         return "hi {self.name}"
     }
 
     static fn guest() -> User {
-        return new User("guest")
+        return new User("guest", "")
     }
 }
 
-let u: User = new User("jul")
+let u: User = new User("jul", "secret")
 ```
 
 - Methods are instance methods by default. Their `self` is implicit and
   available in the body; it is never written in the parameter list.
-- `static fn` declares a class static. A static has no `self` and is not
-  inherited.
-- **`new Class(...)` is the only way to construct a class.** It always runs the
-  class's `init`. Class field literals and plain `Class(...)` calls are errors.
-- Fields are private to the package unless marked `pub`.
+- `static fn` declares a class method. It has no `self` and is not inherited.
+- A normal class is constructed with `new Class(...)`. It always runs `init`.
+  Class field literals and plain `Class(...)` calls are errors.
+- An unmarked field is visible in its package. `pub` opens it to every package.
+  `priv` limits it to the class that declares it.
 
 Anything that produces an object belongs on that object's class, as `new` or as
 a named static (for fallible construction, like `File.open`). A module-level
 function is only for work that yields no object.
+
+## Field visibility
+
+Beans has three field visibility levels:
+
+| Form | Can access the field |
+| --- | --- |
+| `value: int` | code in the same package |
+| `pub value: int` | code in any package |
+| `priv value: int` | only the class or struct that declares it |
+
+`priv` stays strict even in the same package. A peer class, subclass, or free
+function cannot read or write the field. There is no `protected` level.
+
+## Method visibility
+
+Methods use the same three levels:
+
+| Form | Can call the method |
+| --- | --- |
+| `fn read()` | code in the same package |
+| `pub fn read()` | code in any package |
+| `priv fn read()` | only the class or struct that declares it |
+
+`priv` works on instance, static, and `inout` struct methods. A private method
+is not inherited and cannot be `abstract` or `override`. A subclass may declare
+a new method with the same name, but it does not replace the parent's private
+method.
+
+## Static fields
+
+A static field belongs to the class, not to each object. Read and write it
+through the class name:
+
+```beans
+class Request {
+    static next_id: int = 1
+    priv static secret: int = 40
+
+    priv static fn secret_value() -> int {
+        return Request.secret
+    }
+
+    static fn take_id() -> int {
+        let id: int = Request.next_id
+        Request.next_id += 1
+        return id
+    }
+
+    static fn reveal() -> int {
+        return Request.secret_value()
+    }
+}
+```
+
+Static fields are initialized once, in declaration order, before `main` runs.
+They need an initializer and are not inherited. A generic class cannot declare
+a static field; each type argument would otherwise make ownership unclear.
+
+## Singleton classes
+
+`singleton class` creates one eager instance. Access it as `Type.instance`:
+
+```beans
+singleton class Registry {
+    priv count: int = 0
+
+    fn next() -> int {
+        self.count += 1
+        return self.count
+    }
+}
+
+let first: int = Registry.instance.next()
+let second: int = Registry.instance.next()
+```
+
+The instance is created once before `main`, after static fields are initialized.
+Every `.instance` access returns that same object. `new Registry()` is an error.
+A singleton must have a zero-argument initializer and cannot declare `deinit`.
+It also cannot be generic, `abstract`, `unique`, or extended.
 
 ## init: the constructor
 
@@ -68,6 +157,8 @@ let c: Conn = new Conn("db1")
   `new Conn(...)`.
 - Use `pub fn init` only when another package must construct the class. The
   class itself must be `pub` too.
+- Use `priv fn init` when callers must go through a static factory. Even a peer
+  class or subclass in the same package cannot call that constructor.
 - Construction that can fail stays a named static returning a `Result`, such as
   `static fn open(...) -> Result<Conn>`, which may call `new Conn(...)` after
   validation.

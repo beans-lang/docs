@@ -99,8 +99,9 @@ fn main() {
 }
 ```
 
-A private field is still present in metadata, but `get` and `set` return a
-`ReflectError` with kind `inaccessible`.
+A non-`pub` member is still present in metadata, including a strict `priv`
+field or method, but reflective access returns a `ReflectError` with kind
+`inaccessible`.
 
 ## Construct and call
 
@@ -116,7 +117,7 @@ The struct and all of its fields must be public.
 Reflected calls support public synchronous Beans functions, instance methods,
 static methods, virtual overrides, and initializers. They reject:
 
-- private members
+- non-`pub` members, including `priv` fields and methods
 - `deinit`
 - open generic, async, `extern`, variadic, or `inout` call shapes
 - a wrong receiver, argument count, or argument type

@@ -1,6 +1,6 @@
 ---
-title: Interfaces and inheritance
-description: Single class inheritance, multiple interfaces, default methods, super, override, and the as? downcast.
+title: Interfaces, abstract classes, and inheritance
+description: Single class inheritance, multiple interfaces, abstract methods, override rules, super, and the as? downcast.
 ---
 
 A class has **one** base class and may implement **many** interfaces.
@@ -20,18 +20,35 @@ interface NamedShape extends Shape {
     fn name() -> string
 }
 
-class Circle implements Shape {
-    r: f64
+abstract class Drawable {
+    abstract fn draw()
 
-    fn area() -> f64 {
-        return 3.14159265 * self.r * self.r
+    fn visible() -> bool {
+        return true
     }
 }
 
-class LoudCircle extends Circle implements NamedShape {
-    // override is required to override an existing method
+class Circle extends Drawable implements NamedShape {
+    r: f64
+
+    fn init(r: f64) {
+        self.r = r
+    }
+
+    override fn draw() {}
+
+    // First body for an interface requirement: no override.
+    fn area() -> f64 {
+        return 3.14159265 * self.r * self.r
+    }
+
+    fn name() -> string {
+        return "circle"
+    }
+
+    // Replacing an interface default body needs override.
     override fn describe() -> string {
-        return "A CIRCLE. AREA {self.area()}."
+        return "{self.name()} with area {self.area()}"
     }
 }
 ```
@@ -39,11 +56,48 @@ class LoudCircle extends Circle implements NamedShape {
 - `extends` takes one class base; `implements` takes comma-separated interfaces.
 - Interface requirements and default methods are instance methods. Static
   interface methods are not supported.
-- `override` is required to override an existing method. A name marked
-  `override` that matches no parent method is a compile error, which catches
-  typos in method names.
-- There is no `abstract` or `final` yet.
+- An `abstract class` may mix bodyless `abstract fn` declarations with normal
+  methods. It cannot be constructed with `new`.
+- A concrete subclass must implement every inherited abstract method and every
+  bodyless interface requirement.
 - A `pub interface` exposes its whole method set to other packages.
+- Interfaces cannot declare `priv` methods. Private class methods do not
+  implement interface requirements or replace inherited methods.
+- Beans has no `final` yet.
+
+## When to write `override`
+
+`override` means “replace a method that already has a slot in a base contract.”
+The rule depends on where the method came from:
+
+| Inherited method | Write `override`? |
+| --- | --- |
+| concrete base-class method | yes |
+| abstract base-class method | yes |
+| interface method with a default body | yes |
+| bodyless interface requirement, first implementation | optional |
+
+Using `override` when no base method or interface requirement matches is an
+error. Leaving it out when it is required is also an error. This catches
+method-name typos in both paths.
+
+`priv` means a fresh method owned by one exact class or struct, not an override
+slot. For that reason `priv abstract fn` and `priv override fn` are errors.
+
+An abstract declaration has no body and may appear only inside an
+`abstract class`:
+
+```beans
+abstract class Job {
+    abstract fn run() -> int
+}
+
+class BuildJob extends Job {
+    override fn run() -> int {
+        return 1
+    }
+}
+```
 
 ## super
 

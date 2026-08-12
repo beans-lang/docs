@@ -1,6 +1,6 @@
 ---
 title: Attributes and modifiers
-description: The built-in declaration modifiers Beans has, covering pub, extern "C", packed, align(N), opaque, feature, unique, move, and inout.
+description: Built-in Beans modifiers for visibility, OOP, layout, ownership, async code, and CPU features.
 ---
 
 Beans has custom [annotations](/guide/annotations/) for typed metadata and a
@@ -10,8 +10,30 @@ ownership, or CPU requirements. This page lists those modifiers.
 
 ## Visibility
 
-- **`pub`** makes a declaration or field public outside its package. Everything
-  is private by default. See [Source files and modules](/guide/modules/).
+- **`pub`** makes a declaration or field public outside its package. An
+  unmarked name is visible only in its package.
+- **`priv`** applies to a class or struct field or method. Only code inside the
+  declaring type can access it, including when other code is in the same
+  package. It works with static and `inout` methods. There is no `protected`
+  visibility.
+
+See [Source files and modules](/guide/modules/) for package visibility.
+
+## Classes and methods
+
+- **`abstract class`** declares a class that cannot be constructed. It may
+  contain bodyless **`abstract fn`** methods.
+- **`singleton class`** declares one eager instance, read as `Type.instance`.
+- **`static`** declares a class field or a class/struct method owned by the
+  type. Static members have no `self`.
+- **`override`** is required when replacing a concrete or abstract base-class
+  method, or an interface method that has a default body. It is optional for
+  the first implementation of a bodyless interface requirement.
+- A private method cannot be `abstract` or `override`, and an interface cannot
+  declare one.
+
+See [Classes](/guide/classes/) and
+[Interfaces, abstract classes, and inheritance](/guide/interfaces/).
 
 ## C interop
 
@@ -67,6 +89,9 @@ feature "aes" fn mix_fast(seed: int) -> int { /* ... */ }
 - **`inout`** is a parameter mode that aliases a mutable caller local for the
   call. The caller writes `inout` at the call site and the argument must be a
   `var`.
+- **`inout fn`** declares a mutating struct method. It gets mutable `self` and
+  must be called on a `var` local. The caller does not write `inout` before the
+  receiver.
 
 ## async
 
@@ -79,12 +104,13 @@ Both are contextual and stay usable as ordinary identifiers elsewhere. See
 ## Modifier order
 
 The standard order places visibility first, then the kind modifiers:
-`pub unique class`, `pub extern "C" struct`. The C interop modifiers and layout
-modifiers stack in the same chain: `pub extern "C" packed struct`.
+`pub unique class`, `pub abstract class`, `pub singleton class`, and
+`pub extern "C" struct`. The C interop and layout modifiers stack in the same
+chain: `pub extern "C" packed struct`.
 
-These modifiers are the whole built-in set; there is no way to add a new
-modifier. Custom annotations can describe declarations, parameters, and locals,
-but they do not replace language rules such as `pub`, `unique`, or `extern
-"C"`. The [foreign function interface](/guide/ffi/) page shows `extern "C"`
-and `opaque` in use, and [structs and unions](/guide/structs/) shows the layout
-modifiers on real records.
+Custom annotations can describe declarations, parameters, and locals, but they
+do not add new language modifiers or replace rules such as `priv`, `abstract`,
+`singleton`, or `extern "C"`. The [foreign function interface](/guide/ffi/)
+page shows `extern "C"` and `opaque` in use, and
+[structs and unions](/guide/structs/) shows the layout and method modifiers on
+real records.
