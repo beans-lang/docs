@@ -1,17 +1,17 @@
 ---
 title: std.encoding.xml
-description: Parse and build XML with a DOM API backed by pugixml, with DOCTYPE rejected by default.
+description: Parse XML as a DOM or decode it directly into checked Beans structs.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 6 package functions · 5 types · 1 static method · 22 instance methods · 4 public fields · 7 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 9 package functions · 6 types · 1 static method · 22 instance methods · 4 public fields · 10 enum variants.
 <!-- coverage:summary:end -->
 
-`std.encoding.xml` reads and writes XML through a DOM: `parse` materializes the
-whole document and a `Node` is a view into it. A node keeps its document alive
-through a shared owner, so a child stays valid after the local variable holding
-its root is gone. Copying a node is cheap. Underneath it uses pugixml (MIT). Read
-the source at
+`std.encoding.xml` reads and writes XML. `parse` materializes a DOM and returns
+`Node` views; `decode<T>` writes checked XML directly into a struct tree. A DOM
+node keeps its document alive through a shared owner, so a child stays valid
+after the local variable holding its root is gone. Copying a node is cheap.
+Underneath it uses pugixml (MIT). Read the source at
 [`stdlib/std/encoding/xml/xml.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/xml/xml.b).
 
 ```beans
@@ -27,12 +27,67 @@ Security defaults matter here:
   or the network.
 - Exactly one root element is required.
 
-Names are qualified names. `prefix()` and `local_name()` split the qualified name
-at its colon; there is no namespace-URI resolution, so prefixes are read as text
-and are not matched against `xmlns` declarations.
+DOM names are qualified names. `prefix()` and `local_name()` split the qualified
+name at its colon. The typed decoder separately resolves `xmlns` declarations
+and can match a namespace URI plus local name, so input prefixes may vary.
 
 A build made with `--runtime freestanding` refuses `std.encoding`; these packages
 need the hosted runtime.
+
+## Typed decoding
+
+`decode<T>` builds the concrete mapping at compile time. Native decoding writes
+directly into final struct and list storage without public `Node` wrappers or
+runtime reflection lookups.
+
+```beans
+import std.encoding.xml
+
+@xml.namespace(value: "urn:store")
+struct Product {
+    @xml.attribute
+    pub sku: string
+    @xml.name(value: "tag")
+    pub tags: List<string>
+    pub note: Option<string>
+}
+
+fn read_product(text: string) -> Result<Product> {
+    return xml.decode(text)
+}
+```
+
+The typed entry points are:
+
+```beans
+pub fn decode<T>(text: string) -> Result<T>
+pub fn decode_bytes<T>(data: Bytes) -> Result<T>
+pub fn decode_with_options<T>(text: string, options: Options) -> Result<T>
+```
+
+Struct roots and `List<Struct>` roots may contain booleans, integer widths,
+`f32`, `float`, strings, nested structs, repeated lists, and options of those
+shapes. `@xml.name`, `@xml.namespace`, `@xml.attribute`, `@xml.text`,
+`@xml.naming`, and `@xml.allow_unknown` control the implemented mapping.
+`@xml.ignore` is declared but rejected in this release. A namespace annotation
+matches the URI and local name, not the input prefix.
+
+Missing required fields, duplicate attributes or elements, unknown input,
+wrong kinds, and numeric overflow are errors by default. A missing option
+becomes `none`. The decoder avoids the public DOM layer, but pugixml owns its
+parse buffer and decoded strings own their bytes, so it is direct-to-struct,
+not zero-copy.
+
+### Typed mapping names
+
+`Naming` changes every unannotated field name on one struct:
+
+```beans
+pub enum Naming
+exact
+camel_case
+snake_case
+```
 
 ## NodeKind
 

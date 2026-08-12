@@ -1,16 +1,16 @@
 ---
 title: std.encoding.json
-description: Parse and build JSON with a DOM-style Value API backed by yyjson.
+description: Parse JSON as a DOM or decode it directly into checked Beans structs.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 6 package functions · 4 types · 8 static methods · 15 instance methods · 5 public fields · 8 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 10 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
-`std.encoding.json` reads and writes JSON. Parsing gives you a `Value`, a cheap
-view over an immutable document; you read fields and elements off that value, or
-build new values and turn them into text. It is backed by yyjson (MIT). The
-source is [`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b).
+`std.encoding.json` reads and writes JSON. Use `parse` for a DOM-style `Value`,
+or `decode<T>` to write checked input directly into a struct tree. It is backed
+by yyjson (MIT). The source is
+[`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b).
 
 ```beans
 import std.encoding.json
@@ -22,6 +22,85 @@ it. Copying a `Value` is cheap. Parsing is strict RFC 8259 by default.
 
 A build made with `--runtime freestanding` refuses `std.encoding`; these packages
 need the hosted runtime.
+
+## Typed decoding
+
+`decode<T>` builds the concrete mapping at compile time. The native fast path
+does not create public `Value` wrappers and does not scan runtime reflection
+metadata.
+
+```beans
+import std.encoding.json
+
+struct Storage {
+    @json.name(value: "type")
+    pub storage_type: string
+    pub capacity_tb: float
+}
+
+struct Product {
+    pub sku: string
+    pub tags: List<string>
+    pub storage: Option<Storage>
+}
+
+fn read_product(text: string) -> Result<Product> {
+    return json.decode(text)
+}
+```
+
+The typed entry points are:
+
+```beans
+pub fn decode<T>(text: string) -> Result<T>
+pub fn decode_bytes<T>(data: Bytes) -> Result<T>
+pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>
+pub fn decode_with_options<T>(text: string, options: DecodeOptions) -> Result<T>
+```
+
+Struct roots and `List<Struct>` roots may contain booleans, integer widths,
+`f32`, `float`, strings, nested structs, lists, and options of those shapes.
+`@json.name`, `@json.alias`, `@json.ignore`, `@json.naming`, and
+`@json.allow_unknown` control the implemented mapping. `@json.bytes` reserves
+the byte-format contract, but typed Bytes decoding is not implemented in this
+release. Invalid roots, recursive schemas, and duplicate mapped names fail at
+compile time.
+
+By default, missing required fields, unknown keys, duplicate keys, wrong kinds,
+and numeric overflow are errors. A missing `Option<T>` becomes `none`; JSON
+`null` is accepted for an option. The in-place form consumes the input buffer,
+but in-situ yyjson parsing is not implemented yet and decoded strings own their
+bytes. Typed decoding is not zero-copy.
+
+### Typed mapping types
+
+`Naming` changes every unannotated field name on one struct:
+
+```beans
+pub enum Naming
+exact
+camel_case
+snake_case
+```
+
+`BytesFormat` reserves the two representations for typed Bytes support. Bytes
+decoding itself is not implemented in this release.
+
+```beans
+pub enum BytesFormat
+base64
+array
+```
+
+`DecodeOptions` carries typed-decoder parser flags and the nesting limit:
+
+```beans
+pub class DecodeOptions
+pub parse: Options
+pub max_depth: int
+```
+
+The defaults are strict parsing and a maximum depth of 128.
 
 ## Kind
 

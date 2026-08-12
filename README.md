@@ -6,6 +6,10 @@ language](https://github.com/beans-lang/beans). Built with
 directory; the built site is a static bundle that runs on GitHub Pages under the
 `/docs/` base path and needs no backend or network access.
 
+The published reference tracks Beans `0.1.13` (language contract `1.0`, runtime
+ABI `5`), including OOP features, runtime reflection, and direct typed JSON/XML
+decoding.
+
 ## Develop
 
 ```bash

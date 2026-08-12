@@ -13,9 +13,9 @@ phrase means something specific:
 
 - **The language contract is frozen at `1.0`.** The syntax and semantics you
   write against are settled. Code you write now is meant to keep working.
-- **The latest compiler release is `0.1.12`.** The language is `1.0`; the tool
+- **The latest compiler release is `0.1.13`.** The language is `1.0`; the tool
   that implements it is still on its way to a matching release number.
-- **The runtime ABI is `4`.**
+- **The runtime ABI is `5`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
 has open work, listed below.
@@ -28,8 +28,9 @@ The list below is what works today:
   stage 3 builds are byte-identical, the standard proof that a compiler
   reproduces itself.
 - **A full front end.** Whole-program loader and resolver, a generic checker,
-  typed custom annotations, a high-level IR (HIR), and a checked mid-level IR
-  (MIR) with ownership verification.
+  typed custom annotations and reflection, private/static/singleton/abstract
+  object features, a high-level IR (HIR), and a checked mid-level IR (MIR)
+  with ownership verification.
 - **A native backend.** MIR compiled to LLVM for debug, release, and LTO builds,
   with automatic reference counting plus a cycle collector.
 - **A reference interpreter** with behavior identical to the native backend.
@@ -43,6 +44,9 @@ The list below is what works today:
 - **Systems access.** Files, memory mappings, processes, sockets, DNS, polling,
   signals, shared memory, dynamic libraries, SIMD, and intrinsics. Every
   capability on the project's 100-point systems-access scorecard is implemented.
+- **Typed encoding.** Generated JSON and XML decoders write nested structs,
+  lists, and options directly, with compile-time mapping checks and XML
+  namespace URI matching.
 
 Thirty targets are registered, and most ship as prebuilt release packages.
 

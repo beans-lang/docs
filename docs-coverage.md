@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **897**
-- Symbols with an enforced signature: **638**
+- Total public symbols: **918**
+- Symbols with an enforced signature: **645**
 - Builtin reference symbols: **309**
-- Standard-library symbols: **574**
+- Standard-library symbols: **595**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -694,6 +694,16 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `BytesFormat` | enum |  | `reference/stdlib/json` | ✓ |
+| `BytesFormat.array` | variant |  | `reference/stdlib/json` | ✓ |
+| `BytesFormat.base64` | variant |  | `reference/stdlib/json` | ✓ |
+| `decode` | function | `pub fn decode<T>(text: string) -> Result<T>` | `reference/stdlib/json` | ✓ |
+| `decode_bytes` | function | `pub fn decode_bytes<T>(data: Bytes) -> Result<T>` | `reference/stdlib/json` | ✓ |
+| `decode_bytes_in_place` | function | `pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>` | `reference/stdlib/json` | ✓ |
+| `decode_with_options` | function | `pub fn decode_with_options<T>(text: string, options: DecodeOptions) -> Result<T>` | `reference/stdlib/json` | ✓ |
+| `DecodeOptions` | class |  | `reference/stdlib/json` | ✓ |
+| `DecodeOptions.max_depth` | field |  | `reference/stdlib/json` | ✓ |
+| `DecodeOptions.parse` | field |  | `reference/stdlib/json` | ✓ |
 | `Entry` | struct |  | `reference/stdlib/json` | ✓ |
 | `Entry.key` | field |  | `reference/stdlib/json` | ✓ |
 | `Entry.value` | field |  | `reference/stdlib/json` | ✓ |
@@ -706,6 +716,10 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Kind.object` | variant |  | `reference/stdlib/json` | ✓ |
 | `Kind.text` | variant |  | `reference/stdlib/json` | ✓ |
 | `Kind.unsigned_integer` | variant |  | `reference/stdlib/json` | ✓ |
+| `Naming` | enum |  | `reference/stdlib/json` | ✓ |
+| `Naming.camel_case` | variant |  | `reference/stdlib/json` | ✓ |
+| `Naming.exact` | variant |  | `reference/stdlib/json` | ✓ |
+| `Naming.snake_case` | variant |  | `reference/stdlib/json` | ✓ |
 | `Options` | class |  | `reference/stdlib/json` | ✓ |
 | `Options.allow_comments` | field |  | `reference/stdlib/json` | ✓ |
 | `Options.allow_inf_nan` | field |  | `reference/stdlib/json` | ✓ |
@@ -748,6 +762,9 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Attribute` | struct |  | `reference/stdlib/xml` | ✓ |
 | `Attribute.name` | field |  | `reference/stdlib/xml` | ✓ |
 | `Attribute.value` | field |  | `reference/stdlib/xml` | ✓ |
+| `decode` | function | `pub fn decode<T>(text: string) -> Result<T>` | `reference/stdlib/xml` | ✓ |
+| `decode_bytes` | function | `pub fn decode_bytes<T>(data: Bytes) -> Result<T>` | `reference/stdlib/xml` | ✓ |
+| `decode_with_options` | function | `pub fn decode_with_options<T>(text: string, options: Options) -> Result<T>` | `reference/stdlib/xml` | ✓ |
 | `Document` | class |  | `reference/stdlib/xml` | ✓ |
 | `Document.append_comment` | method | `pub fn append_comment(value: string) -> Result<Node>` | `reference/stdlib/xml` | ✓ |
 | `Document.append_declaration` | method | `pub fn append_declaration(version: string, encoding: string) -> Result<Node>` | `reference/stdlib/xml` | ✓ |
@@ -757,6 +774,10 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Document.empty` | static | `pub static fn empty() -> Document` | `reference/stdlib/xml` | ✓ |
 | `Document.nodes` | method | `pub fn nodes() -> List<Node>` | `reference/stdlib/xml` | ✓ |
 | `Document.root` | method | `pub fn root() -> Result<Node>` | `reference/stdlib/xml` | ✓ |
+| `Naming` | enum |  | `reference/stdlib/xml` | ✓ |
+| `Naming.camel_case` | variant |  | `reference/stdlib/xml` | ✓ |
+| `Naming.exact` | variant |  | `reference/stdlib/xml` | ✓ |
+| `Naming.snake_case` | variant |  | `reference/stdlib/xml` | ✓ |
 | `Node` | class |  | `reference/stdlib/xml` | ✓ |
 | `Node.append_cdata` | method | `pub fn append_cdata(value: string) -> Result<Node>` | `reference/stdlib/xml` | ✓ |
 | `Node.append_comment` | method | `pub fn append_comment(value: string) -> Result<Node>` | `reference/stdlib/xml` | ✓ |
