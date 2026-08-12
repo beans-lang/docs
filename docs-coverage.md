@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **738**
-- Symbols with an enforced signature: **537**
+- Total public symbols: **897**
+- Symbols with an enforced signature: **638**
 - Builtin reference symbols: **309**
-- Standard-library symbols: **415**
+- Standard-library symbols: **574**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1014,6 +1014,170 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `new Reader` | constructor | `new Reader(file: File)` | `reference/stdlib/reader` | ✓ |
 | `Reader` | class |  | `reference/stdlib/reader` | ✓ |
 | `Reader.read_line` | method | `pub fn read_line() -> Result<Option<string>>` | `reference/stdlib/reader` | ✓ |
+
+## std.reflect
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Annotation` | class |  | `reference/stdlib/reflect` | ✓ |
+| `annotation_types` | function | `pub fn annotation_types() -> List<AnnotationType>` | `reference/stdlib/reflect` | ✓ |
+| `Annotation.argument` | method | `pub fn argument(name: string) -> Option<AnnotationArgument>` | `reference/stdlib/reflect` | ✓ |
+| `Annotation.arguments` | method | `pub fn arguments() -> List<AnnotationArgument>` | `reference/stdlib/reflect` | ✓ |
+| `Annotation.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Annotation.qualified_name` | method | `pub fn qualified_name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Annotation.type` | method | `pub fn type() -> AnnotationType` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationArgument` | class |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationArgument.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationArgument.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationArgument.value` | method | `pub fn value() -> AnnotationValue` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationField` | class |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationField.default_value` | method | `pub fn default_value() -> Option<AnnotationValue>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationField.has_default` | method | `pub fn has_default() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationField.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationField.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType` | class |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.field` | method | `pub fn field(name: string) -> Option<AnnotationField>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.fields` | method | `pub fn fields() -> List<AnnotationField>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.is_repeatable` | method | `pub fn is_repeatable() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.qualified_name` | method | `pub fn qualified_name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.retention` | method | `pub fn retention() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationType.targets` | method | `pub fn targets() -> List<string>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue` | class |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.as_bool` | method | `pub fn as_bool() -> Option<bool>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.as_int` | method | `pub fn as_int() -> Option<int>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.as_string` | method | `pub fn as_string() -> Option<string>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.items` | method | `pub fn items() -> List<AnnotationValue>` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.kind` | method | `pub fn kind() -> AnnotationValueKind` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.text` | method | `pub fn text() -> string` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValue.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind` | enum |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.boolean` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.decimal` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.enum_value` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.floating` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.list` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.other` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.signed_integer` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.string` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `AnnotationValueKind.unsigned_integer` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind` | enum |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.argument_count` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.failed` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.inaccessible` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.missing` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.receiver_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.unsupported` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ErrorKind.value_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Field` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Field.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Field.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Field.get` | method | `pub fn get(receiver: Value) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Field.has_default` | method | `pub fn has_default() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Field.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Field.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Field.set` | method | `pub fn set(receiver: Value, move value: Value) -> Result<bool, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Field.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `find_annotation_type` | function | `pub fn find_annotation_type(qualified_name: string) -> Option<AnnotationType>` | `reference/stdlib/reflect` | ✓ |
+| `find_function` | function | `pub fn find_function(qualified_name: string) -> Option<Function>` | `reference/stdlib/reflect` | ✓ |
+| `find_type` | function | `pub fn find_type(qualified_name: string) -> Option<Type>` | `reference/stdlib/reflect` | ✓ |
+| `Function` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Function.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Function.call` | method | `pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Function.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Function.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Function.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Function.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Function.parameters` | method | `pub fn parameters() -> List<Parameter>` | `reference/stdlib/reflect` | ✓ |
+| `Function.qualified_name` | method | `pub fn qualified_name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Function.result_type` | method | `pub fn result_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `functions` | function | `pub fn functions() -> List<Function>` | `reference/stdlib/reflect` | ✓ |
+| `Initializer` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Initializer.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.call` | method | `pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Initializer.parameters` | method | `pub fn parameters() -> List<Parameter>` | `reference/stdlib/reflect` | ✓ |
+| `Kind` | enum |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.boolean` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.class_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.decimal` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.enum_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.fixed_array` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.floating` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.function_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.interface_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.list` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.map` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.option` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.other` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.raw_pointer` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.result` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.signed_integer` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.slice` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.string` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.struct_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.union_type` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.unit` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Kind.unsigned_integer` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Method` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Method.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Method.call` | method | `pub fn call(receiver: Value, move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Method.call_static` | method | `pub fn call_static(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Method.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Method.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Method.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Method.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Method.is_static` | method | `pub fn is_static() -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Method.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Method.parameters` | method | `pub fn parameters() -> List<Parameter>` | `reference/stdlib/reflect` | ✓ |
+| `Method.result_type` | method | `pub fn result_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Parameter` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Parameter.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Parameter.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Parameter.passing` | method | `pub fn passing() -> Passing` | `reference/stdlib/reflect` | ✓ |
+| `Parameter.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Passing` | enum |  | `reference/stdlib/reflect` | ✓ |
+| `Passing.borrowed` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Passing.mutable` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `Passing.taken` | variant |  | `reference/stdlib/reflect` | ✓ |
+| `ReflectError` | class |  | `reference/stdlib/reflect` | ✓ |
+| `ReflectError.kind` | method | `pub fn kind() -> ErrorKind` | `reference/stdlib/reflect` | ✓ |
+| `ReflectError.message` | method | `pub fn message() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Type` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Type.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Type.base_type` | method | `pub fn base_type() -> Option<Type>` | `reference/stdlib/reflect` | ✓ |
+| `Type.declared_fields` | method | `pub fn declared_fields() -> List<Field>` | `reference/stdlib/reflect` | ✓ |
+| `Type.declared_methods` | method | `pub fn declared_methods() -> List<Method>` | `reference/stdlib/reflect` | ✓ |
+| `Type.field` | method | `pub fn field(name: string) -> Option<Field>` | `reference/stdlib/reflect` | ✓ |
+| `Type.fields` | method | `pub fn fields() -> List<Field>` | `reference/stdlib/reflect` | ✓ |
+| `Type.initializer` | method | `pub fn initializer() -> Option<Initializer>` | `reference/stdlib/reflect` | ✓ |
+| `Type.interfaces` | method | `pub fn interfaces() -> List<Type>` | `reference/stdlib/reflect` | ✓ |
+| `Type.is_assignable_from` | method | `pub fn is_assignable_from(other: Type) -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Type.kind` | method | `pub fn kind() -> Kind` | `reference/stdlib/reflect` | ✓ |
+| `Type.method` | method | `pub fn method(name: string) -> Option<Method>` | `reference/stdlib/reflect` | ✓ |
+| `Type.methods` | method | `pub fn methods() -> List<Method>` | `reference/stdlib/reflect` | ✓ |
+| `Type.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Type.qualified_name` | method | `pub fn qualified_name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Type.type_arguments` | method | `pub fn type_arguments() -> List<Type>` | `reference/stdlib/reflect` | ✓ |
+| `Type.variant` | method | `pub fn variant(name: string) -> Option<Variant>` | `reference/stdlib/reflect` | ✓ |
+| `Type.variants` | method | `pub fn variants() -> List<Variant>` | `reference/stdlib/reflect` | ✓ |
+| `types` | function | `pub fn types() -> List<Type>` | `reference/stdlib/reflect` | ✓ |
+| `value` | function | `pub fn value<T>(move item: T) -> Value` | `reference/stdlib/reflect` | ✓ |
+| `Value` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Value.copy` | method | `pub fn copy() -> Value` | `reference/stdlib/reflect` | ✓ |
+| `Value.is_type` | method | `pub fn is_type(wanted: Type) -> bool` | `reference/stdlib/reflect` | ✓ |
+| `Value.type` | method | `pub fn type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Variant` | class |  | `reference/stdlib/reflect` | ✓ |
+| `Variant.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
+| `Variant.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
+| `Variant.make` | method | `pub fn make(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
+| `Variant.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
+| `Variant.parameters` | method | `pub fn parameters() -> List<Parameter>` | `reference/stdlib/reflect` | ✓ |
 
 ## std.signal
 

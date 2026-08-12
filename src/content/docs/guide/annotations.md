@@ -97,8 +97,11 @@ annotation traced {
 data. `@retention(value: "source")` validates the annotation and then drops it
 from checked HIR. The default is `tool`.
 
-Runtime retention is not supported. Beans does not promise runtime reflection
-for annotations yet.
+`@retention(value: "runtime")` also emits the annotation into the executable.
+Code can read it through [`std.reflect`](/guide/reflection/). Runtime retention
+is supported on annotation declarations, types, functions, methods, fields,
+enum variants, and parameters. It is rejected on locals and C globals because
+the runtime API has no descriptor for either target.
 
 ### `@repeatable`
 
@@ -138,6 +141,9 @@ An annotation is metadata, not a macro or hidden function call. Declaring
 `@debug` or `@log` does not print anything by itself. A compiler tool or library
 can read `tool` metadata and define that behavior later without changing the
 annotation grammar.
+
+Runtime reflection only reads the checked values. It never evaluates annotation
+source expressions.
 
 The same rule applies to testing: `@test` is not a built-in test runner feature
 in this release. It can be declared as metadata, but no test command consumes it
