@@ -60,6 +60,16 @@ jobs:
         run: |
           "$HOME/.beans/bin/beansc" --version
 
+      # The docs follow compiler main, which can be newer than the latest
+      # release. Use the release compiler only to bootstrap the current
+      # self-hosted compiler, then validate snippets with that current build.
+      - name: Build current beansc
+        run: |
+          "$HOME/.beans/bin/beansc" build \
+            beans-src/compiler/beans/main.b \
+            -o "$RUNNER_TEMP/beansc-docs"
+          "$RUNNER_TEMP/beansc-docs" --version
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -92,6 +102,7 @@ jobs:
       - name: Example check
         env:
           BEANS_REPO: ${{ github.workspace }}/beans-src
+          BEANSC: ${{ runner.temp }}/beansc-docs
           # Fail (do not skip) if beansc is somehow unavailable in CI.
           REQUIRE_BEANSC: '1'
         run: npm run examples
