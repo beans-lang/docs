@@ -131,7 +131,8 @@ It also cannot be generic, `abstract`, `unique`, or extended.
 ## init: the constructor
 
 `init` is the constructor body. `new Class(...)` allocates the object and runs
-it. Like every method, `init` has an implicit `self`.
+it. `init` has an implicit `self`, but it is a lifecycle method rather than a
+normal callable method.
 
 ```beans
 class Conn {
@@ -145,6 +146,10 @@ class Conn {
 
 let c: Conn = new Conn("db1")
 ```
+
+Callers cannot write `c.init(...)`. Construct an object with `new`; the compiler
+runs `init` exactly once. The only direct initializer call is `super.init(...)`
+inside a subclass initializer.
 
 - A class whose fields all have defaults gets an implicit zero-argument
   initializer. A class with any required field must declare `init`.
@@ -180,7 +185,8 @@ class Conn {
 }
 ```
 
-- No parameters, no return value, never called by hand.
+- No parameters, no return value, and callers cannot write `c.deinit()`. The
+  compiler runs it automatically.
 - A subclass `deinit` runs first, then its parent's, automatically, with no
   `override`.
 - `self` must not escape a `deinit`.

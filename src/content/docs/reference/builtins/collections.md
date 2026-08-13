@@ -123,6 +123,19 @@ Both store values under keys, and the key type `K` must implement `Eq` and `Hash
 - `Map` has no iteration order.
 - `OrderedMap` keeps the order in which you inserted keys.
 
+Iterate over keys and values together without making a list or repeating a map
+lookup:
+
+```beans
+for name: string, age: int in ages {
+    io.println("{name}: {age}")
+}
+```
+
+This direct loop is O(n) and allocation-free. It follows insertion order for an
+`OrderedMap`. Adding or removing entries during the loop panics before the next
+entry is read. Replacing the value of an existing key is allowed.
+
 They share the same methods. Write a map literal with braces; the empty map is
 `{}`:
 
@@ -192,8 +205,11 @@ fn main() {
         some(age) => io.println("ben is {age}"),
         none => io.println("no ben"),
     }
+
+    for name: string, age: int in ages {
+        io.println("{name}: {age}")
+    }
     io.println("{ages.len()} people")
-    io.println(ages.keys())
 }
 ```
 

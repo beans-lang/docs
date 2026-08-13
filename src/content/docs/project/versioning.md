@@ -12,14 +12,14 @@ All version numbers come from one file:
 [`compiler/version.h`](https://github.com/beans-lang/beans/blob/main/compiler/version.h).
 
 ```text
-version              = "0.1.13"
+version              = "0.1.14"
 language_version     = "1.0"
-runtime_abi_version  = 4
+runtime_abi_version  = 5
 ```
 
-- **version**: the compiler version (`0.1.13`).
+- **version**: the compiler version (`0.1.14`).
 - **language_version**: the language version (`1.0`).
-- **runtime_abi_version**: the runtime ABI number (`4`).
+- **runtime_abi_version**: the runtime ABI number (`5`).
 
 From that header, `compiler/beans/version.b` is generated. A test
 (`test/version.sh`) refuses a stale copy, so the generated Beans file can never
