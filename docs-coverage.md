@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **918**
-- Symbols with an enforced signature: **645**
-- Builtin reference symbols: **309**
-- Standard-library symbols: **595**
+- Total public symbols: **925**
+- Symbols with an enforced signature: **652**
+- Builtin reference symbols: **314**
+- Standard-library symbols: **597**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -129,11 +129,14 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `File.close` | method | `File.close() -> Result<bool>` | `reference/builtins/files` | ✓ |
+| `File.copy` | static | `File.copy(string, string) -> Result<int>` | `reference/builtins/files` | ✓ |
 | `File.exists` | static | `File.exists(string) -> bool` | `reference/builtins/files` | ✓ |
 | `File.lock` | method | `File.lock() -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `File.open` | static | `File.open(string, string) -> Result<File>` | `reference/builtins/files` | ✓ |
 | `File.read` | method | `File.read(int) -> Result<Bytes>` | `reference/builtins/files` | ✓ |
 | `File.read_at` | method | `File.read_at(int, int) -> Result<Bytes>` | `reference/builtins/files` | ✓ |
+| `File.read_text` | method | `File.read_text(int) -> Result<string>` | `reference/builtins/files` | ✓ |
+| `File.read_text_at` | method | `File.read_text_at(int, int) -> Result<string>` | `reference/builtins/files` | ✓ |
 | `File.remove` | static | `File.remove(string) -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `File.rename` | static | `File.rename(string, string) -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `File.seek` | method | `File.seek(int) -> int` | `reference/builtins/files` | ✓ |
@@ -146,6 +149,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `File.unlock` | method | `File.unlock() -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `File.write` | method | `File.write(Bytes) -> Result<int>` | `reference/builtins/files` | ✓ |
 | `File.write_at` | method | `File.write_at(int, Bytes) -> Result<int>` | `reference/builtins/files` | ✓ |
+| `File.write_text` | method | `File.write_text(string) -> Result<int>` | `reference/builtins/files` | ✓ |
+| `File.write_text_at` | method | `File.write_text_at(int, string) -> Result<int>` | `reference/builtins/files` | ✓ |
 
 ## builtin List
 
@@ -764,6 +769,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Attribute.value` | field |  | `reference/stdlib/xml` | ✓ |
 | `decode` | function | `pub fn decode<T>(text: string) -> Result<T>` | `reference/stdlib/xml` | ✓ |
 | `decode_bytes` | function | `pub fn decode_bytes<T>(data: Bytes) -> Result<T>` | `reference/stdlib/xml` | ✓ |
+| `decode_bytes_in_place` | function | `pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>` | `reference/stdlib/xml` | ✓ |
 | `decode_with_options` | function | `pub fn decode_with_options<T>(text: string, options: Options) -> Result<T>` | `reference/stdlib/xml` | ✓ |
 | `Document` | class |  | `reference/stdlib/xml` | ✓ |
 | `Document.append_comment` | method | `pub fn append_comment(value: string) -> Result<Node>` | `reference/stdlib/xml` | ✓ |
@@ -807,6 +813,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Options.preserve_space_text` | field |  | `reference/stdlib/xml` | ✓ |
 | `parse` | function | `pub fn parse(text: string) -> Result<Document>` | `reference/stdlib/xml` | ✓ |
 | `parse_bytes` | function | `pub fn parse_bytes(data: Bytes) -> Result<Document>` | `reference/stdlib/xml` | ✓ |
+| `parse_bytes_in_place` | function | `pub fn parse_bytes_in_place(move data: Bytes) -> Result<Document>` | `reference/stdlib/xml` | ✓ |
 | `parse_bytes_with_options` | function | `pub fn parse_bytes_with_options(data: Bytes, options: Options) -> Result<Document>` | `reference/stdlib/xml` | ✓ |
 | `parse_with_options` | function | `pub fn parse_with_options(text: string, options: Options) -> Result<Document>` | `reference/stdlib/xml` | ✓ |
 | `stringify` | function | `pub fn stringify(document: Document) -> Result<string>` | `reference/stdlib/xml` | ✓ |

@@ -88,6 +88,10 @@ Unlike a `List`, it is not a handle: it copies by value.
 - Two arrays compare equal with `==`.
 - You can loop over one with `for`.
 
+A stable `for` loop reads the inline array directly when its item binding cannot
+escape. If the loop can change the array, the compiler keeps the previous safe
+snapshot behavior. This is an optimizer choice, not new array syntax.
+
 A list literal takes on fixed-array meaning from the declared type:
 
 ```beans

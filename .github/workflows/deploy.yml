@@ -103,6 +103,9 @@ jobs:
         env:
           BEANS_REPO: ${{ github.workspace }}/beans-src
           BEANSC: ${{ runner.temp }}/beansc-docs
+          # Type-check the docs against the same main-branch stdlib as the
+          # source inventory, even when the latest release is older than main.
+          BEANS_STDLIB: ${{ github.workspace }}/beans-src/stdlib/std
           # Fail (do not skip) if beansc is somehow unavailable in CI.
           REQUIRE_BEANSC: '1'
         run: npm run examples

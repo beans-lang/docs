@@ -4,7 +4,7 @@ description: Parse XML as a DOM or decode it directly into checked Beans structs
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 9 package functions · 6 types · 1 static method · 22 instance methods · 4 public fields · 10 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 11 package functions · 6 types · 1 static method · 22 instance methods · 4 public fields · 10 enum variants.
 <!-- coverage:summary:end -->
 
 `std.encoding.xml` reads and writes XML. `parse` materializes a DOM and returns
@@ -62,6 +62,7 @@ The typed entry points are:
 ```beans
 pub fn decode<T>(text: string) -> Result<T>
 pub fn decode_bytes<T>(data: Bytes) -> Result<T>
+pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>
 pub fn decode_with_options<T>(text: string, options: Options) -> Result<T>
 ```
 
@@ -74,9 +75,21 @@ matches the URI and local name, not the input prefix.
 
 Missing required fields, duplicate attributes or elements, unknown input,
 wrong kinds, and numeric overflow are errors by default. A missing option
-becomes `none`. The decoder avoids the public DOM layer, but pugixml owns its
-parse buffer and decoded strings own their bytes, so it is direct-to-struct,
-not zero-copy.
+becomes `none`.
+
+Use `decode_bytes_in_place(move data)` when the input buffer is no longer
+needed. Pugixml tokenizes that allocation directly while the final typed value
+is built. This removes its private parse copy. Returned strings and collections
+still own their data. The normal `decode` and `decode_bytes` forms borrow their
+input without bridge staging, while pugixml keeps its required private parse
+copy.
+
+```beans
+fn read_product_file(path: string) -> Result<Product> {
+    let input: Bytes = fs.read_bytes(path)?
+    return xml.decode_bytes_in_place(move input)
+}
+```
 
 ### Typed mapping names
 
@@ -208,6 +221,7 @@ pub fn append_declaration(version: string, encoding: string) -> Result<Node>
 ```beans
 pub fn parse(text: string) -> Result<Document>
 pub fn parse_bytes(data: Bytes) -> Result<Document>
+pub fn parse_bytes_in_place(move data: Bytes) -> Result<Document>
 pub fn parse_with_options(text: string, options: Options) -> Result<Document>
 pub fn parse_bytes_with_options(data: Bytes, options: Options) -> Result<Document>
 pub fn stringify(document: Document) -> Result<string>
@@ -217,6 +231,9 @@ pub fn stringify_pretty(document: Document, indent: string) -> Result<string>
 - `parse` and `parse_with_options` read a string. `parse_bytes` and
   `parse_bytes_with_options` read a buffer, honouring a UTF-8, UTF-16, or UTF-32
   byte-order mark; without one the bytes are read as UTF-8.
+- `parse_bytes_in_place(move data)` consumes UTF-8 input and tokenizes that
+  allocation directly. The returned document keeps the buffer alive for its
+  node views. Use `parse_bytes` when the caller must keep its input.
 - A rejected `DOCTYPE` comes back with kind `doctype`, an out-of-memory failure
   with kind `memory`, and any other malformed input with kind `invalid`. The
   message carries the byte offset, or says the offset is unknown when the input

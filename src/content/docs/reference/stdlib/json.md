@@ -68,9 +68,21 @@ compile time.
 
 By default, missing required fields, unknown keys, duplicate keys, wrong kinds,
 and numeric overflow are errors. A missing `Option<T>` becomes `none`; JSON
-`null` is accepted for an option. The in-place form consumes the input buffer,
-but in-situ yyjson parsing is not implemented yet and decoded strings own their
-bytes. Typed decoding is not zero-copy.
+`null` is accepted for an option.
+
+Use `decode_bytes_in_place(move data)` when the input buffer is no longer
+needed. It lets yyjson parse that allocation in place, so a large payload does
+not need a second parse buffer. The returned strings and collections still own
+their data and stay valid after the temporary parse tree is gone. The normal
+`decode` and `decode_bytes` forms borrow their input without bridge staging but
+do not consume it.
+
+```beans
+fn read_product_file(path: string) -> Result<Product> {
+    let input: Bytes = fs.read_bytes(path)?
+    return json.decode_bytes_in_place(move input)
+}
+```
 
 ### Typed mapping types
 

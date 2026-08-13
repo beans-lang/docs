@@ -79,6 +79,13 @@ reverses in place, `clear` empties the list, and `reserve(cap)` makes room for
 `Clone` and not be move-only. `slice(from, to)` returns a fresh list with the items
 in `[from, to)` and panics if the range is out of bounds.
 
+There is no new view type or syntax. A normal `for` loop over a stable `List`
+borrows its existing storage when the compiler proves that the loop cannot
+change the list and the item binding cannot escape. Loops that can mutate the
+source keep the old snapshot behavior. A temporary `slice(...)` used only by an
+immediate read-only loop or consumer may be fused away; storing or returning the
+slice still makes the independent list promised by this API.
+
 **Sorting.** `sort()` needs `T` to implement `Order`. `sort_by` takes a strict
 less-than predicate; `sort_by_key` sorts by an integer key computed once per item.
 All three sorts are stable: equal items keep their original order.

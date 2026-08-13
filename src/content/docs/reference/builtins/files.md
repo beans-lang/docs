@@ -4,7 +4,7 @@ description: The built-in File, Dir, and MMap types for reading, writing, listin
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 17 static methods · 31 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 3 types · 18 static methods · 35 instance methods.
 <!-- coverage:summary:end -->
 
 Beans has three builtin types for working with the file system: `File` for a single
@@ -30,6 +30,7 @@ returns `Result<File>`.
 File.exists(string) -> bool
 File.size(string) -> Result<int>
 File.open(string, string) -> Result<File>
+File.copy(string, string) -> Result<int>
 File.remove(string) -> Result<bool>
 File.rename(string, string) -> Result<bool>
 ```
@@ -43,15 +44,20 @@ The second argument to `File.open` is the mode, one of:
 
 `File.exists` answers whether a file is there without opening it. `File.size` also
 works as a static that takes a path, so you can read a file's length without an
-open handle; the same call exists as a method on an open file (below).
+open handle; the same call exists as a method on an open file (below). `File.copy`
+uses the platform file-copy path when available and returns the byte count.
 
 ### Methods
 
 ```beans
 File.read(int) -> Result<Bytes>
 File.read_at(int, int) -> Result<Bytes>
+File.read_text(int) -> Result<string>
+File.read_text_at(int, int) -> Result<string>
 File.write(Bytes) -> Result<int>
 File.write_at(int, Bytes) -> Result<int>
+File.write_text(string) -> Result<int>
+File.write_text_at(int, string) -> Result<int>
 File.seek(int) -> int
 File.seek_from_end(int) -> int
 File.tell() -> int
@@ -70,6 +76,10 @@ File.unlock() -> Result<bool>
   cursor forward.
 - `read_at(pos, n)` and `write_at(pos, b)` take an absolute position and do not use
   or move the cursor, so they are safe to call from more than one place in the file.
+- `read_text` and `read_text_at` are the text forms. They fill the returned string
+  directly instead of reading `Bytes` and converting it. `write_text` and
+  `write_text_at` write string storage directly. Use them when the data is text;
+  the byte methods keep their owned `Bytes` behavior.
 - `seek(pos)` moves the cursor to `pos`; `seek_from_end(off)` moves it to `off`
   bytes before the end. Both return the new position and panic if the file is
   closed. `tell()` returns the current position.

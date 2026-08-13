@@ -13,7 +13,7 @@ phrase means something specific:
 
 - **The language contract is frozen at `1.0`.** The syntax and semantics you
   write against are settled. Code you write now is meant to keep working.
-- **The latest compiler release is `0.1.14`.** The language is `1.0`; the tool
+- **The latest compiler release is `0.1.15`.** The language is `1.0`; the tool
   that implements it is still on its way to a matching release number.
 - **The runtime ABI is `5`.**
 

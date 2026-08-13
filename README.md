@@ -6,9 +6,10 @@ language](https://github.com/beans-lang/beans). Built with
 directory; the built site is a static bundle that runs on GitHub Pages under the
 `/docs/` base path and needs no backend or network access.
 
-The published reference tracks Beans `0.1.14` (language contract `1.0`, runtime
-ABI `5`), including direct map entry iteration, enforced class lifecycle calls,
-OOP features, runtime reflection, and direct typed JSON/XML decoding.
+The published reference tracks Beans `0.1.15` (language contract `1.0`, runtime
+ABI `5`), including allocation-free stable collection loops, direct Base64
+buffers, consumed JSON/XML decoding, direct file and socket paths, OOP features,
+and runtime reflection.
 
 ## Develop
 
@@ -37,12 +38,15 @@ points:
 
 ```bash
 BEANS_REPO=/path/to/beans npm run coverage
+BEANS_REPO=/path/to/beans \
+BEANS_STDLIB=/path/to/beans/stdlib/std npm run examples
 ```
 
 The example check compiles programs with `beansc`. It uses the in-tree build
 (`$BEANS_REPO/build/beansc`), then `BEANSC`, then `beansc` on your `PATH`; if it
 finds none it skips itself (set `REQUIRE_BEANSC=1` to make a missing compiler a
-failure, as CI does).
+failure, as CI does). Point `BEANS_STDLIB` at the same checkout when that source
+is newer than your installed release.
 
 ## Coverage and signatures (maintenance)
 

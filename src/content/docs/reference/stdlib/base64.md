@@ -43,7 +43,7 @@ pub fn decode_forgiving(text: string) -> Result<Bytes>
 ```
 
 - `encode` turns bytes into Base64 text. The output length is exact for the chosen
-  encoding.
+  encoding. Native builds allocate that final string once and fill it directly.
 - `decode` is strict RFC 4648. On bad input it returns an error whose kind tells you
   what was wrong: `invalid` (a byte outside the alphabet), `length` (a lone
   trailing character), `padding` (padding that does not match the encoding), `bits`
@@ -52,6 +52,11 @@ pub fn decode_forgiving(text: string) -> Result<Bytes>
 - `decode_forgiving` follows the WHATWG "forgiving base64" rules: it skips ASCII
   whitespace, accepts a partial final group with or without padding, and ignores
   non-zero trailing padding bits. Bytes outside the alphabet are still errors.
+
+Decode fills its result `Bytes` directly and shrinks that same allocation to the
+decoded length. Strict no-padding forms validate the final group without making
+a padded copy of the input. These are implementation gains; the API and owned
+result behavior do not change.
 
 ```beans
 import std.io

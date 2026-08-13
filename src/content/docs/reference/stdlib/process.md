@@ -135,7 +135,8 @@ pub fn poll_handle() -> int
   with kind `reset` if the stream accepts nothing. `write_text` writes a string.
 - `read` reads up to `max` bytes; an empty result means the other end closed, so
   for a child's stdout it has stopped writing. `read_to_end` reads until the
-  writer closes, up to `limit` bytes.
+  writer closes, up to `limit` bytes. It grows one result buffer rather than
+  joining a list of chunks.
 - `close` closes this stream. For a child's stdin this is how a program that
   reads to EOF is told to finish. A read, write, or close on an already-closed
   stream is an error with kind `closed`.

@@ -100,7 +100,9 @@ pub fn poll_handle() -> int
 - `write` may send less than all of `data` and returns the count. `write_all`
   loops until everything is sent. `read` returns up to `max` bytes; an empty
   result means the peer closed. `read_exact` fails with kind `eof` if the peer
-  closes before `count` bytes arrive.
+  closes before `count` bytes arrive. `read_exact` and `read_to_end` grow one
+  result buffer instead of joining copied chunks. `write_text` sends string
+  storage directly.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
 - `poll_handle` returns the descriptor **borrowed**, for registering with a
   poller or the async helpers. It does not transfer ownership; do not close it.
@@ -176,7 +178,9 @@ pub fn poll_handle() -> int
 - `send_to` reports how many bytes went. A datagram is sent whole or not at all,
   so a short count means the message was too large.
 - `recv_from` reads one datagram up to `max` bytes; anything past `max` in a
-  single datagram is dropped by the OS, so size `max` to your protocol.
+  single datagram is dropped by the OS, so size `max` to your protocol. The
+  returned `Datagram` takes ownership of the received payload without joining
+  and slicing one combined runtime buffer.
 
 Two UDP sockets on loopback, one sending to the other:
 

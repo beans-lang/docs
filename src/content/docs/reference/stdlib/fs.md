@@ -27,7 +27,8 @@ pub fn read(path: string) -> Result<string>
 ```
 
 - `read_bytes` opens the file, reads it whole from offset 0, and returns the bytes.
-- `read` does the same and returns the content as a string.
+- `read` does the same and fills its returned string directly. It does not build
+  an intermediate `Bytes` value.
 
 ## Writing
 
@@ -43,10 +44,12 @@ All five return the number of bytes written.
 
 - `write_bytes` and `write` open the file in "create" mode, truncate it to empty,
   and write starting at position 0. `write` takes a string; `write_bytes` takes
-  `Bytes`.
+  `Bytes`. Text writes use the string storage directly.
 - `append_bytes` and `append` open the file in "append" mode and add `data` to the
   end instead of truncating.
-- `copy` reads `from` whole and writes it to `to`, truncating `to` first.
+- `copy` uses the platform file-copy path when available and a fixed-size
+  fallback. It does not hold the whole source file in a Beans buffer. A same-file
+  or hard-link copy fails before the destination can be truncated.
 
 ```beans
 import std.io
