@@ -1,6 +1,6 @@
 ---
 title: What Beans is
-description: A short introduction to the Beans language, the two jobs it is built for, and the one tool you use to work with it.
+description: A short introduction to the Beans language, what it is built to do well, and the one tool you use to work with it.
 ---
 
 Beans is a small object-oriented programming language. It has classes,
@@ -9,10 +9,11 @@ It has predictable ownership and direct access to the operating system.
 
 Source files end in `.b`.
 
-## The two jobs Beans is built for
+## Built to be exact and low-level
 
-Beans is not a general "do everything" language. It is built for two kinds of
-work, and most design choices serve one or both.
+Beans is built to be both exact and low-level. Most design choices serve one or
+both of those — which is why it is as comfortable with business software as with
+systems work.
 
 ### Business apps
 

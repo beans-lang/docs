@@ -63,6 +63,14 @@ export default defineConfig({
       description:
         'The official documentation for Beans, a small object-oriented systems language with classes, interfaces, predictable ownership, and direct systems access.',
       tagline: 'A small object-oriented systems language.',
+      // Two languages. English is the default and stays at the site root; casual
+      // Bangla is served under /bn/. Pages without a Bangla translation fall back
+      // to the English content, so the site is fully browsable in either language.
+      defaultLocale: 'root',
+      locales: {
+        root: { label: 'English', lang: 'en' },
+        bn: { label: 'বাংলা', lang: 'bn' },
+      },
       social: [
         {
           icon: 'github',

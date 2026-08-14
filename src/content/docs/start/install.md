@@ -55,11 +55,16 @@ Override the location with the `BEANS_HOME` environment variable or the
 Inside the install directory you get:
 
 ```text
-bin/         the beansc command
-lib/         libraries
-toolchain/   backend tools
+bin/         the beansc launcher, the compiler, and the runtime C sources
+lib/std/     the standard library
+lib/encoding/  the std.encoding bridge and its vendored sources
+libexec/     the checked installer used by `beansc upgrade`
+toolchain/   bundled Clang, LLD, and llvm-ar (full packages only)
 VERSION      the installed version
 ```
+
+The layout is stable, and you can move the whole directory after installing —
+every path inside is resolved relative to the launcher.
 
 ## Full vs slim packages
 

@@ -1,0 +1,66 @@
+---
+title: Beans
+description: ছোট একটা object-oriented সিস্টেম ল্যাঙ্গুয়েজ — class আর interface আছে, নিখুঁত decimal হিসাব, পূর্বানুমেয় মেমরি, আর সিস্টেমে সরাসরি অ্যাক্সেস।
+template: splash
+hero:
+  tagline: ছোট একটা object-oriented সিস্টেম ল্যাঙ্গুয়েজ — পূর্বানুমেয় মেমরি, null নেই, exception নেই, আর সিস্টেমে সরাসরি অ্যাক্সেস।
+---
+
+import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
+
+export const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+
+<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-block:1rem;">
+  <LinkButton href={base + '/bn/start/install/'} icon="right-arrow">শুরু করুন</LinkButton>
+  <LinkButton href={base + '/bn/guide/modules/'} variant="minimal" icon="open-book">ল্যাঙ্গুয়েজ গাইড পড়ুন</LinkButton>
+  <LinkButton href="https://github.com/beans-lang/beans" variant="minimal" icon="external">GitHub-এ দেখুন</LinkButton>
+</div>
+
+## Beans কী?
+
+Beans একটা ছোট object-oriented systems language, তৈরি হয়েছে exact আর low-level —
+দুটোই হওয়ার জন্য। accounting আর billing-এর মতো কাজে যেমন সহজ, database আর
+operating system-এও তেমন। Source file-এর শেষে থাকে `.b`।
+
+এতে class, interface আর inheritance আছে, সবই reference semantics-এ। grammar
+ছোট। হিসাব হয় নিখুঁত `decimal`-এ, তাই কোনো rounding ভুল থাকে না। null নেই,
+exception নেই — না-থাকা মান `Option`, ব্যর্থতা `Result`। কোন object কখন মুছে
+যাবে তা আগে থেকেই নির্ধারিত, তাই garbage collector হঠাৎ থামিয়ে দেয় না, আর
+destructor নির্দিষ্ট সময়ে চলে। raw memory আর C-র সাথে কাজের জন্য একটা `unsafe`
+layer আছে। পুরোটা চালায় একটাই compiler, `beansc` — এটি program check করে, হয়
+reference interpreter-এ চালায়, নয়তো LLVM দিয়ে native binary তৈরি করে।
+
+```beans
+import std.io
+
+fn main() {
+    let name: string = "beans"
+    io.println("hello from {name}")
+}
+```
+
+<CardGrid stagger>
+  <Card title="ছোট আর স্পষ্ট" icon="approve-check">
+    প্রতিটা নামের type উল্লেখ করা থাকে। null নেই, exception নেই — না-থাকা মান
+    `Option`, ব্যর্থতা `Result`। grammar ছোট।
+  </Card>
+  <Card title="পূর্বানুমেয় মেমরি" icon="setting">
+    cycle collector-সহ automatic reference counting। কোনো tracing garbage
+    collector নেই, তাই সাধারণ পথে কোনো pause নেই, আর destructor নির্দিষ্ট সময়ে
+    চলে।
+  </Card>
+  <Card title="সিস্টেমে সরাসরি অ্যাক্সেস" icon="laptop">
+    file, socket, thread, atomics, SIMD, shared memory, dynamic library, আর
+    পুরো C ABI — সবই standard library দিয়ে।
+  </Card>
+  <Card title="একটাই কমান্ড" icon="rocket">
+    `beansc` নিজেই checker, interpreter, native backend, package manager,
+    language server আর debugger। একটা command-এই ইনস্টল হয়ে যায়।
+  </Card>
+</CardGrid>
+
+:::note[ম্যাচিউরিটি]
+Beans এখন 1.0-এর পথে থাকা একটা production preview। ল্যাঙ্গুয়েজ contract
+`1.0`-তে স্থির; সবচেয়ে নতুন compiler release `0.1.15`। এর মানে কী, দেখুন
+[Maturity and platforms](/bn/intro/maturity/) পেজে।
+:::
