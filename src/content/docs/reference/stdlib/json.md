@@ -1,15 +1,15 @@
 ---
 title: std.encoding.json
-description: Parse JSON as a DOM or decode it directly into checked Beans structs.
+description: Parse JSON as a DOM, decode it into structs, or encode structs as JSON.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 10 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 12 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.encoding.json` reads and writes JSON. Use `parse` for a DOM-style `Value`,
-or `decode<T>` to write checked input directly into a struct tree. It is backed
-by yyjson (MIT). The source is
+`decode<T>` to map input directly into a struct tree, or `encode<T>` to turn a
+struct tree into a JSON string. It is backed by yyjson (MIT). The source is
 [`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b).
 
 ```beans
@@ -23,7 +23,7 @@ it. Copying a `Value` is cheap. Parsing is strict RFC 8259 by default.
 A build made with `--runtime freestanding` refuses `std.encoding`; these packages
 need the hosted runtime.
 
-## Typed decoding
+## Typed structs
 
 `decode<T>` builds the concrete mapping at compile time. The native fast path
 does not create public `Value` wrappers and does not scan runtime reflection
@@ -56,15 +56,22 @@ pub fn decode<T>(text: string) -> Result<T>
 pub fn decode_bytes<T>(data: Bytes) -> Result<T>
 pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>
 pub fn decode_with_options<T>(text: string, options: DecodeOptions) -> Result<T>
+pub fn encode<T>(value: T) -> Result<string>
+pub fn encode_pretty<T>(value: T, indent: string) -> Result<string>
 ```
 
-Struct roots and `List<Struct>` roots may contain booleans, integer widths,
-`f32`, `float`, strings, nested structs, lists, and options of those shapes.
+Both directions accept a struct root or `List<Struct>`. Fields may contain
+booleans, integer widths, `f32`, `float`, strings, nested structs, one list
+layer, or one option layer. An option may hold a supported scalar, struct, or
+list. Nested lists and nested options are rejected.
 `@json.name`, `@json.alias`, `@json.ignore`, `@json.naming`, and
-`@json.allow_unknown` control the implemented mapping. `@json.bytes` reserves
-the byte-format contract, but typed Bytes decoding is not implemented in this
-release. Invalid roots, recursive schemas, and duplicate mapped names fail at
-compile time.
+`@json.allow_unknown` control the mapping. Encoding uses the primary mapped
+name; aliases are input-only. Ignored fields are left out. Invalid roots,
+recursive schemas, duplicate mapped names, classes, enums, maps, fixed arrays,
+Bytes, decimal, unit, and generic structs fail at compile time. `@json.bytes`
+reserves the byte-format contract, but typed Bytes support is not implemented.
+On decode, an ignored field needs a default and cannot yet share a schema with
+nested struct or list fields. Encoding has no such limit.
 
 By default, missing required fields, unknown keys, duplicate keys, wrong kinds,
 and numeric overflow are errors. A missing `Option<T>` becomes `none`; JSON
@@ -113,6 +120,26 @@ pub max_depth: int
 ```
 
 The defaults are strict parsing and a maximum depth of 128.
+
+`encode` writes compact JSON. `encode_pretty` accepts exactly two or four
+spaces for `indent`. `Option.none` becomes JSON `null`; NaN and infinity are
+errors. Printing stays explicit:
+
+<!-- beans:compile -->
+```beans
+import std.io
+import std.encoding.json
+
+struct User {
+    pub id: u64
+    pub name: string
+}
+
+fn main() {
+    let user: User = User { id: 7, name: "Ada" }
+    io.println(json.encode(user).expect("encode user"))
+}
+```
 
 ## Kind
 

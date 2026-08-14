@@ -1,15 +1,15 @@
 ---
 title: std.encoding.json
-description: JSON-কে DOM হিসেবে parse করা, নয়তো সরাসরি checked Beans struct-এ decode করা।
+description: JSON-কে DOM হিসেবে parse করা, struct-এ decode করা, বা struct-কে JSON বানানো।
 ---
 
 <!-- coverage:summary -->
 **API summary** (generated from the Beans source by `npm run coverage`): 10 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
-`std.encoding.json` JSON পড়ে আর লেখে। DOM-ধাঁচের একটা `Value` পেতে `parse` ব্যবহার
-করুন, নয়তো checked ইনপুট সরাসরি একটা struct tree-তে লিখতে `decode<T>`। এর পেছনে
-আছে yyjson (MIT)। সোর্স হলো
+`std.encoding.json` JSON পড়ে আর লেখে। DOM-ধাঁচের একটা `Value` পেতে `parse`,
+ইনপুটকে struct tree-তে নিতে `decode<T>`, আর struct tree-কে JSON string বানাতে
+`encode<T>` ব্যবহার করুন। এর পেছনে আছে yyjson (MIT)। সোর্স হলো
 [`stdlib/std/encoding/json/json.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/encoding/json/json.b)।
 
 ```beans
@@ -23,7 +23,7 @@ document-টাকে বাঁচিয়ে রাখে, তাই parse থ
 `--runtime freestanding` দিয়ে বানানো একটা build `std.encoding` মানে না; এই
 প্যাকেজগুলোর hosted runtime লাগে।
 
-## Typed decoding
+## Typed struct
 
 `decode<T>` কম্পাইল টাইমে concrete mapping-টা বানিয়ে ফেলে। এর native fast path কোনো
 public `Value` wrapper বানায় না আর কোনো runtime reflection metadata স্ক্যান করে না।
@@ -55,14 +55,21 @@ pub fn decode<T>(text: string) -> Result<T>
 pub fn decode_bytes<T>(data: Bytes) -> Result<T>
 pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>
 pub fn decode_with_options<T>(text: string, options: DecodeOptions) -> Result<T>
+pub fn encode<T>(value: T) -> Result<string>
+pub fn encode_pretty<T>(value: T, indent: string) -> Result<string>
 ```
 
-Struct root আর `List<Struct>` root-এ থাকতে পারে boolean, নানা প্রস্থের integer,
-`f32`, `float`, string, nested struct, list, আর এসব চেহারার option। `@json.name`,
-`@json.alias`, `@json.ignore`, `@json.naming`, আর `@json.allow_unknown` দিয়ে
-বাস্তবায়িত mapping-টা নিয়ন্ত্রণ হয়। `@json.bytes` byte-format contract-টা রিজার্ভ
-করে রাখে, তবে এই রিলিজে typed Bytes decoding বানানো হয়নি। ভুল root, recursive
-schema, আর ডুপ্লিকেট mapped নাম কম্পাইল টাইমেই ফেল করে।
+দুই দিকেই struct root বা `List<Struct>` root চলে। Field-এ boolean, নানা প্রস্থের
+integer, `f32`, `float`, string, nested struct, এক স্তরের list, বা এক স্তরের option
+থাকতে পারে। Option-এর ভেতরে supported scalar, struct, বা list থাকতে পারে। Nested
+list আর nested option চলে না। `@json.name`, `@json.alias`, `@json.ignore`,
+`@json.naming`, আর `@json.allow_unknown` mapping নিয়ন্ত্রণ করে। Encoding primary
+mapped নাম ব্যবহার করে; alias শুধু input-এর জন্য। Ignored field output-এ থাকে না।
+ভুল root, recursive schema, ডুপ্লিকেট mapped নাম, class, enum, map, fixed array,
+Bytes, decimal, unit, আর generic struct কম্পাইল টাইমেই ফেল করে। `@json.bytes`
+contract রিজার্ভ করা আছে, তবে typed Bytes support এখনো বানানো হয়নি।
+Decode করার সময় ignored field-এর default থাকতে হবে, আর একই schema-তে nested
+struct বা list field রাখা যাবে না। Encoding-এ এই সীমা নেই।
 
 ডিফল্টে, না-থাকা required field, অচেনা key, ডুপ্লিকেট key, ভুল kind, আর numeric
 overflow — সবই error। একটা না-থাকা `Option<T>` হয়ে যায় `none`; একটা option-এর
@@ -111,6 +118,25 @@ pub max_depth: int
 ```
 
 ডিফল্ট হলো কড়া parsing আর সর্বোচ্চ depth 128।
+
+`encode` compact JSON লেখে। `encode_pretty`-র `indent` হুবহু দুই বা চারটা space
+হতে হয়। `Option.none` JSON `null` হয়; NaN আর infinity error। Print করাটা স্পষ্ট:
+
+<!-- beans:compile -->
+```beans
+import std.io
+import std.encoding.json
+
+struct User {
+    pub id: u64
+    pub name: string
+}
+
+fn main() {
+    let user: User = User { id: 7, name: "Ada" }
+    io.println(json.encode(user).expect("encode user"))
+}
+```
 
 ## Kind
 

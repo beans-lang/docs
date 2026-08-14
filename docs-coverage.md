@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **925**
-- Symbols with an enforced signature: **652**
+- Total public symbols: **927**
+- Symbols with an enforced signature: **654**
 - Builtin reference symbols: **314**
-- Standard-library symbols: **597**
+- Standard-library symbols: **599**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -709,6 +709,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `DecodeOptions` | class |  | `reference/stdlib/json` | ✓ |
 | `DecodeOptions.max_depth` | field |  | `reference/stdlib/json` | ✓ |
 | `DecodeOptions.parse` | field |  | `reference/stdlib/json` | ✓ |
+| `encode` | function | `pub fn encode<T>(value: T) -> Result<string>` | `reference/stdlib/json` | ✓ |
+| `encode_pretty` | function | `pub fn encode_pretty<T>(value: T, indent: string) -> Result<string>` | `reference/stdlib/json` | ✓ |
 | `Entry` | struct |  | `reference/stdlib/json` | ✓ |
 | `Entry.key` | field |  | `reference/stdlib/json` | ✓ |
 | `Entry.value` | field |  | `reference/stdlib/json` | ✓ |

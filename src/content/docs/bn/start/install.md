@@ -90,7 +90,7 @@ C++ bootstrap compiler, `beansc0`, কখনো ইনস্টল হয় ন
 ইনস্টলারকে অপশন দিতে হলে `-s --`-এর পরে দিন:
 
 ```bash
-curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.17 --prefix /opt/beans
+curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.18 --prefix /opt/beans
 ```
 
 কোন build target হবে সেটা `BEANS_TARGET` environment variable দিয়ে ঠিক করুন:
