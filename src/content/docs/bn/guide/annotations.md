@@ -136,12 +136,16 @@ compiler নাকচ করে অজানা বা private annotation, ভ�
 non-repeatable ব্যবহার, বাদ পড়া বা পুনরাবৃত্ত argument, অজানা field, ভুল
 value type, আর যেসব value compile-time constant না — সবকিছু।
 
-## Annotation নিজে থেকে কিছু চালায় না
+## Metadata আর active annotation
 
-Annotation হলো metadata — কোনো macro বা লুকানো function call না। `@debug` বা
-`@log` ঘোষণা করলেই নিজে থেকে কিছু print হয় না। কোনো compiler tool বা library
-`tool` metadata পড়তে পারে আর annotation grammar না বদলেই পরে সেই আচরণ ঠিক
-করে দিতে পারে।
+সাধারণ annotation শুধু metadata। `@debug` বা `@log` ঘোষণা করলেই কিছু print হয়
+না। কোনো compiler tool বা library annotation grammar না বদলে `tool` metadata
+পড়তে পারে।
+
+কোনো annotation schema `@runtime_hook` দিয়ে checked runtime behavior চালু করতে
+পারে। তখন compiler তার handler-এ সরাসরি call বসায়। এটা text macro না, আর
+annotated function-এর code বদলে দিতে পারে না। সব নিয়মের জন্য দেখুন
+[Runtime hook](/bn/guide/runtime-hooks/)।
 
 Runtime reflection শুধু check করা value পড়ে। এটা কখনও annotation-এর source
 expression evaluate করে না।

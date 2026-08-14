@@ -135,12 +135,16 @@ The compiler rejects unknown or private annotations, wrong targets, duplicate
 non-repeatable uses, missing or repeated arguments, unknown fields, wrong value
 types, and values that are not compile-time constants.
 
-## Annotations do not run by themselves
+## Metadata and active annotations
 
-An annotation is metadata, not a macro or hidden function call. Declaring
-`@debug` or `@log` does not print anything by itself. A compiler tool or library
-can read `tool` metadata and define that behavior later without changing the
-annotation grammar.
+An annotation is metadata by default. Declaring `@debug` or `@log` does not
+print anything by itself. A compiler tool or library can read `tool` metadata
+without changing the annotation grammar.
+
+An annotation schema can opt into checked runtime behavior with
+`@runtime_hook`. The compiler then emits direct calls to its declared handlers.
+This is not text macro expansion, and it cannot rewrite the annotated function.
+See [Runtime hooks](/guide/runtime-hooks/) for the full contract.
 
 Runtime reflection only reads the checked values. It never evaluates annotation
 source expressions.

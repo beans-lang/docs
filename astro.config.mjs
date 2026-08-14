@@ -130,6 +130,7 @@ export default defineConfig({
             { label: 'Async and await', slug: 'guide/async' },
             { label: 'Compile-time features', slug: 'guide/compile-time' },
             { label: 'Annotations', slug: 'guide/annotations' },
+            { label: 'Runtime hooks', slug: 'guide/runtime-hooks' },
             { label: 'Reflection', slug: 'guide/reflection' },
             { label: 'Attributes and modifiers', slug: 'guide/attributes' },
             { label: 'Unsafe and raw memory', slug: 'guide/unsafe' },
