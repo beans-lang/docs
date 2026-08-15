@@ -1,0 +1,89 @@
+---
+import EditLink from 'virtual:starlight/components/EditLink';
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+import config from 'virtual:starlight/user-config';
+import { Icon } from '@astrojs/starlight/components';
+
+const isBangla = Astro.locals.starlightRoute.locale === 'bn';
+---
+
+<footer class="sl-flex">
+  <div class="meta sl-flex">
+    <EditLink />
+    <LastUpdated />
+  </div>
+  <Pagination />
+
+  <p class="library-credits">
+    {isBangla ? 'ওপেন-সোর্স ক্রেডিট: Beans ভেতরে JSON-এর জন্য ' : 'Open-source credit: Beans uses '}
+    <a href="https://github.com/ibireme/yyjson">yyjson</a>{isBangla ? ', Base64-এর জন্য ' : ' for JSON, '}
+    <a href="https://github.com/simdutf/simdutf">simdutf</a>{isBangla ? ', আর XML-এর জন্য ' : ' for Base64, and '}
+    <a href="https://github.com/zeux/pugixml">pugixml</a>{isBangla ? ' ব্যবহার করে।' : ' for XML internally.'}
+  </p>
+
+  {
+    config.credits && (
+      <a class="kudos sl-flex" href="https://starlight.astro.build">
+        <Icon name="starlight" /> {Astro.locals.t('builtWithStarlight.label')}
+      </a>
+    )
+  }
+</footer>
+
+<style>
+  @layer starlight.core {
+    footer {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .meta {
+      gap: 0.75rem 3rem;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+      font-size: var(--sl-text-sm);
+      color: var(--sl-color-gray-3);
+    }
+
+    .meta > :global(p:only-child) {
+      margin-inline-start: auto;
+    }
+
+    .library-credits {
+      margin: 0 auto;
+      max-width: 52rem;
+      color: var(--sl-color-gray-3);
+      font-size: var(--sl-text-xs);
+      text-align: center;
+    }
+
+    .library-credits a {
+      color: inherit;
+    }
+
+    .library-credits a:hover {
+      color: var(--sl-color-white);
+    }
+
+    .kudos {
+      align-items: center;
+      gap: 0.5em;
+      margin: 0 auto 1.5rem;
+      font-size: var(--sl-text-xs);
+      text-decoration: none;
+      color: var(--sl-color-gray-3);
+    }
+
+    .kudos:hover {
+      color: var(--sl-color-white);
+    }
+  }
+
+  @layer starlight.components {
+    .kudos :global(svg) {
+      color: var(--sl-color-orange);
+    }
+  }
+</style>

@@ -88,6 +88,9 @@ export default defineConfig({
         styleOverrides: { borderRadius: '0.4rem' },
       },
       customCss: ['./src/styles/custom.css'],
+      components: {
+        Footer: './src/components/Footer.astro',
+      },
       sidebar: [
         {
           label: 'Introduction',
