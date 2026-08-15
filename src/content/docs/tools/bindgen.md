@@ -39,6 +39,35 @@ defines).
 beansc bindgen sqlite3.h -o sqlite3.b --package sqlite --only sqlite3_open --only sqlite3_close -- -I/usr/include
 ```
 
+## Linking a C library
+
+`beansc pot add` installs Beans source packages. It does not install or build a
+C library. Install the C library with the operating system package manager, or
+put its headers and built library in the project. Then generate bindings and
+add linker rows to `beans.pot`.
+
+For a system SQLite installation:
+
+```bash
+beansc bindgen sqlite3.h -o sqlite3_bindings.b --package main
+```
+
+```beans-pot
+link all library "sqlite3"
+```
+
+For a vendored library outside the system search paths:
+
+```beans-pot
+link all search "vendor/sqlite/lib"
+link all library "sqlite3"
+```
+
+`search` paths are relative to `beans.pot`. The library must already exist as
+something the linker accepts, such as `libsqlite3.a`, `libsqlite3.so`, or
+`libsqlite3.dylib`. A Git Beans wrapper may carry these `link` rows, but Beans
+still does not run CMake or another native build system for it.
+
 ## What it can bind
 
 bindgen handles: typedefs, records (structs), unions, arrays, enums, globals,

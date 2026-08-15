@@ -4,11 +4,46 @@ description: beansc pot এর subcommand গুলো, আর --locked ও --of
 ---
 
 `beansc pot` command কাজ করে project-এর dependency আর
-[`beans.lock`](/bn/pot/dependencies/) নিয়ে। এর দুইটা subcommand আছে।
+[`beans.lock`](/bn/pot/dependencies/) নিয়ে। এর চারটা subcommand আছে।
 
 ```text
-beansc pot <tidy|update [dependency]>
+beansc pot add <dependency> [ref]
+beansc pot tidy
+beansc pot remove <dependency>
+beansc pot update [dependency]
 ```
+
+## `beansc pot add`
+
+`beans.pot`-এ Git dependency যোগ করে, সেটা resolve করে, আর `beans.lock` লেখে।
+
+```bash
+beansc pot add acme/http v1.2
+```
+
+`owner/repo` লিখলে সেটা `github.com/owner/repo` ধরা হয়। পুরো host path, HTTPS
+URL, বা SSH URL-ও paste করা যায়। ref না দিলে `HEAD` ধরা হয়।
+
+ref tag, branch, বা commit hash হতে পারে:
+
+```bash
+beansc pot add acme/http main
+beansc pot add acme/http feature/new-api
+beansc pot add acme/http 4f82c9a7d13e
+```
+
+এখানে কোনো package registry search হয় না। `acme/http` সবসময়
+`github.com/acme/http`, আর Git `https://github.com/acme/http.git` fetch করে।
+
+private repo-র জন্যও একই command। Beans credential save করে না; Git তার
+স্বাভাবিক credential helper ব্যবহার করে। GitHub-এ SSH ব্যবহার করতে চাইলে একবার
+এটা চালানো যায়:
+
+```bash
+git config --global url."git@github.com:".insteadOf "https://github.com/"
+```
+
+`beans.pot` বা dependency argument-এ access token লিখবেন না।
 
 ## `beansc pot tidy`
 
@@ -19,8 +54,18 @@ beansc pot <tidy|update [dependency]>
 beansc pot tidy
 ```
 
-[`beans.pot`](/bn/pot/manifest/)-এ `require` লাইন যোগ করা বা মুছে ফেলার পর এটা
-চালান, যাতে lock-টা যা import করা হচ্ছে তার সাথে মিলে যায়।
+import বদলানোর পর এটা চালান, যাতে lock-টা কোডের সাথে মিলে যায়।
+
+## `beansc pot remove`
+
+`beans.pot` থেকে Git dependency মুছে দেয়, তারপর `beans.lock` tidy করে।
+
+```bash
+beansc pot remove acme/http
+```
+
+আগে ওই dependency-র import মুছুন। import থেকে গেলে command fail করবে আর
+`beans.pot` বদলাবে না।
 
 ## `beansc pot update`
 
@@ -37,12 +82,7 @@ beansc pot update
 beansc pot update github.com/acme/http
 ```
 
-## যা কিছু নেই
-
-কোনো `pot init` নেই, `pot add` নেই, `pot remove`-ও নেই। `beans.pot` নিজ হাতে
-edit করতে হয় — একটা `require` লাইন যোগ করা বা মুছে ফেলা — তারপর
-`beansc pot tidy` চালিয়ে lock update করা হয়। `tidy` আর `update` — এই দুইটাই `pot`
-এর একমাত্র subcommand।
+dependency-র নাম `pot add`-এর মতো short name, host path, বা Git URL হতে পারে।
 
 ## `--locked` আর `--offline`
 

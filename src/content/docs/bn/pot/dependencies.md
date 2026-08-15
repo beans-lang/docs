@@ -9,7 +9,13 @@ cache-এ নিয়ে আসে, আর ঠিক যা পেল সেট
 
 ## একটা dependency ঘোষণা করা
 
-[manifest](/bn/pot/manifest/)-এ একটা `require` লাইন যোগ করুন:
+project root থেকে `pot add` চালান:
+
+```bash
+beansc pot add acme/http v1.2
+```
+
+এটা [manifest](/bn/pot/manifest/)-এ একটা `require` লাইন যোগ করে:
 
 ```beans-pot
 module shop
@@ -20,6 +26,13 @@ require github.com/acme/http v1.2
 - reference হলো একটা tag, branch, বা commit-এর মতো কোনো ref (এখানে `v1.2`)।
 - যত খুশি `require` লাইন থাকতে পারে।
 - একই path দুইটা আলাদা ref-এ pin করলে সেটা error।
+
+`owner/repo` হলো GitHub shorthand। পুরো host path আর HTTPS/SSH Git URL-ও চলে।
+ref না দিলে `HEAD` ধরা হয়।
+
+ref শুধু tag নয়; branch আর commit hash-ও চলে। lock সবসময় ঠিক resolved commit
+আর tree লেখে। branch বা `HEAD` update করলে lock সামনে যেতে পারে; fixed commit
+একই commit-এ থাকে। private repo-র credential Git নিজে সামলায়।
 
 একবার require করে দিলে, এর ভেতর থেকে package গুলো import করা হয় তাদের পুরো
 import path দিয়ে, যেমন `import github.com/acme/http`। import path কীভাবে resolve
@@ -57,6 +70,8 @@ atomic ভাবে rename করে জায়গায় বসিয়ে
 ## lock কখন লেখা হয়
 
 - সাধারণ একটা build নিজে থেকেই `beans.lock` লিখে দেয়।
+- [`beansc pot add`](/bn/pot/commands/) একটা dependency যোগ করে আর resolve করে।
+- [`beansc pot remove`](/bn/pot/commands/) একটা dependency মুছে lock tidy করে।
 - [`beansc pot tidy`](/bn/pot/commands/) কোড যে dependency গুলো সত্যিই ব্যবহার করে
   সেগুলো resolve করে lock লেখে।
 - [`beansc pot update`](/bn/pot/commands/) locked dependency গুলো refresh করে lock

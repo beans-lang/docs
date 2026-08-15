@@ -39,6 +39,34 @@ beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
 beansc bindgen sqlite3.h -o sqlite3.b --package sqlite --only sqlite3_open --only sqlite3_close -- -I/usr/include
 ```
 
+## C library link করা
+
+`beansc pot add` Beans source package install করে। এটা C library install বা
+build করে না। C library system package manager দিয়ে install করতে হবে, অথবা
+তার header আর built library project-এ রাখতে হবে। তারপর binding বানিয়ে
+`beans.pot`-এ linker row যোগ করুন।
+
+system SQLite-এর জন্য:
+
+```bash
+beansc bindgen sqlite3.h -o sqlite3_bindings.b --package main
+```
+
+```beans-pot
+link all library "sqlite3"
+```
+
+system search path-এর বাইরে vendored library হলে:
+
+```beans-pot
+link all search "vendor/sqlite/lib"
+link all library "sqlite3"
+```
+
+`search` path `beans.pot` থেকে relative। `libsqlite3.a`, `libsqlite3.so`, বা
+`libsqlite3.dylib`-এর মতো built library আগে থেকেই থাকতে হবে। Beans CMake বা
+অন্য native build system নিজে চালায় না।
+
 ## কী কী bind করতে পারে
 
 bindgen যা যা সামলায়: typedef, record (struct), union, array, enum, global,

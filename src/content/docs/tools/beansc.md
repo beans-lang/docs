@@ -15,6 +15,8 @@ driving [`compiler/beans/driver.b`](https://github.com/beans-lang/beans/blob/mai
 usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc build [options] <file.b> [-o out]
        beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
+       beansc pot add <dependency> [ref]
+       beansc pot remove <dependency>
        beansc pot <tidy|update [dependency]>
        beansc upgrade
        beansc doctor
@@ -56,7 +58,9 @@ build options:
 | `beansc build [options] <file.b> [-o out]` | Compile to a native binary via LLVM/Clang. |
 | `beansc target <triple>` | Print one target's layout and capability facts. |
 | `beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]` | Generate Beans C declarations with Clang. |
+| `beansc pot add <dependency> [ref]` | Add a Git dependency and write `beans.lock`. |
 | `beansc pot tidy` | Resolve used dependencies and write `beans.lock`. |
+| `beansc pot remove <dependency>` | Remove a Git dependency and tidy `beans.lock`. |
 | `beansc pot update [dependency]` | Refresh all locked dependencies, or one named. |
 | `beansc upgrade` | Upgrade this Beans installation to the latest release. |
 | `beansc lsp` | Language server on stdio. |
