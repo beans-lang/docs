@@ -19,6 +19,14 @@ The smallest manifest just names the module:
 module shop
 ```
 
+Create it from the project directory with:
+
+```bash
+beansc pot init shop
+```
+
+This command refuses to overwrite an existing `beans.pot`.
+
 ## The main package
 
 An application's root package is `package main`, and it needs an `fn main()`,

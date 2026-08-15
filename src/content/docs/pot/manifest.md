@@ -23,6 +23,10 @@ module shop
 
 The compiler's own manifest is just `module compiler`.
 
+Create a minimal manifest in the current directory with
+`beansc pot init <module-name>`. The command does not overwrite an existing
+manifest.
+
 ## Fields
 
 ### `module <name>` (required)

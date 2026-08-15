@@ -23,6 +23,10 @@ module shop
 
 compiler-এর নিজের manifest আরো ছোট — শুধু `module compiler`।
 
+বর্তমান directory-তে ছোট manifest বানাতে
+`beansc pot init <module-name>` চালান। আগে থেকে manifest থাকলে command সেটা
+overwrite করে না।
+
 ## Field গুলো
 
 ### `module <name>` (লাগবেই)

@@ -15,6 +15,7 @@ driving [`compiler/beans/driver.b`](https://github.com/beans-lang/beans/blob/mai
 usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc build [options] <file.b> [-o out]
        beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
+       beansc pot init <module-name>
        beansc pot add <dependency> [ref]
        beansc pot add --system <pkg-config-name>
        beansc pot remove <dependency>
@@ -61,6 +62,7 @@ build options:
 | `beansc build [options] <file.b> [-o out]` | Compile to a native binary via LLVM/Clang. |
 | `beansc target <triple>` | Print one target's layout and capability facts. |
 | `beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]` | Generate Beans C declarations with Clang. |
+| `beansc pot init <module-name>` | Create `beans.pot` in the current directory without overwriting one. |
 | `beansc pot add <dependency> [ref]` | Add a Git dependency and write `beans.lock`. |
 | `beansc pot add --system <name>` | Add linker rows for an installed pkg-config C library. |
 | `beansc pot tidy` | Resolve used dependencies and write `beans.lock`. |

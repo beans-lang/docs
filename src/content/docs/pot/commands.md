@@ -4,9 +4,10 @@ description: The beansc pot subcommands, and where --locked and --offline apply.
 ---
 
 The `beansc pot` command works on your project's dependencies and
-[`beans.lock`](/pot/dependencies/). There are four subcommands.
+[`beans.lock`](/pot/dependencies/). There are five subcommands.
 
 ```text
+beansc pot init <module-name>
 beansc pot add <dependency> [ref]
 beansc pot add --system <pkg-config-name>
 beansc pot tidy
@@ -15,6 +16,24 @@ beansc pot remove --system <pkg-config-name>
 beansc pot update [dependency]
 beansc pot update --system <pkg-config-name>
 ```
+
+## `beansc pot init`
+
+Creates a new `beans.pot` in the current directory:
+
+```bash
+beansc pot init shop
+```
+
+The result is:
+
+```beans-pot
+module shop
+```
+
+Module names are lowercase dot-separated names, such as `shop` or
+`acme.http_client`. The command refuses to overwrite an existing `beans.pot`.
+It creates only the manifest; add `main.b` or your library source separately.
 
 ## `beansc pot add`
 

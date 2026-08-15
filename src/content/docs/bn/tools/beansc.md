@@ -16,6 +16,7 @@ parse করে, check করে, run করে, আর build করে। স�
 usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc build [options] <file.b> [-o out]
        beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
+       beansc pot init <module-name>
        beansc pot add <dependency> [ref]
        beansc pot add --system <pkg-config-name>
        beansc pot remove <dependency>
@@ -62,6 +63,7 @@ build options:
 | `beansc build [options] <file.b> [-o out]` | LLVM/Clang দিয়ে native binary বানায়। |
 | `beansc target <triple>` | একটা target-এর layout আর capability-এর তথ্য ছাপায়। |
 | `beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]` | Clang দিয়ে Beans-এর C declaration বানিয়ে দেয়। |
+| `beansc pot init <module-name>` | বর্তমান directory-তে `beans.pot` বানায়; আগে থেকে থাকলে overwrite করে না। |
 | `beansc pot add <dependency> [ref]` | Git dependency যোগ করে `beans.lock` লেখে। |
 | `beansc pot add --system <name>` | install করা pkg-config C library-র linker row যোগ করে। |
 | `beansc pot tidy` | কোন কোন dependency সত্যিই ব্যবহার হচ্ছে সেটা মিলিয়ে `beans.lock` লেখে। |

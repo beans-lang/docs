@@ -19,6 +19,14 @@ file-টাই manifest। এটা module-এর নাম দেয়। (PO
 module shop
 ```
 
+Project directory থেকে এটা বানাতে চালান:
+
+```bash
+beansc pot init shop
+```
+
+আগে থেকে `beans.pot` থাকলে command সেটা overwrite করে না।
+
 ## main package
 
 কোনো application-এর root package হলো `package main`, আর এতে একটা `fn main()` লাগে — অর্থাৎ

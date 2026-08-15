@@ -4,9 +4,10 @@ description: beansc pot এর subcommand গুলো, আর --locked ও --of
 ---
 
 `beansc pot` command কাজ করে project-এর dependency আর
-[`beans.lock`](/bn/pot/dependencies/) নিয়ে। এর চারটা subcommand আছে।
+[`beans.lock`](/bn/pot/dependencies/) নিয়ে। এর পাঁচটা subcommand আছে।
 
 ```text
+beansc pot init <module-name>
 beansc pot add <dependency> [ref]
 beansc pot add --system <pkg-config-name>
 beansc pot tidy
@@ -15,6 +16,24 @@ beansc pot remove --system <pkg-config-name>
 beansc pot update [dependency]
 beansc pot update --system <pkg-config-name>
 ```
+
+## `beansc pot init`
+
+বর্তমান directory-তে নতুন `beans.pot` বানায়:
+
+```bash
+beansc pot init shop
+```
+
+ফাইলটা হবে:
+
+```beans-pot
+module shop
+```
+
+Module name ছোট হাতের অক্ষরে dot দিয়ে ভাগ করা হয়, যেমন `shop` বা
+`acme.http_client`। আগে থেকে `beans.pot` থাকলে command সেটা overwrite করে না।
+এটা শুধু manifest বানায়; `main.b` বা library source আলাদা করে যোগ করতে হবে।
 
 ## `beansc pot add`
 
