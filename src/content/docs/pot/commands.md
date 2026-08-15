@@ -8,9 +8,12 @@ The `beansc pot` command works on your project's dependencies and
 
 ```text
 beansc pot add <dependency> [ref]
+beansc pot add --system <pkg-config-name>
 beansc pot tidy
 beansc pot remove <dependency>
+beansc pot remove --system <pkg-config-name>
 beansc pot update [dependency]
+beansc pot update --system <pkg-config-name>
 ```
 
 ## `beansc pot add`
@@ -53,6 +56,28 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 
 Do not put access tokens in `beans.pot` or in the dependency argument.
 
+### Add a system C library
+
+Use `--system` for a C library that is already installed and has a
+`pkg-config` file:
+
+```bash
+beansc pot add --system sqlite3
+```
+
+Beans asks `pkg-config` for the library search paths and names, then writes a
+marked block like this:
+
+```beans-pot
+# beansc:system sqlite3 begin
+link all library "sqlite3"
+# beansc:system sqlite3 end
+```
+
+Search rows are added too when the library is outside the default linker
+paths. The operating system package manager still owns the library. It is not
+downloaded by Beans and does not enter `beans.lock`.
+
 ## `beansc pot tidy`
 
 Resolves the dependencies your code actually uses and writes `beans.lock`.
@@ -74,6 +99,12 @@ beansc pot remove acme/http
 Remove the dependency's imports first. If the code still imports it, the
 command fails and leaves `beans.pot` unchanged.
 
+Remove a generated system-library block with the matching flag:
+
+```bash
+beansc pot remove --system sqlite3
+```
+
 ## `beansc pot update`
 
 Refreshes locked dependencies to the newest commit their ref allows, and
@@ -91,6 +122,13 @@ beansc pot update github.com/acme/http
 
 The dependency name accepts the same short names, host paths, and Git URLs as
 `pot add`.
+
+Refresh one generated system-library block from its current `pkg-config`
+metadata with:
+
+```bash
+beansc pot update --system sqlite3
+```
 
 ## `--locked` and `--offline`
 

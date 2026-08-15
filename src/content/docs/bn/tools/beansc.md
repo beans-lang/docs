@@ -17,7 +17,10 @@ usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc build [options] <file.b> [-o out]
        beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
        beansc pot add <dependency> [ref]
+       beansc pot add --system <pkg-config-name>
        beansc pot remove <dependency>
+       beansc pot remove --system <pkg-config-name>
+       beansc pot update --system <pkg-config-name>
        beansc pot <tidy|update [dependency]>
        beansc upgrade
        beansc doctor
@@ -60,9 +63,12 @@ build options:
 | `beansc target <triple>` | একটা target-এর layout আর capability-এর তথ্য ছাপায়। |
 | `beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]` | Clang দিয়ে Beans-এর C declaration বানিয়ে দেয়। |
 | `beansc pot add <dependency> [ref]` | Git dependency যোগ করে `beans.lock` লেখে। |
+| `beansc pot add --system <name>` | install করা pkg-config C library-র linker row যোগ করে। |
 | `beansc pot tidy` | কোন কোন dependency সত্যিই ব্যবহার হচ্ছে সেটা মিলিয়ে `beans.lock` লেখে। |
 | `beansc pot remove <dependency>` | Git dependency মুছে `beans.lock` tidy করে। |
+| `beansc pot remove --system <name>` | C library-র generated linker row মুছে দেয়। |
 | `beansc pot update [dependency]` | lock-করা সব dependency নতুন করে আনে, নাম দিলে শুধু ওই একটা। |
+| `beansc pot update --system <name>` | pkg-config থেকে C library-র link block refresh করে। |
 | `beansc upgrade` | এই Beans install-টাকে সবশেষ release-এ তুলে দেয়। |
 | `beansc lsp` | stdio-তে language server চালায়। |
 | `beansc debug-adapter` | stdio-তে debug adapter (DAP) চালায়। |

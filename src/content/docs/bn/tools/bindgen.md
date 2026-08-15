@@ -9,7 +9,7 @@ target-এর জন্য এটা Clang-এর কাছ থেকে header-
 library ব্যবহার করা যায়।
 
 ```bash
-beansc bindgen sqlite3.h -o sqlite3.b
+beansc bindgen --system sqlite3 sqlite3.h -o sqlite3.b --only sqlite3_open
 ```
 
 ## Usage
@@ -31,6 +31,7 @@ beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
 | `--sysroot <path>` | Target sysroot। |
 | `--cc <path>` | C driver। ডিফল্ট `clang`। |
 | `--package <name>` | output-এর ওপরে একটা `package` clause লেখে। |
+| `--system <name>` | `pkg-config` দিয়ে header আর Clang flag খুঁজে নেয়। |
 | `--only <name>` | শুধু নাম-করা declaration-গুলোর মধ্যে সীমিত রাখে। একাধিকবার দেওয়া যায়। |
 | `--allow-unsupported` | fail করার বদলে প্রতিটা unsafe declaration (আর যা ওটার ওপর নির্ভর করে) বাদ দিয়ে দেয়। |
 | `-- <clang-options>` | `--`-এর পরের সবকিছু Clang-এ যায়। |
@@ -41,20 +42,22 @@ beansc bindgen sqlite3.h -o sqlite3.b --package sqlite --only sqlite3_open --onl
 
 ## C library link করা
 
-`beansc pot add` Beans source package install করে। এটা C library install বা
-build করে না। C library system package manager দিয়ে install করতে হবে, অথবা
-তার header আর built library project-এ রাখতে হবে। তারপর binding বানিয়ে
-`beans.pot`-এ linker row যোগ করুন।
+C library আগে system package manager দিয়ে install করুন। Beans CMake বা অন্য
+native build system চালায় না। Library-র `pkg-config` metadata থাকলে Beans
+linker setting আর header—দুটোই খুঁজে নিতে পারে।
 
 system SQLite-এর জন্য:
 
 ```bash
-beansc bindgen sqlite3.h -o sqlite3_bindings.b --package main
+beansc pot add --system sqlite3
+beansc bindgen --system sqlite3 sqlite3.h \
+  -o sqlite3_bindings.b --package main \
+  --only sqlite3_open --only sqlite3_close --only sqlite3_exec --only sqlite3_free
 ```
 
-```beans-pot
-link all library "sqlite3"
-```
+SQLite-র পুরো header-এ variadic আর অন্য কিছু declaration আছে যেগুলো Beans
+হুবহু বানাতে পারে না। Program যে API call করে, `--only` দিয়ে শুধু সেগুলো নিন।
+SDK-র ভেতরে থাকা header-ও `--system` খুঁজে পায়।
 
 system search path-এর বাইরে vendored library হলে:
 

@@ -16,7 +16,10 @@ usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc build [options] <file.b> [-o out]
        beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]
        beansc pot add <dependency> [ref]
+       beansc pot add --system <pkg-config-name>
        beansc pot remove <dependency>
+       beansc pot remove --system <pkg-config-name>
+       beansc pot update --system <pkg-config-name>
        beansc pot <tidy|update [dependency]>
        beansc upgrade
        beansc doctor
@@ -59,9 +62,12 @@ build options:
 | `beansc target <triple>` | Print one target's layout and capability facts. |
 | `beansc bindgen <header.h> -o <bindings.b> [options] [-- clang-options]` | Generate Beans C declarations with Clang. |
 | `beansc pot add <dependency> [ref]` | Add a Git dependency and write `beans.lock`. |
+| `beansc pot add --system <name>` | Add linker rows for an installed pkg-config C library. |
 | `beansc pot tidy` | Resolve used dependencies and write `beans.lock`. |
 | `beansc pot remove <dependency>` | Remove a Git dependency and tidy `beans.lock`. |
+| `beansc pot remove --system <name>` | Remove generated linker rows for a C library. |
 | `beansc pot update [dependency]` | Refresh all locked dependencies, or one named. |
+| `beansc pot update --system <name>` | Refresh a C-library link block from pkg-config. |
 | `beansc upgrade` | Upgrade this Beans installation to the latest release. |
 | `beansc lsp` | Language server on stdio. |
 | `beansc debug-adapter` | Debug adapter (DAP) on stdio. |

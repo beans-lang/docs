@@ -18,10 +18,16 @@ import { execFileSync } from 'node:child_process';
 import { DOCS_DIR, BEANS_REPO, findBeansc, walk } from './lib/paths.mjs';
 
 const beansc = findBeansc();
+const compilerEnv = {
+  ...process.env,
+  ...(BEANS_REPO && !process.env.BEANS_STDLIB
+    ? { BEANS_STDLIB: path.join(BEANS_REPO, 'stdlib', 'std') }
+    : {}),
+};
 
 function beanscWorks() {
   try {
-    execFileSync(beansc, ['--version'], { stdio: 'ignore' });
+    execFileSync(beansc, ['--version'], { stdio: 'ignore', env: compilerEnv });
     return true;
   } catch {
     return false;
@@ -34,6 +40,7 @@ function check(file) {
     const out = execFileSync(beansc, ['check', file], {
       stdio: ['ignore', 'pipe', 'pipe'],
       encoding: 'utf8',
+      env: compilerEnv,
     });
     return { ok: true, output: out };
   } catch (e) {

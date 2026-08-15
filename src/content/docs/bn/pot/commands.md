@@ -8,9 +8,12 @@ description: beansc pot এর subcommand গুলো, আর --locked ও --of
 
 ```text
 beansc pot add <dependency> [ref]
+beansc pot add --system <pkg-config-name>
 beansc pot tidy
 beansc pot remove <dependency>
+beansc pot remove --system <pkg-config-name>
 beansc pot update [dependency]
+beansc pot update --system <pkg-config-name>
 ```
 
 ## `beansc pot add`
@@ -45,6 +48,27 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 
 `beans.pot` বা dependency argument-এ access token লিখবেন না।
 
+### System C library যোগ করা
+
+আগে থেকে install করা C library-র `pkg-config` file থাকলে `--system` ব্যবহার করুন:
+
+```bash
+beansc pot add --system sqlite3
+```
+
+Beans `pkg-config` থেকে library search path আর library name নিয়ে `beans.pot`-এ
+চিহ্ন দেওয়া `link` block লেখে:
+
+```beans-pot
+# beansc:system sqlite3 begin
+link all library "sqlite3"
+# beansc:system sqlite3 end
+```
+
+Library default linker path-এর বাইরে থাকলে `search` row-ও যোগ হয়। Library-টা
+system package manager-এরই দায়িত্বে থাকে। Beans সেটা download করে না, আর
+`beans.lock`-এও যোগ করে না।
+
 ## `beansc pot tidy`
 
 কোড যে dependency গুলো সত্যিই ব্যবহার করে সেগুলো resolve করে, আর
@@ -67,6 +91,12 @@ beansc pot remove acme/http
 আগে ওই dependency-র import মুছুন। import থেকে গেলে command fail করবে আর
 `beans.pot` বদলাবে না।
 
+generated system-library block মুছতে একই flag ব্যবহার করুন:
+
+```bash
+beansc pot remove --system sqlite3
+```
+
 ## `beansc pot update`
 
 locked dependency গুলোকে refresh করে তাদের ref যতটুকু অনুমতি দেয় ততটুকুর মধ্যে
@@ -83,6 +113,13 @@ beansc pot update github.com/acme/http
 ```
 
 dependency-র নাম `pot add`-এর মতো short name, host path, বা Git URL হতে পারে।
+
+system library-র generated block-টা বর্তমান `pkg-config` metadata দিয়ে refresh
+করতে চালান:
+
+```bash
+beansc pot update --system sqlite3
+```
 
 ## `--locked` আর `--offline`
 
