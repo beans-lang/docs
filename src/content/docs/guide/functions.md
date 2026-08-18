@@ -48,6 +48,41 @@ fn enqueue(move jobs: List<Job>) { /* ... */ }
 fn bump(inout n: int) { n += 1 }
 ```
 
+## Default parameter values
+
+A trailing parameter may declare a constant default — a literal, a negated
+numeric literal, or `none`. A call that leaves trailing arguments out gets the
+declared constants; the checker fills them in at each call site, so nothing
+about the ABI or function values changes.
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+fn greet(name: string, punct: string = "!", times: int = 1) -> string {
+    var parts: List<string> = []
+    for index: int in 0..times {
+        parts.push("{name}{punct}")
+    }
+    return parts.join(" ")
+}
+
+fn main() {
+    io.println(greet("hi"))          // hi!
+    io.println(greet("yo", "?"))     // yo?
+    io.println(greet("go", ".", 3))  // go. go. go.
+}
+```
+
+Every parameter after a defaulted one needs a default too, defaults are
+by-value only (`move` and `inout` parameters cannot have them), and
+`extern "C"` signatures never have them. A function used as a value keeps its
+full arity. There are **no named arguments** and **no overloading** — one
+name, one signature; a defaulted tail is the one sanctioned way to make an
+argument optional.
+
 ## Anonymous functions (closures)
 
 `fn` without a name is a closure. It captures the variables around it.
@@ -61,7 +96,39 @@ xs.map(fn(x: int) -> int { return x * 2 })
 Closures capture their surrounding variables by reference to a shared cell, so
 mutation and escaping both work. A closure cannot capture an `inout` parameter,
 and a function with `move` or `inout` parameters cannot be stored as a closure
-value (function values do not carry ownership modes yet).
+value (closure *parameters* do not carry ownership modes yet).
+
+### Capture by move
+
+`fn(...) move(a, b)` captures the listed locals by move: the closure owns
+them, the enclosing bindings are spent, and each owned capture is released
+exactly once when the closure value dies. This is how a move-only value — a
+socket, a `Box`, a `List` — lives inside a callback and is torn down with it.
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+fn make_counter() -> fn() -> int {
+    var seen: List<int> = []
+    return fn() move(seen) -> int {
+        seen.push(1)
+        return seen.len()
+    }
+}
+
+fn main() {
+    let tick: fn() -> int = make_counter()
+    io.println("{tick()} {tick()}")   // 1 2
+}
+```
+
+Each listed name must be an enclosing local the body actually uses. After the
+closure is built, using the moved local is a use-after-move error. Copying the
+closure value shares the same closure and its captures — fn values are shared,
+so single ownership of the capture is never violated.
 
 ## Methods and statics
 

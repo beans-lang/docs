@@ -48,6 +48,40 @@ fn enqueue(move jobs: List<Job>) { /* ... */ }
 fn bump(inout n: int) { n += 1 }
 ```
 
+## Parameter-এর default value
+
+শেষের দিকের (trailing) parameter-এ একটা constant default declare করা যায় — একটা
+literal, negative করা numeric literal, বা `none`। call-এ শেষের argument-গুলো বাদ
+দিলে declare করা constant-গুলোই বসে; checker প্রতিটা call site-এ সেগুলো ভরে দেয়,
+তাই ABI বা function value-এর কিছুই বদলায় না।
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+fn greet(name: string, punct: string = "!", times: int = 1) -> string {
+    var parts: List<string> = []
+    for index: int in 0..times {
+        parts.push("{name}{punct}")
+    }
+    return parts.join(" ")
+}
+
+fn main() {
+    io.println(greet("hi"))          // hi!
+    io.println(greet("yo", "?"))     // yo?
+    io.println(greet("go", ".", 3))  // go. go. go.
+}
+```
+
+একটা defaulted parameter-এর পরের প্রতিটা parameter-এও default লাগবে। default শুধু
+by-value parameter-এ (`move` আর `inout`-এ হয় না), আর `extern "C"` signature-এ
+কখনোই না। function-কে value হিসেবে ব্যবহার করলে তার পুরো arity-ই থাকে। Beans-এ
+**named argument নেই** আর **overloading নেই** — এক নাম, এক signature; কোনো
+argument-কে optional করার একমাত্র অনুমোদিত পথ হলো defaulted tail।
+
 ## Anonymous function (closure)
 
 নাম ছাড়া `fn` হলো একটা closure। এটা তার চারপাশের variable-গুলো capture করে।
@@ -61,7 +95,40 @@ xs.map(fn(x: int) -> int { return x * 2 })
 closure তার চারপাশের variable-গুলো একটা shared cell-এর reference দিয়ে capture করে,
 তাই mutation আর escaping — দুটোই কাজ করে। একটা closure `inout` parameter capture
 করতে পারে না, আর `move` বা `inout` parameter-ওয়ালা কোনো function-কে closure value
-হিসেবে store করা যায় না (function value এখনও ownership mode বয়ে নেয় না)।
+হিসেবে store করা যায় না (closure-এর *parameter* এখনও ownership mode বয়ে নেয় না)।
+
+### Move দিয়ে capture
+
+`fn(...) move(a, b)` তালিকার local-গুলোকে move করে capture করে: closure-টাই
+তখন সেগুলোর owner, ঘিরে থাকা binding-গুলো খরচ হয়ে যায়, আর owned প্রতিটা
+capture ঠিক একবারই release হয় — closure value-টা মরার সময়ে। move-only কোনো
+value — একটা socket, একটা `Box`, একটা `List` — callback-এর ভেতরে বাঁচে আর
+তার সাথেই বিদায় নেয়, এই পথেই।
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+fn make_counter() -> fn() -> int {
+    var seen: List<int> = []
+    return fn() move(seen) -> int {
+        seen.push(1)
+        return seen.len()
+    }
+}
+
+fn main() {
+    let tick: fn() -> int = make_counter()
+    io.println("{tick()} {tick()}")   // 1 2
+}
+```
+
+তালিকার প্রতিটা নাম ঘিরে থাকা এমন একটা local হতে হবে যেটা body সত্যিই ব্যবহার
+করে। closure বানানোর পরে move হওয়া local-টা ব্যবহার করলে use-after-move
+error। closure value কপি করলে একই closure আর তার capture-গুলোই share হয় — fn
+value shared, তাই capture-এর একক ownership কখনও ভাঙে না।
 
 ## Method আর static
 

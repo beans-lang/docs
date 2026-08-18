@@ -68,6 +68,13 @@ file.b` দিয়ে। দেখুন [Building](/bn/tools/build/)।
   জন্য `context()`। capture-গুলোকে `Send + Sync` হতে হবে। আগে unregister করা হয়,
   তারপর `close()` (যেটা চালু call-গুলোর জন্য অপেক্ষা করে)। value-টা
   move-only।
+- library যে callback store করে কিন্তু **সবসময় register করা thread-এই invoke
+  করে** — C event-loop-এর সবচেয়ে চেনা চেহারা — তার জন্য
+  `StoredCallback.create_same_thread(userdata_index, closure)`। capture-এ কোনো
+  বাধা নেই (`Send` না, `Sync`-ও না): register করার thread-টা রেকর্ড হয়ে থাকে,
+  আর অন্য কোনো thread থেকে invoke করলে সেটা data race নয় — একটা checked
+  runtime abort। `function()` / `function_pointer()` / `context()` surface
+  একই, আর unregister-তারপর-`close()` নিয়মও একই।
 - **`CFunctionPtr<F>`** হলো C function-pointer storage, এক pointer চওড়া
   কিন্তু `RawPtr` আর Beans function value — দুটো থেকেই আলাদা। এটা C-layout
   record, extern global, parameter, return আর বানানো header-এ বৈধ।

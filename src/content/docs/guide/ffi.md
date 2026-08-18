@@ -64,6 +64,13 @@ incomplete type you only touch behind `RawPtr`.
   `CFunctionPtr<F>` field, and `context()` for the separate userdata pointer.
   Captures must be `Send + Sync`. Unregister first, then `close()` (which waits
   for active calls). The value is move-only.
+- A callback the library stores but **always invokes on the registering
+  thread** — the common C event-loop shape — uses
+  `StoredCallback.create_same_thread(userdata_index, closure)`. Captures are
+  unrestricted (no `Send`, no `Sync`): the registering thread is recorded, and
+  an invocation from any other thread is a checked runtime abort rather than a
+  data race. Same `function()` / `function_pointer()` / `context()` surface
+  and the same unregister-then-`close()` discipline.
 - **`CFunctionPtr<F>`** is C function-pointer storage, one pointer wide but
   distinct from `RawPtr` and from Beans function values. It is valid in C-layout
   records, extern globals, parameters, returns, and generated headers.

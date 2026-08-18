@@ -37,14 +37,64 @@ collector প্রতিটা root-এর subgraph-কে trial-delete কর�
 - সব walk iterative, তাই খুব বড় একটা drop হওয়া গড়নও stack overflow ঘটাবে না।
 - কোনো object যদি **cycle-এর ভেতরে** মরে, তার `deinit` চলে না। cycle নিজে
   থেকে কখনও শূন্যে নামে না, তাই object যদি কোনো resource ধরে থাকে (একটা file,
-  একটা socket), সেই resource ছাড়া হয় না। cycle-টা নিজে হাতে ভাঙতে হয় একটা
-  `Weak<T>` দিয়ে, যেটা নিচে বলা আছে।
+  একটা socket), সেই resource ছাড়া হয় না। declarative সমাধান হলো একটা `weak`
+  field, যেটা এর পরেই বলা আছে; `Shared<T>`-এর cycle ভাঙে `Weak<T>` দিয়ে।
 
 :::note[যেটা এখনও পারে না]
 worker thread চলার সময় collection পিছিয়ে রাখা হয়। কোনো program যদি একটা
 দীর্ঘজীবী worker-এর পাশে বসে অবিরাম cycle বানাতে থাকে, worker-টা শেষ না হওয়া
 পর্যন্ত সেটা বাড়তেই থাকতে পারে।
 :::
+
+## weak field
+
+`weak` declare করা class field হলো একটা **zeroing reference**: referent-এর ওপর
+এটা কোনো ownership count ধরে না, তাই এটা কখনও cycle-এর edge হয় না। এর type
+হতে হবে `Option<C>` — যেখানে `C` একটা non-`unique` class — আর default হতে
+হবে `none`।
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+class Node {
+    name: string = ""
+    child: Option<Node> = none        // owning: parent-ই child-কে বাঁচিয়ে রাখে
+    weak parent: Option<Node> = none  // non-owning: parent মরলেই শূন্য হয়ে যায়
+
+    fn deinit() { io.println("gone {self.name}") }
+}
+
+fn main() {
+    let parent: Node = new Node()
+    parent.name = "parent"
+    let child: Node = new Node()
+    child.name = "child"
+    child.parent = some(parent)
+    parent.child = some(child)
+    match child.parent {
+        some(found) => { io.println("up: {found.name}") }
+        none => { io.println("up: gone") }
+    }
+}
+// up: parent, তারপর দুটো deinit-ই চলে — back edge-টা weak,
+// তাই leak করার মতো কোনো cycle-ই নেই
+```
+
+read করলে declare করা `Option<C>`-ই পাওয়া যায়: referent বেঁচে থাকলে `some` —
+load হওয়া value-টা read-এর জন্য retain হয়, তাই ব্যবহারের মাঝপথে সেটা মরতে
+পারে না — আর referent-এর মৃত্যুর প্রথম মুহূর্ত থেকে `none`, এমনকি তার
+`deinit` body চলার *আগেই*, তাই কোনো destructor weak slot দিয়ে নিজেকে
+resurrect করতে পারে না। collector যখন কোনো strong cycle মেরে ফেলে, সেই
+cycle-এর দিকে তাক করা weak field-গুলোও তখন থেকেই `none` পড়ে।
+
+প্রতিটা parent/child graph-এর back edge, আর owner-এর দিকে তাক করা প্রতিটা
+stored callback — `weak` করে বানান, দুই পাশই তাদের `deinit` পাবে। slot-এ
+থাকে একটা zeroing handle, object নয়, তাই weak field reflection-এর চোখে
+অদৃশ্য। `weak` শুধু class-এর instance field-এর জন্য — static নয়, struct নয়,
+local নয়।
 
 ## Move
 

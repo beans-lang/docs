@@ -48,6 +48,16 @@ let u: User = new User("jul", "secret")
 named static হিসেবে (fallible construction-এর জন্য, যেমন `File.open`)। module-level
 function শুধু সেই কাজের জন্য যেটা কোনো object বানায় না।
 
+field-এর আরও দুটো রূপ model-টাকে পূর্ণ করে:
+
+- **function-type-এর field member syntax দিয়েই call করা যায়।** `on_click: fn()
+  -> int` field-টা `widget.on_click()` লিখেই invoke হয় — কোনো local copy লাগে
+  না। কোনো class-এ একই নামের method আর fn-type field দুটোই থাকলে method জেতে;
+  local-copy রূপটা তখনও আড়াল-হওয়া field-টায় পৌঁছায়।
+- **`weak` field** অন্য কোনো object-এর দিকে একটা zeroing, non-owning reference
+  ধরে — parent/child graph-কে cycle-মুক্ত রাখার হাতিয়ার। দেখুন
+  [Memory and ownership](/bn/guide/memory/)।
+
 ## Field visibility
 
 Beans-এ field visibility-র তিনটা level:
@@ -191,14 +201,51 @@ class Conn {
 - একটা subclass-এর `deinit` আগে চলে, তারপর তার parent-এরটা, নিজে থেকেই, কোনো
   `override` ছাড়া।
 - `self` কোনো `deinit` থেকে বেরিয়ে যেতে পারবে না।
-- একটা reference cycle-এর ভেতর যে object মরে, তার `deinit` চলে না। cycle-টা নিজে
-  হাতে ভাঙতে হয় (দেখুন [Memory and ownership](/bn/guide/memory/))।
+- একটা reference cycle-এর ভেতর যে object মরে, তার `deinit` চলে না। back
+  edge-টা `weak` field করে declare করুন — leak করার মতো cycle-ই থাকবে না
+  (দেখুন [Memory and ownership](/bn/guide/memory/))।
 
 ## Inheritance আর interface
 
 class একটা base class নেয় `extends` দিয়ে, আর interface implement করে `implements`
 দিয়ে। construction chain হয় `super.init(...)`-এর মধ্য দিয়ে। এটা নিয়ে আছে
 [Interfaces and inheritance](/bn/guide/interfaces/)-এ।
+
+## Self: fluent chain যেটা নিজের type ধরে রাখে
+
+class বা interface-এর instance method `-> Self` declare করতে পারে। প্রতিটা
+call site-এ result-এর type হয় receiver-এর নিজেরই static type — তাই base class
+থেকে inherit করা chain মাঝপথে base-এ নেমে যায় না:
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+class Base {
+    value: int = 0
+    pub fn tune(n: int) -> Self {
+        self.value = self.value + n
+        return self
+    }
+}
+
+class Special extends Base {
+    pub fn only_here() -> int { return self.value * 100 }
+}
+
+fn main() {
+    // tune() আসে Base থেকে, কিন্তু এখানে ফেরত দেয় Special
+    io.println("{new Special().tune(1).tune(2).only_here()}")   // 300
+}
+```
+
+গ্যারান্টিটা body-তেই enforce হয়: Self-returning method-কে `return self`
+করতেই হবে (নয়তো `self`-এর ওপর Self-returning call-এর একটা chain)। override
+আর interface conformance-এ `Self` শুধু `Self`-এর সাথেই মেলে, generic class-এর
+`Self` তার নিজের type parameter বয়ে নেয়, আর layout বা ABI-র কিছুই বদলায় না।
+static method, free function বা async method-এ `Self` নেই।
 
 ## একটা পুরো উদাহরণ
 

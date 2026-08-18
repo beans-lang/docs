@@ -47,6 +47,16 @@ Anything that produces an object belongs on that object's class, as `new` or as
 a named static (for fallible construction, like `File.open`). A module-level
 function is only for work that yields no object.
 
+Two more field forms round out the model:
+
+- **Function-typed fields are callable through member syntax.** A field
+  `on_click: fn() -> int` is invoked as `widget.on_click()` — no local copy
+  needed. When a class has a method and a fn-typed field with the same name,
+  the method wins; the local-copy form still reaches the shadowed field.
+- **`weak` fields** hold a zeroing, non-owning reference to another object —
+  the tool that keeps parent/child graphs cycle-free. See
+  [Memory and ownership](/guide/memory/).
+
 ## Field visibility
 
 Beans has three field visibility levels:
@@ -190,14 +200,52 @@ class Conn {
 - A subclass `deinit` runs first, then its parent's, automatically, with no
   `override`.
 - `self` must not escape a `deinit`.
-- An object that dies inside a reference cycle does not get its `deinit`. Break
-  the cycle by hand (see [Memory and ownership](/guide/memory/)).
+- An object that dies inside a reference cycle does not get its `deinit`.
+  Declare the back edge as a `weak` field and there is no cycle to leak (see
+  [Memory and ownership](/guide/memory/)).
 
 ## Inheritance and interfaces
 
 Classes take one base class with `extends` and implement interfaces with
 `implements`. Construction chains through `super.init(...)`. That is covered in
 [Interfaces and inheritance](/guide/interfaces/).
+
+## Self: fluent chains that keep their type
+
+An instance method of a class or interface may declare `-> Self`. At every
+call site the result has the receiver's own static type, so a chain inherited
+from a base class does not degrade to the base mid-chain:
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+class Base {
+    value: int = 0
+    pub fn tune(n: int) -> Self {
+        self.value = self.value + n
+        return self
+    }
+}
+
+class Special extends Base {
+    pub fn only_here() -> int { return self.value * 100 }
+}
+
+fn main() {
+    // tune() comes from Base but returns Special here
+    io.println("{new Special().tune(1).tune(2).only_here()}")   // 300
+}
+```
+
+The guarantee is enforced in the body: a Self-returning method must
+`return self` (or a chain of Self-returning calls on `self`). Overrides and
+interface conformances match `Self` only against `Self`, a generic class's
+`Self` carries its own type parameters, and nothing about layout or ABI
+changes. `Self` is not available on static methods, free functions, or async
+methods.
 
 ## A complete example
 

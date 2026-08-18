@@ -8,7 +8,7 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **927**
+- Total public symbols: **926**
 - Symbols with an enforced signature: **654**
 - Builtin reference symbols: **314**
 - Standard-library symbols: **599**
@@ -377,7 +377,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `RawSlice` | type |  | `reference/builtins/simd` | ✓ |
 | `Result` | type |  | `reference/builtins/option-result` | ✓ |
 | `RoundingMode` | type |  | `reference/builtins/numbers` | ✓ |
-| `Self` | type |  | `guide/generics` | ✓ |
 | `Send` | type |  | `guide/generics` | ✓ |
 | `Shared` | type |  | `reference/builtins/handles` | ✓ |
 | `Slice` | type |  | `reference/builtins/simd` | ✓ |

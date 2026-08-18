@@ -81,6 +81,26 @@ C library-র সাথে link করা module-এর জন্য একট�
 
 যে order-এ লেখা হবে, linker-এও ঠিক সেই order-এই entry গুলো যাবে।
 
+### `csrc <selector> "<file.c>"` (যতবার খুশি)
+
+package-এর নিজের একটা C source file declare করে। toolchain-ই সেটা compile
+করে, তাই C-wrap করা library-কে prebuilt binary vendor করতে হয় না, consumer-এর
+ঘাড়ে কোনো বাইরের build step-ও চাপে না — `import github.com/owner/lib` এমনিই
+কাজ করে।
+
+- selector `link`-এর মতোই: `all`, একটা OS-এর নাম, বা একটা পুরো triple।
+- path-টা যে `beans.pot` declare করছে তার সাপেক্ষে relative, আর file-টা
+  থাকতেই হবে — না থাকলে সেটা manifest error।
+- native build বাছাই হওয়া প্রতিটা file নিজের Clang আর নিজের flag দিয়ে compile
+  করে একটা content-hash-cached object বানায়, আর সেটা প্রতিটা emit path-এ
+  চড়ে: binary আর shared object-এ link হয়, `--emit static`-এ archive হয়,
+  `--emit obj`-এর output-এর পাশে বসে।
+- `beansc run` বাছাই হওয়া set-টা একবারে একটা host shared library-তে compile
+  করে, cache রাখে `$BEANS_HOME/cache/csrc`-এ, আর `extern "C"` symbol সেটা
+  দিয়েই resolve করে।
+- quote করা `#include "..."` header প্রতিটা source-এর পাশেই resolve হয়।
+- row গুলো local আর Git dependency থেকে ঠিক `link` row-এর মতোই propagate করে।
+
 ## একটু বড় একটা উদাহরণ
 
 ```beans-pot
@@ -91,11 +111,13 @@ link all search "native/lib"
 link all library "shop_native"
 link macos framework "CoreFoundation"
 link x86_64-unknown-linux-gnu library "platform_helper"
+csrc all "native/shim.c"
 ```
 
-এই module-টা একটা application, একটা Git dependency টেনে আনে, আর `native/lib`-এর
+এই module-টা একটা application, একটা Git dependency টেনে আনে, `native/lib`-এর
 নিচে ship করা একটা native library link করে — তার সাথে একটা macOS framework আর
-শুধু Linux-এর জন্য একটা helper।
+শুধু Linux-এর জন্য একটা helper — আর প্রতিটা target-এ নিজের C shim নিজেই
+compile করে।
 
 `require` কীভাবে `beans.lock`-এ যায় সেটা দেখুন [Dependencies আর lock
 file](/bn/pot/dependencies/)-এ, আর `link` কীভাবে C interop-এর সাথে খাপ খায় সেটা

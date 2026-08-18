@@ -81,6 +81,25 @@ Passes a native linker directive, for modules that link against C libraries.
 
 Entries pass to the linker in the order you declare them.
 
+### `csrc <selector> "<file.c>"` (repeatable)
+
+Declares a C source file the package owns. The toolchain compiles it, so a
+C-wrapping library vendors no prebuilt binaries and pushes no external build
+step onto consumers — `import github.com/owner/lib` just works.
+
+- Selectors are the same as `link`: `all`, an OS name, or an exact triple.
+- The path is relative to the `beans.pot` that declares it, and the file must
+  exist — a missing file is a manifest error.
+- Native builds compile each selected file with the build's own Clang and
+  flags into a content-hash-cached object that rides every emit path: linked
+  into binaries and shared objects, archived into `--emit static`, placed
+  beside `--emit obj` output.
+- `beansc run` compiles the selected set once into a host shared library,
+  cached under `$BEANS_HOME/cache/csrc`, and resolves `extern "C"` symbols
+  through it.
+- Quoted `#include "..."` headers resolve beside each source file.
+- Rows propagate from local and Git dependencies exactly like `link` rows.
+
 ## A fuller example
 
 ```beans-pot
@@ -91,11 +110,12 @@ link all search "native/lib"
 link all library "shop_native"
 link macos framework "CoreFoundation"
 link x86_64-unknown-linux-gnu library "platform_helper"
+csrc all "native/shim.c"
 ```
 
-This module is an application, pulls in one Git dependency, and links a native
-library it ships under `native/lib`, plus a macOS framework and one
-Linux-only helper.
+This module is an application, pulls in one Git dependency, links a native
+library it ships under `native/lib` plus a macOS framework and one Linux-only
+helper, and compiles its own C shim on every target.
 
 See [Dependencies and the lock file](/pot/dependencies/) for how `require` feeds
 `beans.lock`, and the [FFI guide](/guide/ffi/) for how `link` fits with C

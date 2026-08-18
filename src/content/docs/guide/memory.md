@@ -36,13 +36,62 @@ outside, and frees the rest.
   overflow the stack.
 - An object that dies **inside a cycle** does not run its `deinit`. A cycle
   never drops to zero on its own, so if the object owns a resource (a file, a
-  socket), that resource is not released. Break the cycle by hand with a
-  `Weak<T>`, described below.
+  socket), that resource is not released. The declarative fix is a `weak`
+  field, described next; `Shared<T>` cycles use `Weak<T>` instead.
 
 :::note[Known limit]
 Collection is deferred while worker threads run. A program that churns cycles
 forever beside a long-lived worker can grow until that worker exits.
 :::
+
+## weak fields
+
+A class field declared `weak` is a **zeroing reference**: it holds no
+ownership count on its referent, so it never forms a cycle edge. Its type must
+be `Option<C>` for a non-`unique` class `C`, and its default must be `none`.
+
+<!-- beans:compile -->
+```beans
+package main
+
+import std.io
+
+class Node {
+    name: string = ""
+    child: Option<Node> = none        // owning: parent keeps child alive
+    weak parent: Option<Node> = none  // non-owning: zeroes when parent dies
+
+    fn deinit() { io.println("gone {self.name}") }
+}
+
+fn main() {
+    let parent: Node = new Node()
+    parent.name = "parent"
+    let child: Node = new Node()
+    child.name = "child"
+    child.parent = some(parent)
+    parent.child = some(child)
+    match child.parent {
+        some(found) => { io.println("up: {found.name}") }
+        none => { io.println("up: gone") }
+    }
+}
+// up: parent, then both deinits run — the back edge is weak, so
+// there is no cycle to leak
+```
+
+Reads produce the declared `Option<C>`: `some` while the referent is alive —
+the loaded value is retained for the read, so it cannot die mid-use — and
+`none` from the first moment of the referent's death, *before* its `deinit`
+body runs, so a destructor can never resurrect itself through a weak slot.
+When the collector kills a strong cycle, weak fields pointing into that cycle
+read `none` from the kill onward.
+
+Build the back edge of every parent/child graph and every stored callback
+that points at its owner as `weak`, and both sides get their `deinit`. The
+slot's storage is a zeroing handle rather than the object, so weak fields are
+invisible to reflection. `weak` is for instance fields of classes only — no
+statics, no structs, no locals.
 
 ## Move
 

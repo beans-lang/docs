@@ -114,6 +114,18 @@ fn round_rule() {}      // package-private helper
 - **কোনো semicolon নেই।** একটা newline statement শেষ করে (তবে শুধু এমন একটা
   token-এর পরে যেটা statement শেষ করতে পারে)। এই কারণেই `} else {` একই লাইনে
   বসতে হয়।
+- **Method chain একাধিক লাইনে ভাঙা যায়।** chain ভাঙা যায় লাইন-শেষের `.`-এর
+  পরে (একটা dot কখনও statement শেষ করতে পারে না), কিংবা লাইন-শুরুর
+  `.name`-এর আগে (পরের লাইন member access দিয়ে শুরু হলে newline আর
+  terminator নয়)। `..` range operator-ই থেকে যায়, সে কখনও লাইন continue করে
+  না।
+
+  ```beans
+  let total: int = View.make("root")
+      .pad(2)
+      .child(View.make("leaf"))
+      .depth()
+  ```
 - **Comment:** এক লাইনের জন্য `//`, একটা block-এর জন্য `/* ... */` (block-গুলো
   nest হতে পারে)।
 - **condition-এর চারপাশে parenthesis নেই:** `if x > 3 { }`। brace সবসময় লাগবে।

@@ -113,6 +113,17 @@ fn round_rule() {}      // package-private helper
 
 - **No semicolons.** A newline ends a statement (only after a token that can end
   one). Because of that, `} else {` must sit on one line.
+- **Method chains span lines.** A chain may break after a trailing `.` (a dot
+  can never end a statement) or before a leading `.name` (a newline is not a
+  terminator when the next line begins a member access). `..` stays a range
+  operator and never continues a line.
+
+  ```beans
+  let total: int = View.make("root")
+      .pad(2)
+      .child(View.make("leaf"))
+      .depth()
+  ```
 - **Comments:** `//` for a line, `/* ... */` for a block (blocks may nest).
 - **No parentheses around conditions:** `if x > 3 { }`. Braces are always
   required.
