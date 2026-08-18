@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { BEANS_REPO } from './paths.mjs';
+import { BEANS_REPO, compilerSource } from './paths.mjs';
 
 // The single authority for "is this name a builtin type" is `builtin_type()` in
 // compiler/beans/resolve.b (public, self-hosted compiler). We parse the exact
@@ -10,7 +10,7 @@ import { BEANS_REPO } from './paths.mjs';
 export function extractBuiltinTypeNames() {
   if (!BEANS_REPO) throw new Error('Beans repo not found (set BEANS_REPO).');
   const src = fs.readFileSync(
-    path.join(BEANS_REPO, 'compiler', 'beans', 'resolve.b'),
+    compilerSource('resolve.b'),
     'utf8',
   );
   const start = src.indexOf('fn builtin_type(');

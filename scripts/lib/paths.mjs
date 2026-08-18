@@ -14,12 +14,27 @@ function findRepo() {
     path.resolve(WEBSITE_ROOT, 'beans'),
   ].filter(Boolean);
   for (const c of candidates) {
+    // Current layout: self-hosted sources in src/ and the version numbers in
+    // VERSION. The compiler/version.h probe keeps older checkouts working.
+    if (
+      fs.existsSync(path.join(c, 'VERSION')) &&
+      fs.existsSync(path.join(c, 'src', 'main.b'))
+    )
+      return c;
     if (fs.existsSync(path.join(c, 'compiler', 'version.h'))) return c;
   }
   return null;
 }
 
 export const BEANS_REPO = findRepo();
+
+// A checker source file, wherever this checkout keeps it: src/ today,
+// compiler/beans/ in older layouts.
+export function compilerSource(name) {
+  const current = path.join(BEANS_REPO, 'src', name);
+  if (fs.existsSync(current)) return current;
+  return path.join(BEANS_REPO, 'compiler', 'beans', name);
+}
 export const DOCS_DIR = path.join(WEBSITE_ROOT, 'src', 'content', 'docs');
 export const DATA_DIR = path.join(WEBSITE_ROOT, 'data');
 

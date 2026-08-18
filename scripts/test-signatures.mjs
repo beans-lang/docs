@@ -8,7 +8,7 @@ import path from 'node:path';
 import { extractStdlibSignatures } from './lib/extract-signatures.mjs';
 import { extractBuiltinSignatures } from './lib/extract-builtin-signatures.mjs';
 import { buildInventory } from './lib/inventory.mjs';
-import { BEANS_REPO } from './lib/paths.mjs';
+import { BEANS_REPO, compilerSource } from './lib/paths.mjs';
 
 if (!BEANS_REPO) {
   console.error('test:signatures: Beans repo not found. Set BEANS_REPO to the beans checkout.');
@@ -91,7 +91,7 @@ ok(bi.modules['std.os']?.some((f) => f.signature === 'args() -> List<string>'), 
 
 // Completeness: every name-matched builtin method in the checker source is
 // produced by the evaluator (guards against a new receiver/name slipping past).
-const src = fs.readFileSync(path.join(BEANS_REPO, 'compiler', 'beans', 'expression.b'), 'utf8');
+const src = fs.readFileSync(compilerSource('expression.b'), 'utf8');
 function fnBody(name) {
   const s = src.indexOf(`fn ${name}(`);
   const b = src.indexOf('{', s);

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { BEANS_REPO } from './paths.mjs';
+import { BEANS_REPO, compilerSource } from './paths.mjs';
 
 // Generate canonical signatures for the built-in methods, statics and module
 // functions straight from the checker's own typed registry
@@ -57,7 +57,7 @@ const BASE_ENV = {
 
 function readExpressionSource() {
   if (!BEANS_REPO) throw new Error('Beans repo not found (set BEANS_REPO).');
-  return fs.readFileSync(path.join(BEANS_REPO, 'compiler', 'beans', 'expression.b'), 'utf8');
+  return fs.readFileSync(compilerSource('expression.b'), 'utf8');
 }
 
 // The body text of a top-level `fn NAME(...) { ... }` in a source string.
