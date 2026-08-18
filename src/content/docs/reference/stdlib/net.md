@@ -4,7 +4,7 @@ description: TCP and UDP sockets, address resolution, and async readiness helper
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 5 types · 1 constructor · 6 static methods · 32 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 5 types · 1 constructor · 6 static methods · 34 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
 `std.net` provides TCP and UDP sockets, name resolution, and two async readiness
@@ -201,6 +201,20 @@ fn main() {
     io.println("from {note.from.to_string()}: {note.data.to_string()}")
 }
 ```
+
+### Multicast
+
+```beans
+pub fn join_multicast(group: string) -> Result<bool>
+pub fn leave_multicast(group: string) -> Result<bool>
+```
+
+Joins or leaves a multicast group, so datagrams sent to the group arrive on this
+socket. The group is a **numeric** address — `"239.1.2.3"` or `"ff02::1"` —
+because a name can resolve to anything and membership of the wrong group is
+silent. The socket must be bound to the same address family. Leaving a group this
+socket never joined is an `err` from the OS rather than a silent no-op: it is
+always a bookkeeping mistake in the caller.
 
 ## Async readiness
 

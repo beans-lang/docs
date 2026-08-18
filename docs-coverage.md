@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **926**
-- Symbols with an enforced signature: **654**
+- Total public symbols: **1101**
+- Symbols with an enforced signature: **745**
 - Builtin reference symbols: **314**
-- Standard-library symbols: **599**
+- Standard-library symbols: **774**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -573,12 +573,52 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `transform` | function | `pub fn transform<T implements Clone, U>(values: List<T>, apply: fn(T) -> U) -> List<U>` | `reference/stdlib/collections` | ✓ |
 | `unique` | function | `pub fn unique<T implements Eq & Hash & Clone>(values: List<T>) -> List<T>` | `reference/stdlib/collections` | ✓ |
 
+## std.compress
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `deflate` | function | `pub fn deflate(data: Bytes, level: int = 6) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `deflate_raw` | function | `pub fn deflate_raw(data: Bytes, level: int = 6) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `Deflater` | class |  | `reference/stdlib/compress` | ✓ |
+| `Deflater.finish` | method | `pub fn finish() -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `Deflater.open` | static | `pub static fn open(format: Format, level: int = 6) -> Result<Deflater>` | `reference/stdlib/compress` | ✓ |
+| `Deflater.push` | method | `pub fn push(data: Bytes) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `Format` | enum |  | `reference/stdlib/compress` | ✓ |
+| `Format.gzip` | variant |  | `reference/stdlib/compress` | ✓ |
+| `Format.raw` | variant |  | `reference/stdlib/compress` | ✓ |
+| `Format.zlib` | variant |  | `reference/stdlib/compress` | ✓ |
+| `gzip_compress` | function | `pub fn gzip_compress(data: Bytes, level: int = 6) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `gzip_decompress` | function | `pub fn gzip_decompress(data: Bytes, limit: int) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `inflate` | function | `pub fn inflate(data: Bytes, limit: int) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `inflate_raw` | function | `pub fn inflate_raw(data: Bytes, limit: int) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `Inflater` | class |  | `reference/stdlib/compress` | ✓ |
+| `Inflater.finish` | method | `pub fn finish() -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+| `Inflater.finished` | method | `pub fn finished() -> bool` | `reference/stdlib/compress` | ✓ |
+| `Inflater.open` | static | `pub static fn open(format: Format, limit: int) -> Result<Inflater>` | `reference/stdlib/compress` | ✓ |
+| `Inflater.push` | method | `pub fn push(data: Bytes) -> Result<Bytes>` | `reference/stdlib/compress` | ✓ |
+
 ## std.cpu
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `std.cpu.has` | function | `has(CpuFeature) -> bool` | `reference/stdlib/cpu-intrinsic` | ✓ |
 | `std.cpu.has_name` | function | `has_name(string) -> bool` | `reference/stdlib/cpu-intrinsic` | ✓ |
+
+## std.crypto
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Algorithm` | enum |  | `reference/stdlib/crypto` | ✓ |
+| `Algorithm.sha1` | variant |  | `reference/stdlib/crypto` | ✓ |
+| `Algorithm.sha256` | variant |  | `reference/stdlib/crypto` | ✓ |
+| `available` | function | `pub fn available() -> bool` | `reference/stdlib/crypto` | ✓ |
+| `Hasher` | class |  | `reference/stdlib/crypto` | ✓ |
+| `Hasher.finish` | method | `pub fn finish() -> Result<Bytes>` | `reference/stdlib/crypto` | ✓ |
+| `Hasher.open` | static | `pub static fn open(algorithm: Algorithm) -> Result<Hasher>` | `reference/stdlib/crypto` | ✓ |
+| `Hasher.update` | method | `pub fn update(data: Bytes) -> Result<bool>` | `reference/stdlib/crypto` | ✓ |
+| `hmac` | function | `pub fn hmac(algorithm: Algorithm, key: Bytes, data: Bytes) -> Result<Bytes>` | `reference/stdlib/crypto` | ✓ |
+| `sha1` | function | `pub fn sha1(data: Bytes) -> Result<Bytes>` | `reference/stdlib/crypto` | ✓ |
+| `sha256` | function | `pub fn sha256(data: Bytes) -> Result<Bytes>` | `reference/stdlib/crypto` | ✓ |
 
 ## std.dylib
 
@@ -844,6 +884,123 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `write` | function | `pub fn write(path: string, data: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 | `write_bytes` | function | `pub fn write_bytes(path: string, data: Bytes) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 
+## std.http
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Client` | class |  | `reference/stdlib/http` | ✓ |
+| `Client.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Client.connect` | static | `pub static fn connect(host: string, port: int) -> Result<Client>` | `reference/stdlib/http` | ✓ |
+| `Client.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<Client>` | `reference/stdlib/http` | ✓ |
+| `Client.get` | method | `pub fn get(target: string) -> Result<ClientResponse>` | `reference/stdlib/http` | ✓ |
+| `Client.is_alive` | method | `pub fn is_alive() -> bool` | `reference/stdlib/http` | ✓ |
+| `Client.request` | method | `pub fn request(method: string, target: string, headers: Headers, body: Bytes) -> Result<ClientResponse>` | `reference/stdlib/http` | ✓ |
+| `Client.set_max_body` | method | `pub fn set_max_body(limit: int)` | `reference/stdlib/http` | ✓ |
+| `ClientResponse` | class |  | `reference/stdlib/http` | ✓ |
+| `ClientResponse.body` | field |  | `reference/stdlib/http` | ✓ |
+| `ClientResponse.headers` | field |  | `reference/stdlib/http` | ✓ |
+| `ClientResponse.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
+| `ClientResponse.reason` | field |  | `reference/stdlib/http` | ✓ |
+| `ClientResponse.status` | field |  | `reference/stdlib/http` | ✓ |
+| `Field` | class |  | `reference/stdlib/http` | ✓ |
+| `Field.name` | field |  | `reference/stdlib/http` | ✓ |
+| `Field.value` | field |  | `reference/stdlib/http` | ✓ |
+| `Headers` | class |  | `reference/stdlib/http` | ✓ |
+| `Headers.add` | method | `pub fn add(name: string, value: string)` | `reference/stdlib/http` | ✓ |
+| `Headers.all` | method | `pub fn all(name: string) -> List<string>` | `reference/stdlib/http` | ✓ |
+| `Headers.count` | method | `pub fn count() -> int` | `reference/stdlib/http` | ✓ |
+| `Headers.get` | method | `pub fn get(name: string) -> Option<string>` | `reference/stdlib/http` | ✓ |
+| `Headers.has` | method | `pub fn has(name: string) -> bool` | `reference/stdlib/http` | ✓ |
+| `Headers.name_at` | method | `pub fn name_at(index: int) -> string` | `reference/stdlib/http` | ✓ |
+| `Headers.value_at` | method | `pub fn value_at(index: int) -> string` | `reference/stdlib/http` | ✓ |
+| `Http2Connection` | class |  | `reference/stdlib/http` | ✓ |
+| `Http2Connection.adopt` | static | `pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.request` | method | `pub fn request(method: string, scheme: string, authority: string, path: string, fields: Headers, body: Bytes) -> Result<int>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.respond` | method | `pub fn respond(stream_id: int, status: int, fields: Headers, body: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.run` | method | `pub fn run() -> Result<List<Http2Event>>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.windows` | method | `pub fn windows() -> List<int>` | `reference/stdlib/http` | ✓ |
+| `Http2Event` | enum |  | `reference/stdlib/http` | ✓ |
+| `Http2Event.goaway` | variant |  | `reference/stdlib/http` | ✓ |
+| `Http2Event.message` | variant |  | `reference/stdlib/http` | ✓ |
+| `Http2Event.stream_closed` | variant |  | `reference/stdlib/http` | ✓ |
+| `Limits` | class |  | `reference/stdlib/http` | ✓ |
+| `Limits.max_header_bytes` | field |  | `reference/stdlib/http` | ✓ |
+| `Limits.max_header_count` | field |  | `reference/stdlib/http` | ✓ |
+| `Limits.max_target_bytes` | field |  | `reference/stdlib/http` | ✓ |
+| `new Field` | constructor | `new Field(name: string, value: string)` | `reference/stdlib/http` | ✓ |
+| `new Headers` | constructor | `new Headers()` | `reference/stdlib/http` | ✓ |
+| `new Limits` | constructor | `new Limits()` | `reference/stdlib/http` | ✓ |
+| `new RequestParser` | constructor | `new RequestParser()` | `reference/stdlib/http` | ✓ |
+| `new ResponseParser` | constructor | `new ResponseParser()` | `reference/stdlib/http` | ✓ |
+| `Request` | class |  | `reference/stdlib/http` | ✓ |
+| `Request.chunked` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.content_length` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.headers` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.major` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.method` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.minor` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.target` | field |  | `reference/stdlib/http` | ✓ |
+| `Request.upgrade` | field |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent` | enum |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent.body` | variant |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent.done` | variant |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent.head` | variant |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent.trailers` | variant |  | `reference/stdlib/http` | ✓ |
+| `RequestEvent.upgraded` | variant |  | `reference/stdlib/http` | ✓ |
+| `RequestParser` | class |  | `reference/stdlib/http` | ✓ |
+| `RequestParser.feed` | method | `pub fn feed(data: Bytes) -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.finish` | method | `pub fn finish() -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.with_limits` | static | `pub static fn with_limits(limits: Limits) -> RequestParser` | `reference/stdlib/http` | ✓ |
+| `Response` | class |  | `reference/stdlib/http` | ✓ |
+| `Response.chunked` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.content_length` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.headers` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.major` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.minor` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.reason` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.status` | field |  | `reference/stdlib/http` | ✓ |
+| `Response.upgrade` | field |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent` | enum |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent.body` | variant |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent.done` | variant |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent.head` | variant |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent.trailers` | variant |  | `reference/stdlib/http` | ✓ |
+| `ResponseEvent.upgraded` | variant |  | `reference/stdlib/http` | ✓ |
+| `ResponseParser` | class |  | `reference/stdlib/http` | ✓ |
+| `ResponseParser.feed` | method | `pub fn feed(data: Bytes) -> Result<List<ResponseEvent>>` | `reference/stdlib/http` | ✓ |
+| `ResponseParser.finish` | method | `pub fn finish() -> Result<List<ResponseEvent>>` | `reference/stdlib/http` | ✓ |
+| `ResponseParser.with_limits` | static | `pub static fn with_limits(limits: Limits) -> ResponseParser` | `reference/stdlib/http` | ✓ |
+| `ServedRequest` | class |  | `reference/stdlib/http` | ✓ |
+| `ServedRequest.body` | field |  | `reference/stdlib/http` | ✓ |
+| `ServedRequest.head` | field |  | `reference/stdlib/http` | ✓ |
+| `ServedRequest.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
+| `ServedRequest.trailer_fields` | field |  | `reference/stdlib/http` | ✓ |
+| `Server` | class |  | `reference/stdlib/http` | ✓ |
+| `Server.accept` | method | `pub fn accept() -> Result<ServerConn>` | `reference/stdlib/http` | ✓ |
+| `Server.accept_timeout` | method | `pub fn accept_timeout(ms: int) -> Result<ServerConn>` | `reference/stdlib/http` | ✓ |
+| `Server.bind` | static | `pub static fn bind(host: string, port: int) -> Result<Server>` | `reference/stdlib/http` | ✓ |
+| `Server.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/http` | ✓ |
+| `Server.set_read_timeout` | method | `pub fn set_read_timeout(ms: int)` | `reference/stdlib/http` | ✓ |
+| `ServerConn` | class |  | `reference/stdlib/http` | ✓ |
+| `ServerConn.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ServerConn.is_alive` | method | `pub fn is_alive() -> bool` | `reference/stdlib/http` | ✓ |
+| `ServerConn.read_request` | method | `pub fn read_request() -> Result<Option<ServedRequest>>` | `reference/stdlib/http` | ✓ |
+| `ServerConn.respond` | method | `pub fn respond(status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ServerConn.set_max_body` | method | `pub fn set_max_body(limit: int)` | `reference/stdlib/http` | ✓ |
+| `Stream` | class |  | `reference/stdlib/http` | ✓ |
+| `Stream.body` | field |  | `reference/stdlib/http` | ✓ |
+| `Stream.complete` | field |  | `reference/stdlib/http` | ✓ |
+| `Stream.headers` | field |  | `reference/stdlib/http` | ✓ |
+| `Stream.id` | field |  | `reference/stdlib/http` | ✓ |
+| `Stream.method` | method | `pub fn method() -> string` | `reference/stdlib/http` | ✓ |
+| `Stream.path` | method | `pub fn path() -> string` | `reference/stdlib/http` | ✓ |
+| `Stream.status` | method | `pub fn status() -> int` | `reference/stdlib/http` | ✓ |
+
 ## std.intrinsic
 
 | Symbol | Kind | Signature | Page | Documented |
@@ -928,6 +1085,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `UdpSocket` | class |  | `reference/stdlib/net` | ✓ |
 | `UdpSocket.bind` | static | `pub static fn bind(host: string, port: int) -> Result<UdpSocket>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/net` | ✓ |
+| `UdpSocket.join_multicast` | method | `pub fn join_multicast(group: string) -> Result<bool>` | `reference/stdlib/net` | ✓ |
+| `UdpSocket.leave_multicast` | method | `pub fn leave_multicast(group: string) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.local_address` | method | `pub fn local_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/net` | ✓ |
@@ -1264,3 +1423,44 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `std.time.sleep_nanos` | function | `sleep_nanos(int)` | `reference/stdlib/time-random` | ✓ |
 | `std.time.wall_millis` | function | `wall_millis() -> int` | `reference/stdlib/time-random` | ✓ |
 | `std.time.wall_nanos` | function | `wall_nanos() -> int` | `reference/stdlib/time-random` | ✓ |
+
+## std.tls
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `available` | function | `pub fn available() -> bool` | `reference/stdlib/tls` | ✓ |
+| `TlsStream` | class |  | `reference/stdlib/tls` | ✓ |
+| `TlsStream.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.connect` | static | `pub static fn connect(host: string, port: int, alpn: string) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, alpn: string, ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.connect_with_roots` | static | `pub static fn connect_with_roots(host: string, port: int, alpn: string, extra_roots: Bytes, ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.protocol` | method | `pub fn protocol() -> string` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.read` | method | `pub fn read(max: int) -> Result<Bytes>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.read_exact` | method | `pub fn read_exact(count: int) -> Result<Bytes>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.write` | method | `pub fn write(data: Bytes) -> Result<int>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.write_all` | method | `pub fn write_all(data: Bytes) -> Result<int>` | `reference/stdlib/tls` | ✓ |
+
+## std.websocket
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `accept_for_key` | function | `pub fn accept_for_key(key: string) -> Result<string>` | `reference/stdlib/websocket` | ✓ |
+| `Connection` | class |  | `reference/stdlib/websocket` | ✓ |
+| `Connection.accept` | static | `pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.close` | method | `pub fn close(code: int, reason: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.connect` | static | `pub static fn connect(host: string, port: int, target: string) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, target: string, ms: int) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/websocket` | ✓ |
+| `Connection.peer_close_code` | method | `pub fn peer_close_code() -> int` | `reference/stdlib/websocket` | ✓ |
+| `Connection.ping` | method | `pub fn ping(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.pong` | method | `pub fn pong(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.receive` | method | `pub fn receive() -> Result<Option<Message>>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.send_binary` | method | `pub fn send_binary(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.send_text` | method | `pub fn send_text(body: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.wrap` | static | `pub static fn wrap(move stream: net.TcpStream, server: bool, max_message: int = 8388608) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Message` | enum |  | `reference/stdlib/websocket` | ✓ |
+| `Message.binary` | variant |  | `reference/stdlib/websocket` | ✓ |
+| `Message.closed` | variant |  | `reference/stdlib/websocket` | ✓ |
+| `Message.ping` | variant |  | `reference/stdlib/websocket` | ✓ |
+| `Message.pong` | variant |  | `reference/stdlib/websocket` | ✓ |
+| `Message.text` | variant |  | `reference/stdlib/websocket` | ✓ |
