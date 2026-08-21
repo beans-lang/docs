@@ -14,7 +14,7 @@ Strings are byte-based. `len()` returns the number of bytes, not characters, and
 this never changes. Indexes into a string are byte positions.
 
 The string type is a native builtin, reached through the runtime ABI table at
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+[`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
 ## Making and joining strings
 

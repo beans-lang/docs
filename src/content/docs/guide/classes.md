@@ -204,11 +204,38 @@ class Conn {
   Declare the back edge as a `weak` field and there is no cycle to leak (see
   [Memory and ownership](/guide/memory/)).
 
+## Partial classes
+
+`partial class Name` splits one class across files in the same package. Every
+part says `partial`; exactly one primary part carries modifiers, generic
+parameters, `extends`, and `implements`. Other parts use only
+`partial class Name { ... }`. All fields and methods belong to one class, and a
+duplicate member is still an error.
+
+```beans
+// shape.b
+pub partial class Shape extends Figure {
+    name: string
+}
+
+// shape_text.b
+partial class Shape {
+    fn describe() -> string { return self.name }
+}
+```
+
+The primary is decided by its header, not file load order. `partial` remains an
+ordinary name anywhere except directly before `class`.
+
 ## Inheritance and interfaces
 
 Classes take one base class with `extends` and implement interfaces with
 `implements`. Construction chains through `super.init(...)`. That is covered in
 [Interfaces and inheritance](/guide/interfaces/).
+
+Compiler-owned builtin types such as `Bytes`, `File`, and `List` cannot be base
+classes. The compiler rejects `class X extends Bytes` at that declaration; it
+does not continue and report a missing parent constructor later.
 
 ## Self: fluent chains that keep their type
 

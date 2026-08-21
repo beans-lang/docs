@@ -24,11 +24,11 @@ behavior বদলানোর সময় এই order-এ test চালা�
 1. যেটা ছোঁয়া হয়েছে তার জন্য **সবচেয়ে ছোট focused test**।
 2. `make test`।
 3. `make test-sanitize`, ownership, runtime, concurrency, FFI, বা codegen বদলালে।
-4. `make test-bootstrap`, frontend, MIR, বা compiler বদলালে।
+4. `make test-fixpoint`, frontend, MIR, বা compiler বদলালে।
 
-যেহেতু Beans self-hosted, একটা compiler change-কে নিজেকে build করতে পারা ধরে
-রাখতে হয়: stage2 আর stage3-এর output byte-identical থাকতেই হবে
-(`make test-bootstrap`)।
+যেহেতু Beans self-hosted, compiler change-কে নিজেকে build করতে পারা ধরে রাখতে
+হয়: release mode-এর দুই self-build byte-identical থাকতে হবে
+(`make test-fixpoint`)।
 
 ## কোড style-এর গোড়ার কথা
 

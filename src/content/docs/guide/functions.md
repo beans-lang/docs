@@ -130,6 +130,23 @@ closure is built, using the moved local is a use-after-move error. Copying the
 closure value shares the same closure and its captures — fn values are shared,
 so single ownership of the capture is never violated.
 
+### Sendable function values
+
+`send fn(...) -> T` is the function type for moving work to another thread. It
+is move-only and implements `Send`, but not `Sync` or `Clone`. Every capture
+must be `Send`; a mutable, move-only, or non-`Sync` capture must also appear in
+`move(...)`.
+
+```beans
+let bytes: Bytes = Bytes.filled(1024, 0)
+let work: send fn() -> int =
+    fn() move(bytes) -> int { return bytes.len() }
+```
+
+A named function can become a `send fn` when its signature fits. A plain
+closure value never silently converts; a direct closure passed to
+`thread.spawn` is inferred in that sendable context.
+
 ## Methods and statics
 
 Functions defined inside a class are methods; `static fn` declares a class

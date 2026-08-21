@@ -4,7 +4,7 @@ description: RFC 6455 WebSocket over std.http's upgrade, yielding whole messages
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 package function · 2 types · 4 static methods · 8 instance methods · 5 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 5 package functions · 3 types · 7 static methods · 18 instance methods · 5 enum variants.
 <!-- coverage:summary:end -->
 
 `std.websocket` speaks RFC 6455 on top of [`std.http`](/reference/stdlib/http/)'s
@@ -42,12 +42,21 @@ match), `eof` (the connection ended without a close frame), `closed`.
 ## Module functions
 
 ```beans
+pub fn available() -> bool
 pub fn accept_for_key(key: string) -> Result<string>
+pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
+pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
 ```
+
+`available` reports whether the native framing bridge is present.
 
 The `Sec-WebSocket-Accept` value for a client's `Sec-WebSocket-Key`: base64 of
 SHA-1 over the key and one fixed UUID. A server that gets this wrong is rejected
 by every browser, which makes it the most-tested line in the protocol.
+
+The three generic helpers upgrade, wrap, or accept any owned `net.ByteStream`.
+Use them for TLS. The static methods below expose the same operations.
 
 ## Message
 
@@ -65,12 +74,39 @@ pub enum Message {
 }
 ```
 
-## Connection
+## WebSocketTransport
 
-A WebSocket connection over an established TCP stream. Move-only: it owns the
-socket and closes it.
+A move-only WebSocket over any owned byte stream:
 
 ```beans
+pub unique class WebSocketTransport<T implements net.ByteStream> implements Send
+
+pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
+pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub fn receive() -> Result<Option<Message>>
+pub fn send_text(body: string) -> Result<bool>
+pub fn send_binary(body: Bytes) -> Result<bool>
+pub fn ping(body: Bytes) -> Result<bool>
+pub fn pong(body: Bytes) -> Result<bool>
+pub fn close(code: int, reason: string) -> Result<bool>
+pub fn peer_close_code() -> int
+pub fn is_open() -> bool
+pub fn poll_handle() -> int
+```
+
+`upgrade` writes and verifies the client-side HTTP handshake over a connected
+stream. `accept` writes the server-side 101 response for a request already
+parsed by `std.http`. `wrap` takes a stream whose handshake is already done.
+
+## Connection
+
+`Connection` is the raw-TCP wrapper. It owns the socket, implements `Send`, and
+has the same instance methods as `WebSocketTransport`.
+
+```beans
+pub unique class Connection implements Send
+
 pub static fn connect(host: string, port: int, target: string) -> Result<Connection>
 pub static fn connect_timeout(host: string, port: int, target: string, ms: int) -> Result<Connection>
 pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>
@@ -83,6 +119,7 @@ pub fn pong(body: Bytes) -> Result<bool>
 pub fn close(code: int, reason: string) -> Result<bool>
 pub fn peer_close_code() -> int
 pub fn is_open() -> bool
+pub fn poll_handle() -> int
 ```
 
 `connect` does the TCP connect, the HTTP upgrade and the accept-value check.
@@ -94,6 +131,8 @@ finished; `peer_close_code()` is the code the peer sent, or 0.
 and writes the 101 response itself, so the caller hands over a socket that has
 not been answered yet. `wrap` takes an already-upgraded socket, for a caller who
 ran the handshake themselves.
+
+`poll_handle` returns the borrowed transport handle for a readiness poller.
 
 ## A client
 

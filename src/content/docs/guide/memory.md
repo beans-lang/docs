@@ -32,6 +32,8 @@ outside, and frees the rest.
 
 - It runs only between statements, when no worker threads are live, and once
   more at exit.
+- Worker threads batch possible-cycle roots before publishing them. A normal
+  release on a worker does not take one global collector lock.
 - All walks are iterative, so even a very large dropped structure will not
   overflow the stack.
 - An object that dies **inside a cycle** does not run its `deinit`. A cycle
@@ -110,9 +112,11 @@ fn main() {
 ```
 
 A `var` can be moved out and then reassigned a fresh value before its next read.
-Parameters, loop variables, match bindings, and closure captures are borrowed,
-so they cannot be moved. See [Variables and constants](/guide/variables/) for
-the full move, `move` parameter, and `inout` rules.
+Parameters, loop variables, and match bindings are borrowed, so they cannot be
+moved. Closure captures borrow by default, but `fn() move(a, b) { ... }`
+explicitly transfers named locals into the closure. See [Variables and
+constants](/guide/variables/) for the full move, move-capture, `move` parameter,
+and `inout` rules.
 
 ## Move-only handles
 
@@ -177,10 +181,18 @@ thread; use `Box<T>` when one owner is obvious, since it needs no atomic count.
 
 ## Send and Sync
 
-Plain class references, `List`, `Map`, `Box`, `Arena`, `Bytes`, `File`, and
-`MMap` are **not `Send`**: they are local reference values by default. Scalars,
-immutable strings, `AtomicInt`, `Mutex`, a `Channel` of `Send` values, and
-`Shared`/`Weak` of `Send + Sync` types can cross a thread boundary.
+Plain class references are **not `Send`** by default. Containers derive it from
+what they own: `List<T>`, `Box<T>`, and `Arena<T>` are `Send` when `T` is;
+`Map<K, V>` and `OrderedMap<K, V>` require both types. `Bytes`, `File`, and
+`MMap` are move-only `Send` owners, but not `Sync`, so ownership can cross a
+thread boundary without creating a mutable alias. Scalars, immutable strings,
+`Error`, matching `Option`/`Result` values, network owners, `AtomicInt`, a
+`Mutex` or `Channel` of `Send` values, and `Shared`/`Weak` of `Send + Sync`
+types can also cross.
+
+`send fn(...) -> T` is a move-only function value for a thread handoff. Every
+capture must be `Send`; mutable, move-only, or non-`Sync` captures must be named
+in `move(...)`.
 `thread.spawn` rejects a closure that captures or returns a non-`Send` value, so
 you cannot silently race shared mutable data. Wrap it in a `Mutex` instead. See
 [Concurrency](/guide/concurrency/).

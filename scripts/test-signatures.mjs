@@ -107,7 +107,12 @@ function fnBody(name) {
 }
 const PREDICATE = new Set(['<int>', '<float>', '<simd>']);
 // Receivers documented through the curated inventory rather than the evaluator.
-const CURATED_RECV = new Set(['StoredCallback', 'CFunctionPtr', 'decimal']);
+const CURATED_RECV = new Set([
+  'StoredCallback',
+  'LocalStoredCallback',
+  'CFunctionPtr',
+  'decimal',
+]);
 const covered = new Set();
 for (const r of Object.keys(bi.methods)) for (const m of bi.methods[r]) covered.add(`${r}.${m.name}`);
 let recv = null;

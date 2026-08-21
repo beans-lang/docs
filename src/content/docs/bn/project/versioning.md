@@ -9,21 +9,21 @@ Beans-এর version কত সেটা বলার একটাই জায�
 ## version-এর একটাই সত্যের উৎস
 
 সব version number আসে একটা ফাইল থেকে:
-[`compiler/version.h`](https://github.com/beans-lang/beans/blob/main/compiler/version.h)।
+[`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)।
 
 ```text
-version              = "0.1.18"
-language_version     = "1.0"
-runtime_abi_version  = 6
+compiler=0.1.26
+language=1.0
+runtime_abi=7
 ```
 
-- **version**: compiler-এর version (`0.1.18`)।
-- **language_version**: language-এর version (`1.0`)।
-- **runtime_abi_version**: runtime ABI number (`6`)।
+- **compiler**: compiler-এর version (`0.1.26`)।
+- **language**: language-এর version (`1.0`)।
+- **runtime_abi**: runtime ABI number (`7`)।
 
-ওই header থেকেই `compiler/beans/version.b` generate হয়। একটা test
+ওই file থেকেই `src/version.b` generate হয়। একটা test
 (`test/version.sh`) পুরানো একটা copy মানতে চায় না, তাই generate হওয়া Beans ফাইল
-কখনো header থেকে সরে যেতে পারে না।
+কখনো `VERSION` থেকে সরে যেতে পারে না।
 
 `beansc --version` তিনটাই ছাপায়।
 

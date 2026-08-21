@@ -48,7 +48,8 @@ job = next_job()                 // reinitializes it
 
 checker use-after-move reject করে, আর শুধু এক branch-এ move হওয়া value-ও reject
 করে (প্রতিটা branch-এ move হলে সেটা ঠিক আছে)। সাধারণ parameter, loop variable,
-match binding, আর closure capture — এগুলো borrow করা, তাই এদের move করা যায় না।
+আর match binding borrow করা, তাই move করা যায় না। closure default-এ borrow করে;
+`fn() move(a, b) { ... }` named local-গুলো closure-এ move করে।
 
 ## Parameter: borrow, move, inout
 

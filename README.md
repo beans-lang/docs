@@ -6,10 +6,10 @@ language](https://github.com/beans-lang/beans). Built with
 directory; the built site is a static bundle that runs on GitHub Pages under the
 `/docs/` base path and needs no backend or network access.
 
-The published reference tracks Beans `0.1.15` (language contract `1.0`, runtime
-ABI `5`), including allocation-free stable collection loops, direct Base64
-buffers, consumed JSON/XML decoding, direct file and socket paths, OOP features,
-and runtime reflection.
+The published reference tracks Beans `0.1.26` (language contract `1.0`, runtime
+ABI `7`), including the HTTP, HTTP/2, WebSocket, TLS, polling, and socket APIs,
+the current `Send` rules, allocation-free read paths, OOP features, and runtime
+reflection.
 
 ## Develop
 
@@ -24,6 +24,7 @@ Other commands:
 npm run build            # production build into dist/
 npm run preview          # serve the production build locally
 npm run test:signatures  # unit-test the signature extractors and API counts
+npm run version:check    # release and runtime ABI facts match Beans VERSION
 npm run coverage         # every public symbol is documented with its exact signature
 npm run coverage:write   # regenerate the on-page API summary blocks from source
 npm run links            # every internal link resolves
@@ -61,12 +62,12 @@ so it cannot drift from the compiler:
   modifiers) parsed from the Beans packages under `stdlib/std/**/*.b`
   (`scripts/lib/extract-signatures.mjs`).
 - **Builtin methods, statics, and module functions** — signatures parsed from
-  the checker's typed registry in `compiler/beans/expression.b`
+  the checker's typed registry in `src/expression.b`
   (`builtin_method` / `builtin_static` / `builtin_module`, via
   `scripts/lib/extract-builtin-signatures.mjs`). These carry positional
   parameter types, matching how the compiler describes them.
 - **Builtin type names** — parsed from `builtin_type()` in
-  `compiler/beans/resolve.b`, the compiler's single authority for builtin type
+  `src/resolve.b`, the compiler's single authority for builtin type
   names. Every name must map to a documentation page, so a new builtin type
   cannot be added to the compiler without a doc home.
 

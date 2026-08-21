@@ -12,6 +12,9 @@ builtin class for "maybe" and "failed" answers. This page explains all three and
 the tools to work with them. For the wider picture, see
 [error handling](/guide/errors/) in the language guide.
 
+`Error` is `Send`. `Option<T>` and `Result<T, E>` are `Send` when their payload
+types are, so a worker can use `?` and return a typed failure.
+
 ## Option&lt;T&gt;
 
 `Option<T>` is a value that may be missing. It is a builtin enum with two variants:

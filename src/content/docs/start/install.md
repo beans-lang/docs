@@ -83,14 +83,15 @@ Two platform notes:
   `xcode-select --install`. `check` and `run` work without them.
 - **Git** is only needed if you pull in Git package dependencies.
 
-The C++ bootstrap compiler, `beansc0`, is never installed. You do not need it.
+The old C++ bootstrap compiler, `beansc0`, no longer exists. A released `beansc`
+builds the next compiler.
 
 ## Choosing a version, location, or target
 
 Pass options to the installer after `-s --`:
 
 ```bash
-curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.18 --prefix /opt/beans
+curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.26 --prefix /opt/beans
 ```
 
 Pick a specific build target with the `BEANS_TARGET` environment variable:

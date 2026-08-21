@@ -63,7 +63,7 @@ Builder methods:
 pub fn arg(value: string) -> Command
 pub fn cwd(path: string) -> Command
 pub fn env(name: string, value: string) -> Command
-pub fn stdin_bytes(data: Bytes) -> Command
+pub fn stdin_bytes(move data: Bytes) -> Command
 pub fn stdin_text(data: string) -> Command
 pub fn capture_limit(bytes: int) -> Command
 ```
@@ -73,7 +73,8 @@ pub fn capture_limit(bytes: int) -> Command
 - `env` sets one environment variable. The first call switches the child from
   inheriting this process's environment to a fresh one holding only what you set,
   so once you name any variable you start from empty and add only what you name.
-- `stdin_bytes` / `stdin_text` set what to write to the child's stdin. Its stdin
+- `stdin_bytes` moves the byte buffer into the command; `stdin_text` stores text.
+  Both set what to write to the child's stdin. Its stdin
   is closed once those bytes are written, so a program that reads to EOF finishes.
 - `capture_limit` caps how much of each stream is kept. The default is 8 MiB
   (8388608 bytes), so a program that prints forever cannot exhaust memory.

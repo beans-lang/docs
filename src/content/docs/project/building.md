@@ -1,11 +1,12 @@
 ---
 title: Building the compiler
-description: Building beansc from source, self-hosting, the C++ bootstrap, and make install.
+description: Building beansc from source with a released compiler, checking the fixed point, and make install.
 ---
 
 Beans is self-hosted: the compiler is written in Beans. To build it from source
-you need an existing `beansc` to compile it with. The build is driven by the
-project Makefile, and `compiler/version.h` is the single version source.
+you need an existing `beansc` to compile it with. The project Makefile drives
+the build, and [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)
+is the single version source.
 
 ## What you need
 
@@ -28,12 +29,12 @@ xcode-select --install
 
 ## Building on a public checkout
 
-A public checkout has no private bootstrap, so `make` builds `build/beansc`
-using an **already-installed** `beansc`: the one on your `PATH`, or at
+A checkout builds `build/beansc` using an **already-installed** `beansc`: the
+one on your `PATH`, or at
 `$BEANS_HOME/bin/beansc`. Under the hood it runs:
 
 ```bash
-beansc build compiler/beans/main.b -o build/beansc.new
+beansc build --release src/main.b -o build/beansc.new
 ```
 
 The full loop:
@@ -58,20 +59,15 @@ make BEANSC_BOOT=/path/to/beansc
 
 See [Install Beans](/start/install/) for the one-line installer.
 
-## The C++ bootstrap
+## The self-hosting proof
 
-With the private C++ bootstrap submodule present, `make` runs the full
-stage0 -> stage1 -> stage2 -> stage3 chain:
+The old C++ stage-0 bootstrap is gone. A released Beans compiler now bootstraps
+the source compiler. `make test-fixpoint` rebuilds the compiler twice with the
+same release flags and requires the two binaries to be **byte-identical**. That
+fixed point proves the self-hosted compiler reproduces itself.
 
-- `beansc0` is the C++ stage-0 compiler.
-- Stages 2 and 3 must be **byte-identical**. That fixed point proves the
-  self-hosted compiler reproduces itself.
-
-`make test` adds the differential gates on top (see [Running the
-tests](/project/testing/)).
-
-`beansc0` is never installed, never packaged, and never on your `PATH`. It only
-exists to bootstrap the build.
+`make test` runs the behavioural suites and the fixed-point gate. See [Running
+the tests](/project/testing/).
 
 ## Installing
 
@@ -79,8 +75,7 @@ exists to bootstrap the build.
 sudo make install PREFIX=/usr/local
 ```
 
-This installs `beansc` (never `beansc0`), the runtime sources, and the standard
-library.
+This installs `beansc`, the runtime sources, and the standard library.
 
 See [Running the tests](/project/testing/) and
 [Contributing](/project/contributing/) for the change workflow.

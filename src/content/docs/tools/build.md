@@ -17,8 +17,9 @@ directly, never through a shell.
 
 | Option | What it does |
 | --- | --- |
+| no mode flag | Fast edit-build-run loop: `-O0` (`-O1` on 32-bit x86). |
 | `--release` | Optimize: `-O3`, `NDEBUG`. |
-| `--debug` | Unoptimized `-O0`, frame pointers kept, platform debug info (DWARF/CodeView). |
+| `--debug` | `-O0` (`-Og` on 32-bit x86), frame pointers kept, platform debug info (DWARF/CodeView). |
 | `--lto` | Link-time optimization. Disabled if `--debug`. |
 | `--target <triple>` | Build for this target. Default is the host. |
 | `--cpu <generic\|native\|name>` | Target CPU. `native` is host builds only. |
@@ -55,6 +56,9 @@ covered on [Reproducible builds](/pot/reproducible/).
 
 ## Release and debug
 
+- A plain build uses `-O0` for a short edit-build-run loop. Use `--release` for
+  a fast program. On 32-bit x86, plain and debug builds use `-O1` and `-Og`
+  because LLVM's `-O0` register allocator can run out of registers.
 - `--release` turns on `-O3` and defines `NDEBUG`. Add `--lto` for link-time
   optimization.
 - `--debug` produces an unoptimized `-O0` binary that keeps frame pointers and
@@ -62,6 +66,11 @@ covered on [Reproducible builds](/pot/reproducible/).
   info is for the C runtime, good for native backtraces and profilers. It is
   **not** source-level debugging of Beans code; see [Debugger
   (DAP)](/tools/dap/).
+
+Native builds split generated code into content-addressed object chunks, compile
+them in parallel, and reuse unchanged chunks. `BEANS_BUILD_JOBS` caps the number
+of Clang processes. Set `BEANS_BUILD_JOBS=1` for one Clang. Set
+`BEANS_IR_COMMENTS=1` only when you want compiler comments in emitted IR.
 
 ## Library builds
 

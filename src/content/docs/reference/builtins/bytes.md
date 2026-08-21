@@ -4,29 +4,31 @@ description: The growable, mutable byte buffer Bytes and its methods for buildin
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 3 static methods · 29 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 4 static methods · 30 instance methods.
 <!-- coverage:summary:end -->
 
-`Bytes` is a growable, changeable buffer of raw bytes. Use it to build binary
+`Bytes` is a move-only, growable buffer of raw bytes. It implements `Send`, so
+one owner can move it to another thread, but it is not `Sync` and cannot be
+shared for concurrent mutation. Use it to build binary
 data, read fixed-width integers out of a buffer, or collect text before turning it
 into a `string`.
 
 Unlike [`string`](/reference/builtins/string/), a `Bytes` value can change in
-place. Every method that changes the buffer returns the same buffer, so you can
-chain calls.
+place. Methods that change it return `unit`; call them as statements.
 
 `Bytes` is a native builtin with no `.b` source, reached through the runtime ABI
-table in [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+table in [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 Its signatures are positional: the type in each slot is fixed, the names are not.
 
 ## Making a Bytes
 
 Construct a fresh buffer with `new Bytes(n)`, which gives `n` zeroed bytes and
-panics on a negative `n`. Three statics build or measure buffers:
+panics on a negative `n`. Four statics build or measure buffers:
 
 ```beans
 Bytes.from(string) -> Bytes
 Bytes.from_raw(RawPtr<u8>, int) -> Bytes
+Bytes.filled(int, int) -> Bytes
 Bytes.uvarint_size(int) -> int
 ```
 
@@ -34,6 +36,8 @@ Bytes.uvarint_size(int) -> int
 - `Bytes.from_raw(pointer, len)` copies `len` bytes from a raw pointer without
   taking ownership. It requires `unsafe`; a null pointer is accepted only when
   `len` is zero.
+- `Bytes.filled(length, value)` creates `length` bytes with every byte set to
+  `value`. It is useful for a reusable socket read buffer.
 - `Bytes.uvarint_size(v)` returns how many bytes `v` would take as an unsigned
   varint, without writing anything.
 
@@ -47,31 +51,32 @@ let text: Bytes = Bytes.from("hello")
 ```beans
 Bytes.len() -> int
 Bytes.as_ptr() -> RawPtr<u8>
-Bytes.reserve(int) -> Bytes
-Bytes.resize(int) -> Bytes
-Bytes.fill(int) -> Bytes
+Bytes.reserve(int)
+Bytes.resize(int)
+Bytes.fill(int)
 Bytes.get(int) -> int
-Bytes.set(int, int) -> Bytes
-Bytes.push(int) -> Bytes
+Bytes.set(int, int)
+Bytes.push(int)
 Bytes.get_u8(int) -> int
 Bytes.get_u16(int) -> int
 Bytes.get_u32(int) -> int
 Bytes.get_u64(int) -> int
 Bytes.get_i64(int) -> int
-Bytes.put_u8(int, int) -> Bytes
-Bytes.put_u16(int, int) -> Bytes
-Bytes.put_u32(int, int) -> Bytes
-Bytes.put_u64(int, int) -> Bytes
-Bytes.put_i64(int, int) -> Bytes
+Bytes.put_u8(int, int)
+Bytes.put_u16(int, int)
+Bytes.put_u32(int, int)
+Bytes.put_u64(int, int)
+Bytes.put_i64(int, int)
 Bytes.slice(int, int) -> Bytes
-Bytes.copy_from(Bytes, int) -> Bytes
-Bytes.append(Bytes) -> Bytes
-Bytes.append_string(string) -> Bytes
-Bytes.append_i64(int) -> Bytes
-Bytes.append_range(Bytes, int, int) -> Bytes
+Bytes.copy_from(Bytes, int)
+Bytes.append(Bytes)
+Bytes.append_string(string)
+Bytes.append_int_text(int)
+Bytes.append_i64(int)
+Bytes.append_range(Bytes, int, int)
 Bytes.to_string() -> string
 Bytes.to_string_until_nul() -> string
-Bytes.append_uvarint(int) -> Bytes
+Bytes.append_uvarint(int)
 Bytes.get_uvarint(int) -> int
 Bytes.crc32(int, int) -> int
 ```
@@ -97,8 +102,7 @@ Bytes.crc32(int, int) -> int
 
 The `get_*` readers return a whole number read at a byte position, and the `put_*`
 writers write one at a position. All are little-endian and panic when the position
-plus the width runs past the end of the buffer. `put_*` returns the buffer, so
-writes chain.
+plus the width runs past the end of the buffer.
 
 ### Copying and appending
 
@@ -106,7 +110,8 @@ writes chain.
 - `copy_from(src, at)` copies all of `src`'s bytes into this buffer starting at
   `at`.
 - `append(other)` adds another buffer's bytes at the end; `append_string(s)` adds a
-  string's bytes; `append_i64(v)` adds `v` as 8 little-endian bytes; and
+  string's bytes; `append_int_text(v)` adds the decimal text form of an integer;
+  `append_i64(v)` adds `v` as 8 little-endian bytes; and
   `append_range(src, from, to)` adds `src`'s bytes in `[from, to)`.
 
 ### Turning bytes into text
@@ -132,7 +137,7 @@ Beans uses unsigned LEB128 over the full 64-bit pattern, so a negative value tak
 
 ## Examples
 
-Build a record by chaining, then read it back:
+Build a record, then read it back:
 
 <!-- beans:compile -->
 ```beans
@@ -140,11 +145,14 @@ import std.io
 
 fn main() {
     let buf: Bytes = new Bytes(0)
-    buf.append_string("id=").append_i64(42).push(10)
+    buf.append_string("id=")
+    buf.append_i64(42)
+    buf.push(10)
     io.println("{buf.len()} bytes")
 
     let header: Bytes = new Bytes(8)
-    header.put_u32(0, 65535).put_u32(4, 7)
+    header.put_u32(0, 65535)
+    header.put_u32(4, 7)
     io.println("{header.get_u32(0)} {header.get_u32(4)}")
 
     let text: Bytes = Bytes.from("hello")
@@ -160,7 +168,9 @@ import std.io
 
 fn main() {
     var rec: Bytes = new Bytes(0)
-    rec.append_uvarint(1).append_uvarint(300).append_uvarint(70000)
+    rec.append_uvarint(1)
+    rec.append_uvarint(300)
+    rec.append_uvarint(70000)
 
     var pos: int = 0
     var seen: List<int> = []

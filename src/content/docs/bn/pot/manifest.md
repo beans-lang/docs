@@ -6,7 +6,7 @@ description: beans.pot project manifest-এর field গুলো আর তা�
 `beans.pot` হলো একটা Beans module-এর রুটে বসে থাকা manifest ফাইল। এটা module-এর
 নাম রাখে, বলে দেয় module-টা application না library, Git dependency গুলো pin করে,
 আর native linker-এর জন্য দরকারি directive পাস করে। এটা parse হয়
-[`compiler/beans/module.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/module.b)-তে।
+[`src/module.b`](https://github.com/beans-lang/beans/blob/main/src/module.b)-তে।
 
 ## Syntax
 
@@ -97,7 +97,9 @@ package-এর নিজের একটা C source file declare করে। t
   `--emit obj`-এর output-এর পাশে বসে।
 - `beansc run` বাছাই হওয়া set-টা একবারে একটা host shared library-তে compile
   করে, cache রাখে `$BEANS_HOME/cache/csrc`-এ, আর `extern "C"` symbol সেটা
-  দিয়েই resolve করে।
+  দিয়েই resolve করে। Host target-এর `link ... search`, `library`, আর
+  `framework` row-ও এই link-এ যায়, তাই run mode আর native build একই dependency
+  resolve করে। selected link row cache key-এর অংশ।
 - quote করা `#include "..."` header প্রতিটা source-এর পাশেই resolve হয়।
 - row গুলো local আর Git dependency থেকে ঠিক `link` row-এর মতোই propagate করে।
 

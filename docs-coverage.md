@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1101**
-- Symbols with an enforced signature: **745**
-- Builtin reference symbols: **314**
-- Standard-library symbols: **774**
+- Total public symbols: **1167**
+- Symbols with an enforced signature: **797**
+- Builtin reference symbols: **317**
+- Standard-library symbols: **836**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -68,15 +68,17 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
-| `Bytes.append` | method | `Bytes.append(Bytes) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.append_i64` | method | `Bytes.append_i64(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.append_range` | method | `Bytes.append_range(Bytes, int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.append_string` | method | `Bytes.append_string(string) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.append_uvarint` | method | `Bytes.append_uvarint(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append` | method | `Bytes.append(Bytes)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append_i64` | method | `Bytes.append_i64(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append_int_text` | method | `Bytes.append_int_text(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append_range` | method | `Bytes.append_range(Bytes, int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append_string` | method | `Bytes.append_string(string)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.append_uvarint` | method | `Bytes.append_uvarint(int)` | `reference/builtins/bytes` | ✓ |
 | `Bytes.as_ptr` | method | `Bytes.as_ptr() -> RawPtr<u8>` | `reference/builtins/bytes` | ✓ |
-| `Bytes.copy_from` | method | `Bytes.copy_from(Bytes, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.copy_from` | method | `Bytes.copy_from(Bytes, int)` | `reference/builtins/bytes` | ✓ |
 | `Bytes.crc32` | method | `Bytes.crc32(int, int) -> int` | `reference/builtins/bytes` | ✓ |
-| `Bytes.fill` | method | `Bytes.fill(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.fill` | method | `Bytes.fill(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.filled` | static | `Bytes.filled(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.from` | static | `Bytes.from(string) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.from_raw` | static | `Bytes.from_raw(RawPtr<u8>, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get` | method | `Bytes.get(int) -> int` | `reference/builtins/bytes` | ✓ |
@@ -87,15 +89,15 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Bytes.get_u8` | method | `Bytes.get_u8(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_uvarint` | method | `Bytes.get_uvarint(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.len` | method | `Bytes.len() -> int` | `reference/builtins/bytes` | ✓ |
-| `Bytes.push` | method | `Bytes.push(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.put_i64` | method | `Bytes.put_i64(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.put_u16` | method | `Bytes.put_u16(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.put_u32` | method | `Bytes.put_u32(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.put_u64` | method | `Bytes.put_u64(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.put_u8` | method | `Bytes.put_u8(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.reserve` | method | `Bytes.reserve(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.resize` | method | `Bytes.resize(int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.set` | method | `Bytes.set(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
+| `Bytes.push` | method | `Bytes.push(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.put_i64` | method | `Bytes.put_i64(int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.put_u16` | method | `Bytes.put_u16(int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.put_u32` | method | `Bytes.put_u32(int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.put_u64` | method | `Bytes.put_u64(int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.put_u8` | method | `Bytes.put_u8(int, int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.reserve` | method | `Bytes.reserve(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.resize` | method | `Bytes.resize(int)` | `reference/builtins/bytes` | ✓ |
+| `Bytes.set` | method | `Bytes.set(int, int)` | `reference/builtins/bytes` | ✓ |
 | `Bytes.slice` | method | `Bytes.slice(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.to_string` | method | `Bytes.to_string() -> string` | `reference/builtins/bytes` | ✓ |
 | `Bytes.to_string_until_nul` | method | `Bytes.to_string_until_nul() -> string` | `reference/builtins/bytes` | ✓ |
@@ -210,15 +212,15 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `MMap.len` | method | `MMap.len() -> int` | `reference/builtins/files` | ✓ |
 | `MMap.open` | static | `MMap.open(string, bool) -> Result<MMap>` | `reference/builtins/files` | ✓ |
 | `MMap.open_shared_memory` | static | `MMap.open_shared_memory(string, int, bool) -> Result<MMap>` | `reference/builtins/files` | ✓ |
-| `MMap.put_i64` | method | `MMap.put_i64(int, int) -> MMap` | `reference/builtins/files` | ✓ |
-| `MMap.put_u16` | method | `MMap.put_u16(int, int) -> MMap` | `reference/builtins/files` | ✓ |
-| `MMap.put_u32` | method | `MMap.put_u32(int, int) -> MMap` | `reference/builtins/files` | ✓ |
-| `MMap.put_u64` | method | `MMap.put_u64(int, int) -> MMap` | `reference/builtins/files` | ✓ |
-| `MMap.put_u8` | method | `MMap.put_u8(int, int) -> MMap` | `reference/builtins/files` | ✓ |
+| `MMap.put_i64` | method | `MMap.put_i64(int, int)` | `reference/builtins/files` | ✓ |
+| `MMap.put_u16` | method | `MMap.put_u16(int, int)` | `reference/builtins/files` | ✓ |
+| `MMap.put_u32` | method | `MMap.put_u32(int, int)` | `reference/builtins/files` | ✓ |
+| `MMap.put_u64` | method | `MMap.put_u64(int, int)` | `reference/builtins/files` | ✓ |
+| `MMap.put_u8` | method | `MMap.put_u8(int, int)` | `reference/builtins/files` | ✓ |
 | `MMap.read` | method | `MMap.read(int, int) -> Bytes` | `reference/builtins/files` | ✓ |
 | `MMap.resize` | method | `MMap.resize(int) -> Result<bool>` | `reference/builtins/files` | ✓ |
 | `MMap.unlink_shared_memory` | static | `MMap.unlink_shared_memory(string) -> Result<bool>` | `reference/builtins/files` | ✓ |
-| `MMap.write` | method | `MMap.write(int, Bytes) -> MMap` | `reference/builtins/files` | ✓ |
+| `MMap.write` | method | `MMap.write(int, Bytes)` | `reference/builtins/files` | ✓ |
 
 ## builtin Mutex
 
@@ -334,6 +336,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `Thread.detach` | method | `Thread<T>.detach()` | `reference/builtins/handles` | ✓ |
 | `Thread.join` | method | `Thread<T>.join() -> T` | `reference/builtins/handles` | ✓ |
 
 ## builtin type
@@ -366,6 +369,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `i8` | type |  | `reference/builtins/primitives` | ✓ |
 | `int` | type |  | `reference/builtins/primitives` | ✓ |
 | `List` | type |  | `reference/builtins/collections` | ✓ |
+| `LocalStoredCallback` | type |  | `guide/ffi` | ✓ |
 | `Map` | type |  | `reference/builtins/collections` | ✓ |
 | `MemoryOrder` | type |  | `reference/builtins/atomics` | ✓ |
 | `MMap` | type |  | `reference/builtins/files` | ✓ |
@@ -888,6 +892,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `adopt_http2` | function | `pub fn adopt_http2<T implements net.ByteStream>(move stream: T, server: bool) -> Result<Http2Transport<T>>` | `reference/stdlib/http` | ✓ |
 | `Client` | class |  | `reference/stdlib/http` | ✓ |
 | `Client.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Client.connect` | static | `pub static fn connect(host: string, port: int) -> Result<Client>` | `reference/stdlib/http` | ✓ |
@@ -903,6 +908,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `ClientResponse.reason` | field |  | `reference/stdlib/http` | ✓ |
 | `ClientResponse.status` | field |  | `reference/stdlib/http` | ✓ |
 | `Field` | class |  | `reference/stdlib/http` | ✓ |
+| `field_is_safe` | function | `pub fn field_is_safe(text: string) -> bool` | `reference/stdlib/http` | ✓ |
 | `Field.name` | field |  | `reference/stdlib/http` | ✓ |
 | `Field.value` | field |  | `reference/stdlib/http` | ✓ |
 | `Headers` | class |  | `reference/stdlib/http` | ✓ |
@@ -913,20 +919,43 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Headers.has` | method | `pub fn has(name: string) -> bool` | `reference/stdlib/http` | ✓ |
 | `Headers.name_at` | method | `pub fn name_at(index: int) -> string` | `reference/stdlib/http` | ✓ |
 | `Headers.value_at` | method | `pub fn value_at(index: int) -> string` | `reference/stdlib/http` | ✓ |
+| `http2_available` | function | `pub fn http2_available() -> bool` | `reference/stdlib/http` | ✓ |
 | `Http2Connection` | class |  | `reference/stdlib/http` | ✓ |
 | `Http2Connection.adopt` | static | `pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.max_body` | field |  | `reference/stdlib/http` | ✓ |
+| `Http2Connection.max_header_bytes` | field |  | `reference/stdlib/http` | ✓ |
+| `Http2Connection.max_header_count` | field |  | `reference/stdlib/http` | ✓ |
 | `Http2Connection.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.request` | method | `pub fn request(method: string, scheme: string, authority: string, path: string, fields: Headers, body: Bytes) -> Result<int>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.request_headers` | method | `pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.respond` | method | `pub fn respond(stream_id: int, status: int, fields: Headers, body: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.respond_headers` | method | `pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.run` | method | `pub fn run() -> Result<List<Http2Event>>` | `reference/stdlib/http` | ✓ |
+| `Http2Connection.send_data` | method | `pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Http2Connection.windows` | method | `pub fn windows() -> List<int>` | `reference/stdlib/http` | ✓ |
 | `Http2Event` | enum |  | `reference/stdlib/http` | ✓ |
 | `Http2Event.goaway` | variant |  | `reference/stdlib/http` | ✓ |
 | `Http2Event.message` | variant |  | `reference/stdlib/http` | ✓ |
 | `Http2Event.stream_closed` | variant |  | `reference/stdlib/http` | ✓ |
+| `Http2Transport` | class |  | `reference/stdlib/http` | ✓ |
+| `Http2Transport.adopt` | static | `pub static fn adopt(move stream: T, server: bool) -> Result<Http2Transport<T>>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.max_body` | field |  | `reference/stdlib/http` | ✓ |
+| `Http2Transport.max_header_bytes` | field |  | `reference/stdlib/http` | ✓ |
+| `Http2Transport.max_header_count` | field |  | `reference/stdlib/http` | ✓ |
+| `Http2Transport.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.request` | method | `pub fn request(method: string, scheme: string, authority: string, path: string, fields: Headers, body: Bytes) -> Result<int>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.request_headers` | method | `pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.respond` | method | `pub fn respond(stream_id: int, status: int, fields: Headers, body: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.respond_headers` | method | `pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.run` | method | `pub fn run() -> Result<List<Http2Event>>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.send_data` | method | `pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `Http2Transport.windows` | method | `pub fn windows() -> List<int>` | `reference/stdlib/http` | ✓ |
 | `Limits` | class |  | `reference/stdlib/http` | ✓ |
+| `Limits.max_head_span_bytes` | field |  | `reference/stdlib/http` | ✓ |
 | `Limits.max_header_bytes` | field |  | `reference/stdlib/http` | ✓ |
 | `Limits.max_header_count` | field |  | `reference/stdlib/http` | ✓ |
 | `Limits.max_target_bytes` | field |  | `reference/stdlib/http` | ✓ |
@@ -953,6 +982,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `RequestEvent.upgraded` | variant |  | `reference/stdlib/http` | ✓ |
 | `RequestParser` | class |  | `reference/stdlib/http` | ✓ |
 | `RequestParser.feed` | method | `pub fn feed(data: Bytes) -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.feed_range` | method | `pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
 | `RequestParser.finish` | method | `pub fn finish() -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
 | `RequestParser.with_limits` | static | `pub static fn with_limits(limits: Limits) -> RequestParser` | `reference/stdlib/http` | ✓ |
 | `Response` | class |  | `reference/stdlib/http` | ✓ |
@@ -973,6 +1003,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `ResponseEvent.upgraded` | variant |  | `reference/stdlib/http` | ✓ |
 | `ResponseParser` | class |  | `reference/stdlib/http` | ✓ |
 | `ResponseParser.feed` | method | `pub fn feed(data: Bytes) -> Result<List<ResponseEvent>>` | `reference/stdlib/http` | ✓ |
+| `ResponseParser.feed_range` | method | `pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<ResponseEvent>>` | `reference/stdlib/http` | ✓ |
 | `ResponseParser.finish` | method | `pub fn finish() -> Result<List<ResponseEvent>>` | `reference/stdlib/http` | ✓ |
 | `ResponseParser.with_limits` | static | `pub static fn with_limits(limits: Limits) -> ResponseParser` | `reference/stdlib/http` | ✓ |
 | `ServedRequest` | class |  | `reference/stdlib/http` | ✓ |
@@ -984,6 +1015,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Server.accept` | method | `pub fn accept() -> Result<ServerConn>` | `reference/stdlib/http` | ✓ |
 | `Server.accept_timeout` | method | `pub fn accept_timeout(ms: int) -> Result<ServerConn>` | `reference/stdlib/http` | ✓ |
 | `Server.bind` | static | `pub static fn bind(host: string, port: int) -> Result<Server>` | `reference/stdlib/http` | ✓ |
+| `Server.bind_reuse_port` | static | `pub static fn bind_reuse_port(host: string, port: int) -> Result<Server>` | `reference/stdlib/http` | ✓ |
 | `Server.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/http` | ✓ |
 | `Server.set_read_timeout` | method | `pub fn set_read_timeout(ms: int)` | `reference/stdlib/http` | ✓ |
 | `ServerConn` | class |  | `reference/stdlib/http` | ✓ |
@@ -995,10 +1027,11 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Stream` | class |  | `reference/stdlib/http` | ✓ |
 | `Stream.body` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.complete` | field |  | `reference/stdlib/http` | ✓ |
-| `Stream.headers` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.id` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.method` | method | `pub fn method() -> string` | `reference/stdlib/http` | ✓ |
 | `Stream.path` | method | `pub fn path() -> string` | `reference/stdlib/http` | ✓ |
+| `Stream.request` | field |  | `reference/stdlib/http` | ✓ |
+| `Stream.response` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.status` | method | `pub fn status() -> int` | `reference/stdlib/http` | ✓ |
 
 ## std.intrinsic
@@ -1050,6 +1083,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Address.port` | field |  | `reference/stdlib/net` | ✓ |
 | `Address.resolve` | static | `pub static fn resolve(host: string, port: int) -> Result<List<Address>>` | `reference/stdlib/net` | ✓ |
 | `Address.to_string` | method | `pub fn to_string() -> string` | `reference/stdlib/net` | ✓ |
+| `ByteStream` | interface |  | `reference/stdlib/net` | ✓ |
 | `Datagram` | class |  | `reference/stdlib/net` | ✓ |
 | `Datagram.data` | field |  | `reference/stdlib/net` | ✓ |
 | `Datagram.from` | field |  | `reference/stdlib/net` | ✓ |
@@ -1059,6 +1093,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpListener.accept` | method | `pub fn accept() -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.accept_timeout` | method | `pub fn accept_timeout(ms: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.bind` | static | `pub static fn bind(host: string, port: int) -> Result<TcpListener>` | `reference/stdlib/net` | ✓ |
+| `TcpListener.bind_reuse_port` | static | `pub static fn bind_reuse_port(host: string, port: int) -> Result<TcpListener>` | `reference/stdlib/net` | ✓ |
+| `TcpListener.bind_reuse_port_with_backlog` | static | `pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.bind_with_backlog` | static | `pub static fn bind_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.local_address` | method | `pub fn local_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
@@ -1066,21 +1102,18 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpListener.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream` | class |  | `reference/stdlib/net` | ✓ |
-| `TcpStream.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.connect` | static | `pub static fn connect(host: string, port: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.into_raw` | method | `pub fn into_raw() -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.local_address` | method | `pub fn local_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.peer_address` | method | `pub fn peer_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
-| `TcpStream.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/net` | ✓ |
-| `TcpStream.read` | method | `pub fn read(max: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_exact` | method | `pub fn read_exact(count: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.read_into` | method | `pub fn read_into(buffer: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_to_end` | method | `pub fn read_to_end(limit: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_timeouts` | method | `pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.shutdown_read` | method | `pub fn shutdown_read() -> Result<bool>` | `reference/stdlib/net` | ✓ |
-| `TcpStream.shutdown_write` | method | `pub fn shutdown_write() -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write` | method | `pub fn write(data: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
-| `TcpStream.write_all` | method | `pub fn write_all(data: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write_text` | method | `pub fn write_text(text: string) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket` | class |  | `reference/stdlib/net` | ✓ |
 | `UdpSocket.bind` | static | `pub static fn bind(host: string, port: int) -> Result<UdpSocket>` | `reference/stdlib/net` | ✓ |
@@ -1165,7 +1198,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Command.env` | method | `pub fn env(name: string, value: string) -> Command` | `reference/stdlib/process` | ✓ |
 | `Command.run` | method | `pub fn run() -> Result<Output>` | `reference/stdlib/process` | ✓ |
 | `Command.start` | method | `pub fn start() -> Result<Child>` | `reference/stdlib/process` | ✓ |
-| `Command.stdin_bytes` | method | `pub fn stdin_bytes(data: Bytes) -> Command` | `reference/stdlib/process` | ✓ |
+| `Command.stdin_bytes` | method | `pub fn stdin_bytes(move data: Bytes) -> Command` | `reference/stdlib/process` | ✓ |
 | `Command.stdin_text` | method | `pub fn stdin_text(data: string) -> Command` | `reference/stdlib/process` | ✓ |
 | `new Command` | constructor | `new Command(program: string)` | `reference/stdlib/process` | ✓ |
 | `Output` | class |  | `reference/stdlib/process` | ✓ |
@@ -1199,8 +1232,10 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
-| `new Reader` | constructor | `new Reader(file: File)` | `reference/stdlib/reader` | ✓ |
+| `new Reader` | constructor | `new Reader(move file: File)` | `reference/stdlib/reader` | ✓ |
 | `Reader` | class |  | `reference/stdlib/reader` | ✓ |
+| `Reader.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/reader` | ✓ |
+| `Reader.file_position` | method | `pub fn file_position() -> int` | `reference/stdlib/reader` | ✓ |
 | `Reader.read_line` | method | `pub fn read_line() -> Result<Option<string>>` | `reference/stdlib/reader` | ✓ |
 
 ## std.reflect
@@ -1429,22 +1464,37 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `available` | function | `pub fn available() -> bool` | `reference/stdlib/tls` | ✓ |
+| `TlsIdentity` | class |  | `reference/stdlib/tls` | ✓ |
+| `TlsIdentity.pem` | static | `pub static fn pem(name: string, move certificate: Bytes, move private_key: Bytes, password: string = "") -> TlsIdentity` | `reference/stdlib/tls` | ✓ |
+| `TlsIdentity.pkcs12` | static | `pub static fn pkcs12(name: string, move bundle: Bytes, password: string) -> TlsIdentity` | `reference/stdlib/tls` | ✓ |
+| `TlsListener` | class |  | `reference/stdlib/tls` | ✓ |
+| `TlsListener.accept` | method | `pub fn accept() -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.accept_timeout` | method | `pub fn accept_timeout(ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.bind` | static | `pub static fn bind(host: string, port: int, move identities: List<TlsIdentity>, alpn: string, ms: int = 30000) -> Result<TlsListener>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.bind_pem` | static | `pub static fn bind_pem(host: string, port: int, move certificate: Bytes, move private_key: Bytes, alpn: string, ms: int = 30000) -> Result<TlsListener>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.bind_pkcs12` | static | `pub static fn bind_pkcs12(host: string, port: int, move bundle: Bytes, password: string, alpn: string, ms: int = 30000) -> Result<TlsListener>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/tls` | ✓ |
+| `TlsListener.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream` | class |  | `reference/stdlib/tls` | ✓ |
-| `TlsStream.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.accept` | static | `pub static fn accept(move socket: net.TcpStream, move identities: List<TlsIdentity>, alpn: string, ms: int = 30000) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.accept_pem` | static | `pub static fn accept_pem(move socket: net.TcpStream, move certificate: Bytes, move private_key: Bytes, alpn: string, ms: int = 30000) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.accept_pkcs12` | static | `pub static fn accept_pkcs12(move socket: net.TcpStream, move bundle: Bytes, password: string, alpn: string, ms: int = 30000) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.connect` | static | `pub static fn connect(host: string, port: int, alpn: string) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
+| `TlsStream.connect_address_with_roots` | static | `pub static fn connect_address_with_roots(address: string, server_name: string, port: int, alpn: string, extra_roots: Bytes, ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, alpn: string, ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.connect_with_roots` | static | `pub static fn connect_with_roots(host: string, port: int, alpn: string, extra_roots: Bytes, ms: int) -> Result<TlsStream>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.protocol` | method | `pub fn protocol() -> string` | `reference/stdlib/tls` | ✓ |
-| `TlsStream.read` | method | `pub fn read(max: int) -> Result<Bytes>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.read_exact` | method | `pub fn read_exact(count: int) -> Result<Bytes>` | `reference/stdlib/tls` | ✓ |
 | `TlsStream.write` | method | `pub fn write(data: Bytes) -> Result<int>` | `reference/stdlib/tls` | ✓ |
-| `TlsStream.write_all` | method | `pub fn write_all(data: Bytes) -> Result<int>` | `reference/stdlib/tls` | ✓ |
 
 ## std.websocket
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `accept_for_key` | function | `pub fn accept_for_key(key: string) -> Result<string>` | `reference/stdlib/websocket` | ✓ |
+| `accept_websocket` | function | `pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `available` | function | `pub fn available() -> bool` | `reference/stdlib/websocket` | ✓ |
 | `Connection` | class |  | `reference/stdlib/websocket` | ✓ |
 | `Connection.accept` | static | `pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.close` | method | `pub fn close(code: int, reason: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
@@ -1453,6 +1503,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Connection.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/websocket` | ✓ |
 | `Connection.peer_close_code` | method | `pub fn peer_close_code() -> int` | `reference/stdlib/websocket` | ✓ |
 | `Connection.ping` | method | `pub fn ping(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/websocket` | ✓ |
 | `Connection.pong` | method | `pub fn pong(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.receive` | method | `pub fn receive() -> Result<Option<Message>>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.send_binary` | method | `pub fn send_binary(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
@@ -1464,3 +1515,18 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Message.ping` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.pong` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.text` | variant |  | `reference/stdlib/websocket` | ✓ |
+| `upgrade_websocket` | function | `pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport` | class |  | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.accept` | static | `pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.close` | method | `pub fn close(code: int, reason: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.peer_close_code` | method | `pub fn peer_close_code() -> int` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.ping` | method | `pub fn ping(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.pong` | method | `pub fn pong(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.receive` | method | `pub fn receive() -> Result<Option<Message>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.send_binary` | method | `pub fn send_binary(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.send_text` | method | `pub fn send_text(body: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.upgrade` | static | `pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.wrap` | static | `pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `wrap_websocket` | function | `pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |

@@ -69,8 +69,9 @@ file.b` দিয়ে। দেখুন [Building](/bn/tools/build/)।
   তারপর `close()` (যেটা চালু call-গুলোর জন্য অপেক্ষা করে)। value-টা
   move-only।
 - library যে callback store করে কিন্তু **সবসময় register করা thread-এই invoke
-  করে** — C event-loop-এর সবচেয়ে চেনা চেহারা — তার জন্য
-  `StoredCallback.create_same_thread(userdata_index, closure)`। capture-এ কোনো
+  করে** — C event-loop-এর সবচেয়ে চেনা চেহারা — তার জন্য আলাদা
+  `LocalStoredCallback<F>` type আর
+  `LocalStoredCallback.create(userdata_index, closure)`। capture-এ কোনো
   বাধা নেই (`Send` না, `Sync`-ও না): register করার thread-টা রেকর্ড হয়ে থাকে,
   আর অন্য কোনো thread থেকে invoke করলে সেটা data race নয় — একটা checked
   runtime abort। `function()` / `function_pointer()` / `context()` surface

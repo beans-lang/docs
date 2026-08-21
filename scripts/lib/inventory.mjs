@@ -9,9 +9,9 @@ import { extractBuiltinTypeNames } from './extract-types.mjs';
 // Sources (all read from the public Beans source, so nothing is typed by hand
 // that can silently drift):
 //   - stdlib packages           -> stdlib/std/**/*.b       (full signatures, param names)
-//   - builtin methods/statics   -> compiler/beans/expression.b builtin_method/static
-//   - builtin module functions  -> compiler/beans/expression.b builtin_module
-//   - builtin TYPE registry     -> compiler/beans/resolve.b builtin_type()
+//   - builtin methods/statics   -> src/expression.b builtin_method/static
+//   - builtin module functions  -> src/expression.b builtin_module
+//   - builtin TYPE registry     -> src/resolve.b builtin_type()
 //   - a small curated set for members the compiler types by predicate rather
 //     than by a name literal (numeric abs/round, the SIMD family, the FFI
 //     callback handles) and for the true prelude globals (panic, size_of, ...).
@@ -125,7 +125,8 @@ const TYPE_PAGE = {
   Mutex: B('handles'), Channel: B('handles'), Thread: B('handles'), AtomicInt: B('handles'),
   Atomic: B('atomics'), MemoryOrder: B('atomics'),
   Bytes: B('bytes'), File: B('files'), Dir: B('files'), MMap: B('files'),
-  CpuFeature: S('cpu-intrinsic'), StoredCallback: 'guide/ffi', CFunctionPtr: 'guide/ffi',
+  CpuFeature: S('cpu-intrinsic'), StoredCallback: 'guide/ffi',
+  LocalStoredCallback: 'guide/ffi', CFunctionPtr: 'guide/ffi',
 };
 
 // Members the compiler types by predicate (not a name literal) or that are true

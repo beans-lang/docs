@@ -14,7 +14,7 @@ const SNAPSHOT = path.join(DATA_DIR, 'builtin-abi.json');
 // These are the monomorphic rows the native backend and the bootstrap
 // interpreter call directly. The generic/checker-typed builtins (List, Map,
 // Atomic, RawPtr, SIMD, size_of, intrinsics, ...) are NOT here — they live in
-// the curated inventory (builtin-curated.mjs), typed in compiler/beans.
+// the curated inventory (builtin-curated.mjs), typed in src.
 
 // Slice out the row lines of one `table = { ... };` block by its function name.
 function tableBody(src, fnName) {

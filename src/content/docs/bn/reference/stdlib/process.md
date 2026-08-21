@@ -53,7 +53,7 @@ Builder method-গুলো:
 pub fn arg(value: string) -> Command
 pub fn cwd(path: string) -> Command
 pub fn env(name: string, value: string) -> Command
-pub fn stdin_bytes(data: Bytes) -> Command
+pub fn stdin_bytes(move data: Bytes) -> Command
 pub fn stdin_text(data: string) -> Command
 pub fn capture_limit(bytes: int) -> Command
 ```

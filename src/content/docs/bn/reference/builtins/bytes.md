@@ -4,30 +4,32 @@ description: বাড়তে পারা, বদলানো যায় �
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 3 static methods · 29 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 4 static methods · 30 instance methods.
 <!-- coverage:summary:end -->
 
-`Bytes` হলো raw byte-এর একটা buffer, যেটা বাড়তে পারে আর বদলানো যায়। binary data
+`Bytes` move-only raw byte buffer। এটা `Send`, তাই এক owner অন্য thread-এ move
+করতে পারে; কিন্তু `Sync` না, তাই concurrent mutation-এর জন্য share করা যায় না। binary data
 বানাতে, একটা buffer থেকে নির্দিষ্ট চওড়ার integer পড়তে, বা `string` বানানোর আগে
 text জমাতে এটা ব্যবহার করা হয়।
 
 [`string`](/bn/reference/builtins/string/)-এর মতো না — একটা `Bytes` value জায়গায়
-বসেই বদলাতে পারে। buffer-টা বদলায় এমন প্রতিটা method একই buffer ফেরত দেয়, তাই
-call গুলো চেইন করা যায়।
+বসেই বদলাতে পারে। buffer বদলানো method গুলো `unit` ফেরত দেয়; statement হিসেবে
+আলাদা করে call করুন।
 
 `Bytes` একটা native builtin, এর কোনো `.b` source নেই, আর runtime ABI table দিয়ে
 এতে পৌঁছানো হয় —
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b)-তে।
+[`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 এর signature গুলো positional: প্রতিটা জায়গায় type-টা fixed, নাম গুলো না।
 
 ## একটা Bytes বানানো
 
 নতুন একটা buffer তৈরি করা হয় `new Bytes(n)` দিয়ে, যেটা `n`টা শূন্য-করা byte দেয়
-আর `n` negative হলে panic করে। তিনটা static buffer বানায় বা মাপে:
+আর `n` negative হলে panic করে। চারটা static buffer বানায় বা মাপে:
 
 ```beans
 Bytes.from(string) -> Bytes
 Bytes.from_raw(RawPtr<u8>, int) -> Bytes
+Bytes.filled(int, int) -> Bytes
 Bytes.uvarint_size(int) -> int
 ```
 
@@ -36,6 +38,8 @@ Bytes.uvarint_size(int) -> int
 - `Bytes.from_raw(pointer, len)` একটা raw pointer থেকে `len` byte copy করে, তবে
   ownership নেয় না। এটার জন্য `unsafe` লাগে; null pointer শুধু তখনই চলে যখন `len`
   শূন্য।
+- `Bytes.filled(length, value)` `length`টা byte বানায়, সবগুলোর value একই। reusable
+  socket read buffer বানাতে এটা কাজে লাগে।
 - `Bytes.uvarint_size(v)` `v`-কে unsigned varint হিসেবে লিখলে কত byte লাগবে সেটা
   দেয়, কিছু না লিখেই।
 
@@ -49,31 +53,32 @@ let text: Bytes = Bytes.from("hello")
 ```beans
 Bytes.len() -> int
 Bytes.as_ptr() -> RawPtr<u8>
-Bytes.reserve(int) -> Bytes
-Bytes.resize(int) -> Bytes
-Bytes.fill(int) -> Bytes
+Bytes.reserve(int)
+Bytes.resize(int)
+Bytes.fill(int)
 Bytes.get(int) -> int
-Bytes.set(int, int) -> Bytes
-Bytes.push(int) -> Bytes
+Bytes.set(int, int)
+Bytes.push(int)
 Bytes.get_u8(int) -> int
 Bytes.get_u16(int) -> int
 Bytes.get_u32(int) -> int
 Bytes.get_u64(int) -> int
 Bytes.get_i64(int) -> int
-Bytes.put_u8(int, int) -> Bytes
-Bytes.put_u16(int, int) -> Bytes
-Bytes.put_u32(int, int) -> Bytes
-Bytes.put_u64(int, int) -> Bytes
-Bytes.put_i64(int, int) -> Bytes
+Bytes.put_u8(int, int)
+Bytes.put_u16(int, int)
+Bytes.put_u32(int, int)
+Bytes.put_u64(int, int)
+Bytes.put_i64(int, int)
 Bytes.slice(int, int) -> Bytes
-Bytes.copy_from(Bytes, int) -> Bytes
-Bytes.append(Bytes) -> Bytes
-Bytes.append_string(string) -> Bytes
-Bytes.append_i64(int) -> Bytes
-Bytes.append_range(Bytes, int, int) -> Bytes
+Bytes.copy_from(Bytes, int)
+Bytes.append(Bytes)
+Bytes.append_string(string)
+Bytes.append_int_text(int)
+Bytes.append_i64(int)
+Bytes.append_range(Bytes, int, int)
 Bytes.to_string() -> string
 Bytes.to_string_until_nul() -> string
-Bytes.append_uvarint(int) -> Bytes
+Bytes.append_uvarint(int)
 Bytes.get_uvarint(int) -> int
 Bytes.crc32(int, int) -> int
 ```
@@ -100,15 +105,15 @@ Bytes.crc32(int, int) -> int
 
 `get_*` reader গুলো একটা byte-অবস্থানে পূর্ণসংখ্যা পড়ে, আর `put_*` writer গুলো
 একটা অবস্থানে একটা লেখে। সবগুলোই little-endian, আর অবস্থান আর চওড়া যোগ করলে
-buffer-এর শেষ পেরিয়ে গেলে panic করে। `put_*` buffer-টা ফেরত দেয়, তাই লেখা গুলো
-চেইন হয়।
+buffer-এর শেষ পেরিয়ে গেলে panic করে।
 
 ### copy আর append
 
 - `slice(from, to)` `[from, to)`-এর byte গুলো নিয়ে একটা নতুন buffer দেয়।
 - `copy_from(src, at)` `src`-এর সব byte এই buffer-এ `at` থেকে শুরু করে copy করে।
 - `append(other)` আরেকটা buffer-এর byte গুলো শেষে যোগ করে; `append_string(s)`
-  একটা string-এর byte যোগ করে; `append_i64(v)` `v`-কে 8টা little-endian byte
+  একটা string-এর byte যোগ করে; `append_int_text(v)` integer-এর decimal text যোগ
+  করে; `append_i64(v)` `v`-কে 8টা little-endian byte
   হিসেবে যোগ করে; আর `append_range(src, from, to)` `src`-এর `[from, to)` byte
   গুলো যোগ করে।
 
@@ -137,7 +142,7 @@ negative value 10 byte নেয়।
 
 ## উদাহরণ
 
-চেইন করে একটা record তৈরি করা, তারপর সেটা আবার পড়া:
+একটা record তৈরি করা, তারপর সেটা আবার পড়া:
 
 <!-- beans:compile -->
 ```beans
@@ -145,11 +150,14 @@ import std.io
 
 fn main() {
     let buf: Bytes = new Bytes(0)
-    buf.append_string("id=").append_i64(42).push(10)
+    buf.append_string("id=")
+    buf.append_i64(42)
+    buf.push(10)
     io.println("{buf.len()} bytes")
 
     let header: Bytes = new Bytes(8)
-    header.put_u32(0, 65535).put_u32(4, 7)
+    header.put_u32(0, 65535)
+    header.put_u32(4, 7)
     io.println("{header.get_u32(0)} {header.get_u32(4)}")
 
     let text: Bytes = Bytes.from("hello")
@@ -165,7 +173,9 @@ import std.io
 
 fn main() {
     var rec: Bytes = new Bytes(0)
-    rec.append_uvarint(1).append_uvarint(300).append_uvarint(70000)
+    rec.append_uvarint(1)
+    rec.append_uvarint(300)
+    rec.append_uvarint(70000)
 
     var pos: int = 0
     var seen: List<int> = []

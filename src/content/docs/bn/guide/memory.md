@@ -34,6 +34,8 @@ collector প্রতিটা root-এর subgraph-কে trial-delete কর�
 
 - এটা চলে শুধু statement-এর মাঝখানে, যখন কোনো worker thread চালু নেই, আর আরও
   একবার program শেষ হওয়ার সময়।
+- Worker thread possible-cycle root batch করে publish করে। তাই worker-এর সাধারণ
+  release-এ প্রতিবার global collector lock লাগে না।
 - সব walk iterative, তাই খুব বড় একটা drop হওয়া গড়নও stack overflow ঘটাবে না।
 - কোনো object যদি **cycle-এর ভেতরে** মরে, তার `deinit` চলে না। cycle নিজে
   থেকে কখনও শূন্যে নামে না, তাই object যদি কোনো resource ধরে থাকে (একটা file,
@@ -113,9 +115,10 @@ fn main() {
 ```
 
 একটা `var`-কে move করে বের করে নিয়ে, পরের বার পড়ার আগে তাতে একটা নতুন value
-আবার বসানো যায়। parameter, loop variable, match binding আর closure capture —
-এগুলো borrow করা, তাই এগুলোকে move করা যায় না। পুরো move, `move` parameter
-আর `inout`-এর নিয়মের জন্য দেখুন [Variables and constants](/bn/guide/variables/)।
+আবার বসানো যায়। parameter, loop variable আর match binding borrow করা, তাই move
+করা যায় না। closure default-এ borrow করে; `fn() move(a, b) { ... }` named local
+দুটো closure-এ transfer করে। পুরো নিয়মের জন্য দেখুন
+[Variables and constants](/bn/guide/variables/)।
 
 ## Move-only handle
 
@@ -184,10 +187,15 @@ observer থেকে subject) — যেটা তার target-কে জী�
 
 ## Send আর Sync
 
-সাধারণ class reference, `List`, `Map`, `Box`, `Arena`, `Bytes`, `File` আর
-`MMap` — এগুলো **`Send` না**: default-এই এগুলো local reference value। scalar,
-immutable string, `AtomicInt`, `Mutex`, `Send` value-এর `Channel`, আর
-`Send + Sync` type-এর `Shared`/`Weak` — এগুলো thread-এর সীমানা পার হতে পারে।
+সাধারণ class reference default-এ **`Send` না**। `List<T>`, `Box<T>` আর
+`Arena<T>` তখন `Send`, যখন `T` `Send`; `Map<K, V>` আর `OrderedMap<K, V>`-এর
+দুই type-ই `Send` হতে হবে। `Bytes`, `File` আর `MMap` move-only `Send` owner,
+কিন্তু `Sync` না। scalar, immutable string, matching `Error`/`Result`, network
+owner, atomic, `Send` value-এর `Mutex`/`Channel`, আর `Send + Sync` type-এর
+`Shared`/`Weak`-ও thread boundary পার হতে পারে।
+
+`send fn(...) -> T` thread handoff-এর move-only function value। প্রতিটা capture
+`Send` হতে হবে; move-only, mutable বা non-`Sync` capture `move(...)`-এ লিখতে হবে।
 `thread.spawn` এমন কোনো closure মানবে না যেটা কোনো non-`Send` value capture
 বা return করে, তাই ভুলবশত shared mutable data নিয়ে race হয়ে যাওয়ার সুযোগ
 নেই। তার বদলে সেটাকে একটা `Mutex`-এ মুড়ে নিতে হয়। দেখুন [Concurrency](/bn/guide/concurrency/)।

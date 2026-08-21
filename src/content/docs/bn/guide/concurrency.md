@@ -38,7 +38,7 @@ hits.add_and_get(1)
 
 `thread.spawn(fn() -> T)` একটা closure-কে নতুন OS thread-এ চালায় আর একটা
 `Thread<T>` ফেরত দেয়। `join()` thread-টা শেষ হওয়া পর্যন্ত অপেক্ষা করে আর তার
-value ফেরত দেয়। ফেরত আসা value `T`-কে `Send` হতে হবে, আর closure যা যা
+value ফেরত দেয়; `detach()` result ফেলে worker-কে নিজের মতো শেষ হতে দেয়। ফেরত আসা value `T`-কে `Send` হতে হবে, আর closure যা যা
 capture করে সেগুলোকেও।
 
 ## Send আর Sync
@@ -47,11 +47,13 @@ type system data race ঘটার আগেই সেটা থামিয়�
 closure শুধু `Send` value capture করতে পারে আর অবশ্যই একটা `Send` value
 return করতে হয়।
 
-- **`Send` না:** সাধারণ class reference, `List`, `Map`, `Box`, `Arena`,
-  `Bytes`, `File`, `MMap`। এগুলো local reference value।
-- **পার হতে পারে:** scalar, immutable string, `AtomicInt`, `Mutex`, `Send`
-  value-এর একটা `Channel`, আর `Shared<T>`/`Weak<T>` যেখানে `T` হলো
-  `Send & Sync`।
+- **Local:** সাধারণ class reference আর plain `fn` closure।
+- **Conditional:** `List<T>`, `Box<T>`, `Arena<T>`-এর `T` `Send` হতে হবে;
+  `Map<K, V>` আর `OrderedMap<K, V>`-এর দুই type-ই `Send` হতে হবে।
+- **Move-only owner:** `Bytes`, `File`, `MMap`, TCP/UDP, poller, HTTP/HTTP2 আর
+  WebSocket handle `Send`, কিন্তু mutable owner `Sync` না।
+- **Shared tool:** scalar, immutable string, atomic, `Send` value-এর
+  `Mutex`/`Channel`, আর `Send & Sync` value-এর `Shared`/`Weak`।
 
 এতেই একটা `class` default-এ local reference হয়ে যায়। spawn করা কোনো
 closure-এ non-`Send` value capture করলে সেটা compile error — যে value আর তার
@@ -61,10 +63,13 @@ type, দুটোই বলে দেয়:
 ```beans
 import std.thread
 
+class Local {}
+
 fn main() {
-    var xs: List<int> = [1, 2, 3]
+    let item: Local = new Local()
+    var xs: List<Local> = [item]
     let t: Thread<int> = thread.spawn(fn() -> int {
-        return xs.len()            // error: cannot capture non-Send List<int>
+        return xs.len()            // error: List<Local> is not Send
     })
     t.join()
 }
@@ -72,6 +77,16 @@ fn main() {
 
 thread-জুড়ে mutable data ভাগ করতে চাইলে সেটাকে একটা `Mutex`-এ মুড়ে নিতে হয় —
 `Mutex` `Send`। দেখুন [Memory আর ownership](/bn/guide/memory/)।
+
+এক owner worker-কে দিতে closure-এ move করুন। direct `spawn` closure `send fn`
+হিসেবে infer হয়:
+
+```beans
+let data: Bytes = Bytes.filled(4096, 0)
+let work: send fn() -> int =
+    fn() move(data) -> int { return data.len() }
+let worker: Thread<int> = thread.spawn(move work)
+```
 
 ## Mutex
 

@@ -16,18 +16,18 @@ builtin।
 Beans তার builtin গুলো দুই ভাবে তৈরি করে। কোড লেখার সময় এটা নিয়ে ভাবার দরকার
 নেই, তবে একবার জেনে রাখলে সুবিধা।
 
-- কিছু builtin C++ দিয়ে লেখা, আর একটা fixed runtime table দিয়ে ওগুলোতে পৌঁছানো
+- কিছু builtin C runtime-এ লেখা, আর একটা fixed runtime table দিয়ে ওগুলোতে পৌঁছানো
   হয় (এটাকে বলে "runtime ABI")। এগুলো হলো `string`, `Bytes`, `File`, `MMap`, আর
   যেসব `std.*` module operating system-এর সাথে কথা বলে সেগুলো। টেবিলটা দেখা যাবে
-  [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b)-তে।
+  [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 - বাকিগুলো compiler-এর নিজের type checker-এ লেখা, আর code generator ওগুলোকে
   machine code বানিয়ে দেয়। এগুলো হলো generic type গুলো (`List`, `Map`,
   `Box`, `Atomic`, `RawPtr`, `Slice`, SIMD) আর compile-time-এর সাহায্যকারী যেমন
   `size_of`। checker দেখা যাবে
-  [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b)-তে।
+  [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
-এই compiler-এর runtime ABI version হলো `6`। compiler নিজের version জানায়
-`0.1.18`, আর language contract `1.0`-তে আটকানো আছে।
+এই compiler-এর runtime ABI version হলো `7`। compiler নিজের version জানায়
+`0.1.26`, আর language contract `1.0`-তে আটকানো আছে।
 
 ## Error handling নিজেই builtin
 

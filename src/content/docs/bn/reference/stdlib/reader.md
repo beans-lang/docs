@@ -4,7 +4,7 @@ description: একটা File-এর উপর buffered লাইন পড়�
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 1 constructor · 1 instance method.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 1 constructor · 3 instance methods.
 <!-- coverage:summary:end -->
 
 `std.reader` একটা `Reader` দেয় যেটা একটা [`File`](/bn/reference/builtins/files/)
@@ -18,17 +18,22 @@ import std.reader
 
 ## Reader
 
-একটা `Reader` তৈরি করা হয় `new` দিয়ে, তাকে একটা খোলা ফাইল ধরিয়ে দিয়ে:
+একটা `Reader` তৈরি করা হয় `new` দিয়ে, একটা খোলা file move করে দিয়ে। Reader
+handle-টার owner হয়:
 
 ```beans
 pub class Reader
-new Reader(file: File)
+new Reader(move file: File)
 
+pub fn file_position() -> int
+pub fn close() -> Result<bool>
 pub fn read_line() -> Result<Option<string>>
 ```
 
 - `read_line` প্রতিটা লাইনের জন্য `ok(some(line))` ফেরত দেয়, শেষের newline বাদ
   দিয়ে। ফাইল শেষ হলে `ok(none)` ফেরত দেয়। পড়া ফেল করলে একটা error পাওয়া যায়।
+- `file_position` underlying file cursor দেখায়। positional read সেটা বদলায় না।
+- `close` owned file বন্ধ করে। buffered byte পড়া যায়; পরের refill closed error দেয়।
 
 Reader নিজের একটা offset রাখে আর `pread` দিয়ে পড়ে, তাই এটা underlying ফাইলের cursor
 কখনো নাড়ায় না। একই ফাইল একই সময়ে আরেকভাবে পড়া যায়, দুইটা একে অন্যের সাথে
@@ -40,7 +45,7 @@ import std.reader
 
 fn main() {
     let file: File = File.open("log.txt", "r").expect("open")
-    let r: reader.Reader = new reader.Reader(file)
+    let r: reader.Reader = new reader.Reader(move file)
     for true {
         let line: Option<string> = r.read_line().expect("read")
         match line {
@@ -48,7 +53,7 @@ fn main() {
             none => { break },
         }
     }
-    file.close()
+    r.close().expect("close")
 }
 ```
 

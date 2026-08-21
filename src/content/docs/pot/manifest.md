@@ -6,7 +6,7 @@ description: The fields and line-based syntax of the beans.pot project manifest.
 `beans.pot` is the manifest file at the root of a Beans module. It names the
 module, says whether the module is an application or a library, pins Git
 dependencies, and passes native linker directives. It is parsed in
-[`compiler/beans/module.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/module.b).
+[`src/module.b`](https://github.com/beans-lang/beans/blob/main/src/module.b).
 
 ## Syntax
 
@@ -96,7 +96,9 @@ step onto consumers — `import github.com/owner/lib` just works.
   beside `--emit obj` output.
 - `beansc run` compiles the selected set once into a host shared library,
   cached under `$BEANS_HOME/cache/csrc`, and resolves `extern "C"` symbols
-  through it.
+  through it. The host-target `link ... search`, `library`, and `framework`
+  rows are passed to this link too, so run mode and native builds resolve the
+  same dependencies. Those selected link rows are part of the cache key.
 - Quoted `#include "..."` headers resolve beside each source file.
 - Rows propagate from local and Git dependencies exactly like `link` rows.
 

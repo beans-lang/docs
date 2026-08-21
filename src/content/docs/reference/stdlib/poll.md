@@ -64,11 +64,11 @@ pub error: bool
 
 ## Poller
 
-The set of descriptors to wait on. It is a `unique class`: move-only, and it
-closes itself on drop.
+The set of descriptors to wait on. It is move-only, `Send`, and closes itself
+on drop.
 
 ```beans
-pub unique class Poller
+pub unique class Poller implements Send
 
 pub static fn open() -> Result<Poller>
 

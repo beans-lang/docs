@@ -5,7 +5,7 @@ description: One folder is one package, how sub-packages and import paths resolv
 
 Most of your own code lives in **local packages** under your module root. The
 rules are small and consistent. Resolution is done in
-[`compiler/beans/module.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/module.b).
+[`src/module.b`](https://github.com/beans-lang/beans/blob/main/src/module.b).
 
 ## One directory, one package
 

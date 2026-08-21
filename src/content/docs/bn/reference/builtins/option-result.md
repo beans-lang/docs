@@ -12,6 +12,9 @@ Beans-এ null নেই, exception নেই। এর বদলে "হয়�
 বোঝানো হলো, আর এদের নিয়ে কাজ করার tool গুলোও। বড় ছবিটা দেখতে language guide-এর
 [error handling](/bn/guide/errors/) পড়ুন।
 
+`Error` `Send`। `Option<T>` আর `Result<T, E>` তখন `Send`, যখন payload type
+`Send`; তাই worker `?` ব্যবহার করে typed failure return করতে পারে।
+
 ## Option&lt;T&gt;
 
 `Option<T>` হলো এমন একটা value যা হয়তো থাকে না। এটা একটা builtin enum, দুইটা

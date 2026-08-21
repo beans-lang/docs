@@ -4,7 +4,7 @@ description: The built-in handle types for owning, sharing, locking, and moving 
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 21 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 22 instance methods.
 <!-- coverage:summary:end -->
 
 An **ownership handle** is a builtin type that owns a value and controls how you
@@ -16,6 +16,10 @@ For threads and channels in context, see [concurrency](/guide/concurrency/).
 `Box`, `Arena`, `Shared`, and `Mutex` are move-only outer handles, like `List` and
 `Map`. When you bind, assign, or return one, use `move`. Function parameters borrow
 by default.
+
+`Box<T>` and `Arena<T>` implement `Send` when `T` does. `List<T>` follows the
+same rule; `Map<K, V>` and `OrderedMap<K, V>` require both stored types to be
+`Send`.
 
 ## Box&lt;T&gt;
 
@@ -138,9 +142,12 @@ Channel<T>.close()
 
 ```beans
 Thread<T>.join() -> T
+Thread<T>.detach()
 ```
 
 - `join()` waits for the thread to finish and returns its result.
+- `detach()` lets the worker finish on its own and discards its result. Use it
+  only when no later work depends on completion.
 
 ## AtomicInt
 

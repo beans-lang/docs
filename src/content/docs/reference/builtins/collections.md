@@ -18,6 +18,9 @@ assign, or return one, use `move`; function parameters borrow by default. Callin
 method that changes the collection needs a `var` binding. See
 [the memory model](/guide/memory/) for what that means.
 
+They derive `Send` from what they own: `List<T>` is `Send` when `T` is;
+`Map<K, V>` and `OrderedMap<K, V>` require both stored types to be `Send`.
+
 ## List&lt;T&gt;
 
 `List<T>` holds items of type `T` in order. Write a list literal with square

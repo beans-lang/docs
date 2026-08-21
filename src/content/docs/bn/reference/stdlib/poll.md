@@ -51,10 +51,10 @@ pub error: bool
 
 ## Poller
 
-যে descriptor-গুলোর জন্য অপেক্ষা করা হবে তাদের সেট। এটা একটা `unique class`: move-only, আর drop হলে নিজেই বন্ধ হয়ে যায়।
+যে descriptor-গুলোর জন্য অপেক্ষা করা হবে তাদের set। এটা move-only, `Send`, আর drop হলে নিজেই বন্ধ হয়ে যায়।
 
 ```beans
-pub unique class Poller
+pub unique class Poller implements Send
 
 pub static fn open() -> Result<Poller>
 

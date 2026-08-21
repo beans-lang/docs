@@ -17,8 +17,9 @@ Clang চালু হওয়ার আগে প্রতিটা setting �
 
 | Option | কী করে |
 | --- | --- |
+| কোনো mode flag না | দ্রুত edit-build-run loop: `-O0` (32-bit x86-এ `-O1`)। |
 | `--release` | Optimize করে: `-O3`, `NDEBUG`। |
-| `--debug` | Optimize ছাড়া `-O0`, frame pointer রাখা, আর platform-এর debug info (DWARF/CodeView)। |
+| `--debug` | `-O0` (32-bit x86-এ `-Og`), frame pointer রাখা, আর platform-এর debug info (DWARF/CodeView)। |
 | `--lto` | Link-time optimization। `--debug` দিলে এটা বন্ধ থাকে। |
 | `--target <triple>` | এই target-এর জন্য build করে। ডিফল্টে host। |
 | `--cpu <generic\|native\|name>` | Target CPU। `native` শুধু host build-এর জন্য। |
@@ -55,6 +56,9 @@ Target-সংক্রান্ত option (`--target`, `--cpu`, `--features`, `-
 
 ## Release আর debug
 
+- plain build দ্রুত edit-build-run loop-এর জন্য `-O0` ব্যবহার করে। দ্রুত program
+  চাইলে `--release` দিন। 32-bit x86-এ plain build `-O1` আর debug build `-Og`
+  ব্যবহার করে, কারণ LLVM-এর `-O0` register allocator-এর register শেষ হতে পারে।
 - `--release` দিলে `-O3` চালু হয় আর `NDEBUG` define হয়। Link-time optimization
   চাইলে সাথে `--lto` যোগ করুন।
 - `--debug` দিলে optimize-ছাড়া একটা `-O0` binary পাও, যেটা frame pointer রাখে আর
@@ -62,6 +66,11 @@ Target-সংক্রান্ত option (`--target`, `--cpu`, `--features`, `-
   info-টা C runtime-এর জন্য — native backtrace আর profiler-এর কাজে লাগে। এটা কিন্তু
   Beans কোডের source-level debugging **না**; সেটার জন্য দেখুন [Debugger
   (DAP)](/bn/tools/dap/)।
+
+Native build generated code-কে content-addressed object chunk-এ ভাগ করে, সমান্তরালে
+compile করে, আর না-বদলানো chunk cache থেকে নেয়। `BEANS_BUILD_JOBS` একসাথে কতটা
+Clang চলবে তা বেঁধে দেয়। একটাই Clang চাইলে `BEANS_BUILD_JOBS=1` দিন। Emitted IR-এ
+compiler comment দরকার হলেই শুধু `BEANS_IR_COMMENTS=1` দিন।
 
 ## Library build
 

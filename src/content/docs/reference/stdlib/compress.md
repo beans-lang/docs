@@ -69,10 +69,11 @@ let back: Bytes = compress.gzip_decompress(packed, 1048576)?
 
 ## Deflater
 
-A streaming compressor. Move-only; `finish` ends the stream and the handle
+A streaming compressor. Move-only and `Send`; `finish` ends the stream and the handle
 refuses further work.
 
 ```beans
+pub unique class Deflater implements Send
 pub static fn open(format: Format, level: int = 6) -> Result<Deflater>
 pub fn push(data: Bytes) -> Result<Bytes>
 pub fn finish() -> Result<Bytes>
@@ -91,9 +92,10 @@ wire.append(press.finish()?)
 
 ## Inflater
 
-A streaming decompressor with one limit across its whole life.
+A move-only, `Send` streaming decompressor with one limit across its whole life.
 
 ```beans
+pub unique class Inflater implements Send
 pub static fn open(format: Format, limit: int) -> Result<Inflater>
 pub fn push(data: Bytes) -> Result<Bytes>
 pub fn finished() -> bool

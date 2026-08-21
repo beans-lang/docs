@@ -14,7 +14,7 @@ string byte-ভিত্তিক। `len()` byte-এর সংখ্যা দ�
 বদলায় না। string-এর মধ্যে index হলো byte-এর অবস্থান।
 
 string type একটা native builtin, যেটাতে পৌঁছানো হয় runtime ABI table দিয়ে —
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b)-তে।
+[`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
 ## string বানানো আর জোড়া লাগানো
 

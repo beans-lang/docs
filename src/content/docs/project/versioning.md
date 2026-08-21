@@ -9,21 +9,21 @@ currently on a preview line leading up to 1.0.
 ## One source of version truth
 
 All version numbers come from one file:
-[`compiler/version.h`](https://github.com/beans-lang/beans/blob/main/compiler/version.h).
+[`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION).
 
 ```text
-version              = "0.1.18"
-language_version     = "1.0"
-runtime_abi_version  = 6
+compiler=0.1.26
+language=1.0
+runtime_abi=7
 ```
 
-- **version**: the compiler version (`0.1.18`).
-- **language_version**: the language version (`1.0`).
-- **runtime_abi_version**: the runtime ABI number (`6`).
+- **compiler**: the compiler version (`0.1.26`).
+- **language**: the language version (`1.0`).
+- **runtime_abi**: the runtime ABI number (`7`).
 
-From that header, `compiler/beans/version.b` is generated. A test
+From that file, `src/version.b` is generated. A test
 (`test/version.sh`) refuses a stale copy, so the generated Beans file can never
-drift from the header.
+drift from `VERSION`.
 
 `beansc --version` prints all three.
 

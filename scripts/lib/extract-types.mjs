@@ -3,7 +3,7 @@ import path from 'node:path';
 import { BEANS_REPO, compilerSource } from './paths.mjs';
 
 // The single authority for "is this name a builtin type" is `builtin_type()` in
-// compiler/beans/resolve.b (public, self-hosted compiler). We parse the exact
+// src/resolve.b (public, self-hosted compiler). We parse the exact
 // list of type names from it so the coverage inventory cannot silently miss one
 // (this is how RawSlice and Self are kept honest). SIMD families are matched by
 // `simd_description(name)` there, not by a literal, so they stay curated.

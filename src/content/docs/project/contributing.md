@@ -25,10 +25,10 @@ When you change behavior, run tests in this order:
 2. `make test`.
 3. `make test-sanitize`, for ownership, runtime, concurrency, FFI, or codegen
    changes.
-4. `make test-bootstrap`, for frontend, MIR, or compiler changes.
+4. `make test-fixpoint`, for frontend, MIR, or compiler changes.
 
-Because Beans is self-hosted, a compiler change has to keep building itself: the
-stage2 and stage3 outputs must stay byte-identical (`make test-bootstrap`).
+Because Beans is self-hosted, a compiler change has to keep building itself: two
+release-mode self-builds must stay byte-identical (`make test-fixpoint`).
 
 ## Code style basics
 

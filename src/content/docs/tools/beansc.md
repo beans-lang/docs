@@ -6,8 +6,8 @@ description: The beansc usage block, the full subcommand list, and the environme
 `beansc` is the Beans compiler and its command-line tool. It lexes, parses,
 checks, runs, and builds Beans code, and it hosts the package manager, the
 language server, and the debug adapter. The entry point is
-[`compiler/beans/main.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/main.b),
-driving [`compiler/beans/driver.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/driver.b).
+[`src/main.b`](https://github.com/beans-lang/beans/blob/main/src/main.b),
+driving [`src/driver.b`](https://github.com/beans-lang/beans/blob/main/src/driver.b).
 
 ## Usage
 

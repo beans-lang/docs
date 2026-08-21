@@ -1,11 +1,12 @@
 ---
 title: Building the compiler
-description: source থেকে beansc build করা, self-hosting, C++ bootstrap, আর make install।
+description: release compiler দিয়ে source থেকে beansc build করা, fixed point check, আর make install।
 ---
 
 Beans self-hosted: compiler-টা Beans দিয়েই লেখা। এটা source থেকে build করতে হলে
 আগে থেকেই একটা `beansc` লাগবে, যেটা দিয়ে এটাকে compile করা হবে। build-টা চালায়
-project-এর Makefile, আর `compiler/version.h` হলো version-এর একমাত্র উৎস।
+project-এর Makefile, আর [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)
+হলো version-এর একমাত্র উৎস।
 
 ## কী কী লাগবে
 
@@ -26,14 +27,14 @@ macOS-এ native build-এর জন্য command-line tools-ও লাগে:
 xcode-select --install
 ```
 
-## একটা public checkout-এ build করা
+## একটা checkout-এ build করা
 
-public checkout-এ কোনো private bootstrap থাকে না, তাই `make` একটা **আগে থেকেই
-install করা** `beansc` দিয়ে `build/beansc` বানায়: হয় `PATH`-এ থাকাটা, নয়তো
+`make` একটা **আগে থেকেই install করা** `beansc` দিয়ে `build/beansc` বানায়: হয়
+`PATH`-এ থাকাটা, নয়তো
 `$BEANS_HOME/bin/beansc`-এরটা। ভেতরে ভেতরে এটা চালায়:
 
 ```bash
-beansc build compiler/beans/main.b -o build/beansc.new
+beansc build --release src/main.b -o build/beansc.new
 ```
 
 পুরো লুপটা:
@@ -58,19 +59,15 @@ make BEANSC_BOOT=/path/to/beansc
 
 one-line installer-এর জন্য দেখুন [Install Beans](/bn/start/install/)।
 
-## C++ bootstrap
+## Self-hosting-এর প্রমাণ
 
-private C++ bootstrap submodule হাতে থাকলে, `make` পুরো
-stage0 -> stage1 -> stage2 -> stage3 chain-টা চালায়:
+পুরোনো C++ stage-0 bootstrap আর নেই। এখন release হওয়া Beans compiler source
+compiler-কে bootstrap করে। `make test-fixpoint` একই release flag দিয়ে compiler
+দুইবার build করে এবং binary দুইটা **byte-identical** হতে হবে। এই fixed point-ই
+প্রমাণ করে self-hosted compiler নিজেকে হুবহু আবার বানাতে পারে।
 
-- `beansc0` হলো C++ stage-0 compiler।
-- Stage 2 আর 3 কে **byte-identical** হতে হবে। ওই fixed point প্রমাণ করে যে
-  self-hosted compiler নিজেকে হুবহু আবার বানাতে পারে।
-
-`make test` এর উপর differential gate গুলো যোগ করে (দেখুন [test চালানো](/bn/project/testing/))।
-
-`beansc0` কখনো install হয় না, কখনো package হয় না, আর কখনো `PATH`-এও থাকে
-না। এটার একমাত্র কাজ build-টা bootstrap করা।
+`make test` behavioural suite আর fixed-point gate চালায়। দেখুন
+[test চালানো](/bn/project/testing/)।
 
 ## Install করা
 
@@ -78,8 +75,7 @@ stage0 -> stage1 -> stage2 -> stage3 chain-টা চালায়:
 sudo make install PREFIX=/usr/local
 ```
 
-এটা install করে `beansc` (কখনো `beansc0` নয়), runtime-এর source, আর standard
-library।
+এটা install করে `beansc`, runtime-এর source, আর standard library।
 
 change-এর workflow-এর জন্য দেখুন [test চালানো](/bn/project/testing/) আর
 [Contributing](/bn/project/contributing/)।

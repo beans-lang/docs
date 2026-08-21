@@ -48,7 +48,9 @@ job = next_job()                 // reinitializes it
 
 The checker rejects use-after-move, and rejects a value moved on only one
 branch (a move on every branch is fine). Normal parameters, loop variables,
-match bindings, and closure captures are borrowed, so they cannot be moved.
+and match bindings are borrowed, so they cannot be moved. Closure captures also
+borrow by default; `fn() move(a, b) { ... }` explicitly moves named locals into
+the closure.
 
 ## Parameters: borrow, move, inout
 

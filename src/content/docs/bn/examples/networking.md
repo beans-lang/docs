@@ -7,7 +7,10 @@ Beans-এর networking থাকে `std.net`-এ।
 [`net.b`](https://github.com/beans-lang/beans/blob/main/examples/net.b) TCP আর UDP
 দেখায়, আর
 [`poller.b`](https://github.com/beans-lang/beans/blob/main/examples/poller.b) দেখায়
-একটা thread কীভাবে একসাথে অনেক socket-এর জন্য wait করে।
+একটা thread কীভাবে একসাথে অনেক socket-এর জন্য wait করে। আরও আছে
+[`http.b`](https://github.com/beans-lang/beans/blob/main/examples/http.b),
+[`http2.b`](https://github.com/beans-lang/beans/blob/main/examples/http2.b), আর
+[`websocket.b`](https://github.com/beans-lang/beans/blob/main/examples/websocket.b)।
 
 দুইটাই পুরোপুরি loopback-এ (`127.0.0.1`) চলে, তা-ও **একটাই process**-এর ভেতরে। এই
 জন্যই এগুলো কোনো সার্ভার-লাগে-এমন demo না, বরং deterministic test: loopback-এ একটা
@@ -22,8 +25,8 @@ listening socket-এ `connect` করলে kernel সেটা queue করা�
   কারণ এটা fail করতে পারে, তাই সাধারণ constructor হতে পারে না। এই জন্য call করা হয়
   `TcpListener.bind`, `TcpStream.connect`, `UdpSocket.bind`, আর `Address.resolve`
   — ঠিক `File.open`-এর মতোই গড়ন। `std.net`-এ কোনো module-level function নেই।
-- **Socket-গুলো `unique class`:** move-only, `deinit` দিয়ে বন্ধ হয়। এক মালিক,
-  এক বার close।
+- **Socket move-only `Send` owner:** `deinit` দিয়ে বন্ধ হয়, আর explicit move
+  capture দিয়ে এক worker-এ পাঠানো যায়। এক মালিক, এক বার close।
 
 ## যেকোনো ফাঁকা port-এ bind করা
 
@@ -77,6 +80,52 @@ let got: Bytes = session.read_exact(4096)?
 রূপ আছে। `write_all` সব পাঠানো শেষ না হওয়া পর্যন্ত লিখতেই থাকে। `read_exact` যত
 চাওয়া হয়েছে ঠিক তত না পড়া পর্যন্ত পড়তেই থাকে, আর peer আগেভাগে থেমে গেলে `eof` kind
 দিয়ে fail করে — একটা fixed-size header পড়া কোডের ঠিক এটাই দরকার।
+
+## একই read buffer আবার ব্যবহার করা
+
+Long-lived connection-এর buffer একবার allocate করুন:
+
+```beans
+let scratch: Bytes = Bytes.filled(16 * 1024, 0)
+let count: int = session.read_into(scratch)?
+if count > 0 {
+    let events: List<http.RequestEvent> =
+        parser.feed_range(scratch, 0, count)?
+}
+```
+
+`read_into` buffer length বদলায় না; শুধু `0..count` লেখে। zero মানে EOF।
+`feed_range` slice allocate না করে ওই checked range parse করে। `http.ServerConn`
+এই allocation-free input path ব্যবহার করে।
+
+## Connection worker-এ move করা
+
+Socket আর HTTP owner `Send`। closure-এ move স্পষ্ট করে লিখতে হবে:
+
+```beans
+let worker: Thread<Result<int>> = thread.spawn(
+    fn() move(session) -> Result<int> {
+        let scratch: Bytes = Bytes.filled(16 * 1024, 0)
+        return session.read_into(scratch)
+    })
+let count: int = worker.join()?
+```
+
+Plain capture refuse হয়। `Error` আর matching `Result` sendable, তাই worker `?`
+ব্যবহার করে failure return করতে পারে।
+
+Independent accept loop-এর জন্য OS level-এ port share করুন:
+
+```beans
+let first: net.TcpListener =
+    net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
+let second: net.TcpListener =
+    net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
+```
+
+macOS আর Linux নতুন connection listener-গুলোর মধ্যে ভাগ করে। Windows
+`unsupported` দেয়। HTTP server-এর জন্য একই shape হলো
+`http.Server.bind_reuse_port`।
 
 ## UDP datagram
 

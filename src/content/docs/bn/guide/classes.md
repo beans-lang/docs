@@ -205,11 +205,37 @@ class Conn {
   edge-টা `weak` field করে declare করুন — leak করার মতো cycle-ই থাকবে না
   (দেখুন [Memory and ownership](/bn/guide/memory/))।
 
+## Partial class
+
+`partial class Name` একই package-এর কয়েকটা file-এ একটা class ভাগ করে। প্রতিটা
+part-এ `partial` লাগে। ঠিক একটা primary part modifier, generic parameter,
+`extends` আর `implements` রাখে; অন্য part শুধু `partial class Name { ... }`। সব
+field আর method এক class-এর, আর duplicate member error।
+
+```beans
+// shape.b
+pub partial class Shape extends Figure {
+    name: string
+}
+
+// shape_text.b
+partial class Shape {
+    fn describe() -> string { return self.name }
+}
+```
+
+Primary header দিয়ে ঠিক হয়, file load order দিয়ে না। `class`-এর ঠিক আগে ছাড়া
+`partial` ordinary name।
+
 ## Inheritance আর interface
 
 class একটা base class নেয় `extends` দিয়ে, আর interface implement করে `implements`
 দিয়ে। construction chain হয় `super.init(...)`-এর মধ্য দিয়ে। এটা নিয়ে আছে
 [Interfaces and inheritance](/bn/guide/interfaces/)-এ।
+
+`Bytes`, `File`, `List`-এর মতো compiler-owned builtin type base class হতে পারে
+না। `class X extends Bytes` declaration-এই reject হয়; পরে ভুল parent constructor
+error আসে না।
 
 ## Self: fluent chain যেটা নিজের type ধরে রাখে
 

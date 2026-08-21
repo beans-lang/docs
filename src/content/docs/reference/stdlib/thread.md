@@ -22,12 +22,15 @@ import std.thread
 | `thread.spawn(fn() -> T) -> Thread<T>` | `Thread<T>` | run a closure on a new thread |
 
 The closure you pass may only capture `Send` values and must return a `Send`
-value. `Send` means "safe to move to another thread." This rule is why move-only
-socket and file handles cannot be captured into a thread.
+value. `Send` means "safe to move to another thread." Move-only socket, HTTP,
+`Bytes`, `File`, and `MMap` owners can cross with an explicit
+`fn() move(owner) { ... }` capture. Plain class references and TLS handles stay
+local.
 
-`Thread<T>` has one method you use:
+`Thread<T>` has two completion choices:
 
 - `join() -> T`: wait for the thread to finish and take its returned value.
+- `detach()`: let it finish independently and discard its returned value.
 
 ```beans
 import std.io

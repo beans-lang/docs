@@ -130,6 +130,21 @@ fn main() {
 error। closure value কপি করলে একই closure আর তার capture-গুলোই share হয় — fn
 value shared, তাই capture-এর একক ownership কখনও ভাঙে না।
 
+### Sendable function value
+
+`send fn(...) -> T` অন্য thread-এ কাজ move করার function type। এটা move-only
+এবং `Send`, কিন্তু `Sync` বা `Clone` না। প্রতিটা capture `Send` হতে হবে; mutable,
+move-only বা non-`Sync` capture `move(...)`-এও লিখতে হবে।
+
+```beans
+let bytes: Bytes = Bytes.filled(1024, 0)
+let work: send fn() -> int =
+    fn() move(bytes) -> int { return bytes.len() }
+```
+
+Signature মিললে named function `send fn` হতে পারে। plain closure value নিজে থেকে
+convert হয় না; `thread.spawn`-এ direct closure sendable context থেকে infer হয়।
+
 ## Method আর static
 
 class-এর ভেতরে define করা function হলো method; `static fn` একটা class static

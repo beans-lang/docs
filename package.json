@@ -15,8 +15,9 @@
     "links": "node scripts/check-links.mjs",
     "examples": "node scripts/check-examples.mjs",
     "test:signatures": "node scripts/test-signatures.mjs",
-    "check": "npm run test:signatures && npm run coverage && npm run links && npm run examples",
-    "verify": "npm run test:signatures && npm run coverage && npm run links && npm run build && npm run examples"
+    "version:check": "node scripts/check-version.mjs",
+    "check": "npm run test:signatures && npm run version:check && npm run coverage && npm run links && npm run examples",
+    "verify": "npm run test:signatures && npm run version:check && npm run coverage && npm run links && npm run build && npm run examples"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.7",

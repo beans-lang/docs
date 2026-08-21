@@ -19,11 +19,12 @@ import std.thread
 | --- | --- | --- |
 | `thread.spawn(fn() -> T) -> Thread<T>` | `Thread<T>` | একটা নতুন thread-এ একটা closure চালায় |
 
-পাস করা closure শুধু `Send` value capture করতে পারে আর একটা `Send` value-ই return করতে হবে। `Send` বলতে বোঝায় "অন্য thread-এ move করা নিরাপদ"। এই নিয়মের জন্যই move-only socket আর file handle-কে একটা thread-এ capture করা যায় না।
+পাস করা closure শুধু `Send` value capture করতে পারে আর একটা `Send` value-ই return করতে হবে। `Send` বলতে বোঝায় "অন্য thread-এ move করা নিরাপদ"। move-only socket, HTTP, `Bytes`, `File` আর `MMap` explicit `fn() move(owner)` capture দিয়ে worker-এ যায়। plain class আর TLS handle local থাকে।
 
-`Thread<T>`-এর একটা method ব্যবহার করা হয়:
+`Thread<T>`-এর দুইটা completion choice আছে:
 
 - `join() -> T`: thread শেষ হওয়ার জন্য অপেক্ষা করে তার return করা value-টা নিয়ে নেওয়া হয়।
+- `detach()`: result ফেলে thread-কে নিজের মতো শেষ হতে দেয়।
 
 ```beans
 import std.io

@@ -4,7 +4,7 @@ description: HTTP/1.1 and HTTP/2 — a strict push-based parser, a client, a ser
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 17 types · 5 constructors · 6 static methods · 35 instance methods · 36 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 3 package functions · 18 types · 5 constructors · 8 static methods · 50 instance methods · 44 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.http` provides HTTP/1.1 parsing and exchanges over llhttp, and HTTP/2 over
@@ -22,6 +22,9 @@ import std.http
   yields the identical event stream**, so the shape of your read loop can never
   change what it parses. The property is tested against llhttp's own corpus split
   at every byte.
+- **The read buffer can be reused.** `feed_range` parses a checked range of an
+  existing `Bytes`. Pair it with `TcpStream.read_into` to avoid allocating one
+  input buffer per socket read.
 - **Strict mode is the only mode.** The lenient flags that exist for ancient
   peers and request-smuggling papers are not exposed. What llhttp rejects, this
   package rejects: a malformed message is kind `protocol`, and the connection it
@@ -104,11 +107,32 @@ The bounds this layer owns:
 ```beans
 new Limits()
 pub class Limits {
-    pub max_header_count: int    // 128
-    pub max_header_bytes: int    // 65536
-    pub max_target_bytes: int    // 8192
+    pub max_header_count: int      // 128
+    pub max_header_bytes: int      // 65536
+    pub max_target_bytes: int      // 8192
+    pub max_head_span_bytes: int   // 16384
 }
 ```
+
+`max_head_span_bytes` covers every other head field llhttp leaves unbounded —
+the status reason phrase and the chunk-extension name and value. Without it a
+peer sending `1;` and then token bytes forever grows the parser's buffer until
+the process dies.
+
+## Writing headers safely
+
+A header name or value carrying CR, LF or NUL is refused with kind `invalid`
+before anything reaches the socket. Those bytes would splice extra headers — or
+a whole extra response — into the wire format, which is reachable the moment an
+application puts user input in a `Location`. Names may not carry `:` over
+HTTP/1.1; over HTTP/2 a leading one is the pseudo-header form and is allowed.
+
+```beans
+pub fn field_is_safe(text: string) -> bool
+```
+
+Answers the same question for a caller that wants to check before building a
+message rather than at send time.
 
 ## Parser events
 
@@ -141,6 +165,7 @@ pub enum ResponseEvent {
 new RequestParser()
 pub static fn with_limits(limits: Limits) -> RequestParser
 pub fn feed(data: Bytes) -> Result<List<RequestEvent>>
+pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>
 pub fn finish() -> Result<List<RequestEvent>>
 ```
 
@@ -148,11 +173,14 @@ pub fn finish() -> Result<List<RequestEvent>>
 new ResponseParser()
 pub static fn with_limits(limits: Limits) -> ResponseParser
 pub fn feed(data: Bytes) -> Result<List<ResponseEvent>>
+pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<ResponseEvent>>
 pub fn finish() -> Result<List<ResponseEvent>>
 ```
 
 `finish` signals end-of-stream: a message that needed EOF to end produces its
 final events there, and a message cut short becomes a `protocol` error.
+`feed_range(data, from, to)` checks the bounds and parses only that range
+without allocating a slice.
 
 ```beans
 let parser: http.RequestParser = new http.RequestParser()
@@ -169,11 +197,13 @@ for event: http.RequestEvent in parser.feed(arrived)? {
 
 ## Client
 
-One TCP connection speaking HTTP/1.1, with keep-alive by default. Move-only.
+One TCP connection speaking HTTP/1.1, with keep-alive by default. Move-only and
+`Send`.
 There is deliberately no connection pool: a pool is a policy, and this is the
 mechanism it would pool.
 
 ```beans
+pub unique class Client implements Send
 pub static fn connect(host: string, port: int) -> Result<Client>
 pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<Client>
 pub fn get(target: string) -> Result<ClientResponse>
@@ -210,7 +240,9 @@ io.println("{answer.status} {answer.body.len()}")
 ## Server and ServerConn
 
 ```beans
+pub unique class Server implements Send
 pub static fn bind(host: string, port: int) -> Result<Server>
+pub static fn bind_reuse_port(host: string, port: int) -> Result<Server>
 pub fn port() -> Result<int>
 pub fn set_read_timeout(ms: int)
 pub fn accept() -> Result<ServerConn>
@@ -218,6 +250,7 @@ pub fn accept_timeout(ms: int) -> Result<ServerConn>
 ```
 
 ```beans
+pub unique class ServerConn implements Send
 pub fn read_request() -> Result<Option<ServedRequest>>
 pub fn respond(status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
 pub fn set_max_body(limit: int)
@@ -241,6 +274,10 @@ connection closed between messages. Pipelined requests are queued and handed out
 one at a time. Concurrency is your decision: accept on one thread and spawn per
 connection, or run single-threaded in a test.
 
+`bind_reuse_port` creates an independent accept loop on a shared port. Start one
+listener per worker and let macOS or Linux distribute new connections. Windows
+returns kind `unsupported`.
+
 ```beans
 let server: http.Server = http.Server.bind("127.0.0.1", 0)?
 let conn: http.ServerConn = server.accept()?
@@ -255,13 +292,25 @@ match conn.read_request()? {
 
 ## HTTP/2
 
-One exchange on one stream:
+Check the native bridge and adopt any owned byte stream:
+
+```beans
+pub fn http2_available() -> bool
+pub fn adopt_http2<T implements net.ByteStream>(move stream: T, server: bool) -> Result<Http2Transport<T>>
+```
+
+`http2_available` is normally true on supported native targets. It gives an
+unusual target a clean `unsupported` result. `adopt_http2` is the
+transport-neutral entry point for raw TCP or TLS.
+
+One completed exchange:
 
 ```beans
 pub class Stream {
     pub id: int
-    pub headers: Headers
     pub body: Bytes
+    pub request: Option<Request>
+    pub response: Option<Response>
     pub complete: bool
 }
 pub fn method() -> string
@@ -279,29 +328,48 @@ pub enum Http2Event {
 }
 ```
 
-The connection itself, for both roles. Move-only.
+The generic, move-only connection owns any `net.ByteStream`:
 
 ```beans
-pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>
+pub unique class Http2Transport<T implements net.ByteStream> implements Send
+
+pub max_body: int
+pub max_header_count: int
+pub max_header_bytes: int
+
+pub static fn adopt(move stream: T, server: bool) -> Result<Http2Transport<T>>
 pub fn run() -> Result<List<Http2Event>>
 pub fn request(method: string, scheme: string, authority: string, path: string, fields: Headers, body: Bytes) -> Result<int>
+pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>
 pub fn respond(stream_id: int, status: int, fields: Headers, body: Bytes) -> Result<bool>
+pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>
+pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>
 pub fn windows() -> List<int>
 pub fn poll_handle() -> int
 pub fn is_open() -> bool
 pub fn close() -> Result<bool>
 ```
 
-`adopt` takes over a socket that already speaks HTTP/2 — because TLS ALPN agreed
-on `h2`, or because both sides knew in advance. There is no h2c upgrade dance;
-that mechanism is deprecated and browsers never shipped it.
+`request` and `respond` buffer one body. For streaming, call `request_headers`
+or `respond_headers`, then send chunks with `send_data`; set `end_stream` on the
+last chunk. A flow-control stall returns kind `would_block`: run the connection
+and retry the same chunk.
 
-`run` drives one round of IO and returns whatever completed. `request` opens a
-stream and returns its id, adding the four pseudo-headers HTTP/2 requires;
-`respond` answers one stream by id, adding `:status`. `windows()` reports the
-connection-level flow-control windows — how much this side may still receive and
-send — which is the accounting a flow-control bug breaks. `poll_handle()` gives
-the borrowed descriptor so one thread can drive many connections.
+`Http2Connection` is the raw-TCP compatibility wrapper. It has the same fields
+and methods with this static constructor:
+
+```beans
+pub unique class Http2Connection implements Send
+pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>
+pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>
+pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>
+pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>
+```
+
+`adopt` takes over a socket that already speaks HTTP/2 by prior knowledge.
+`run` drives one round of IO. `windows()` reports the receive and send
+flow-control windows. `poll_handle()` is borrowed so one thread can drive many
+connections.
 
 ```beans
 let session: http.Http2Connection =

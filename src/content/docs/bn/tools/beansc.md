@@ -6,9 +6,9 @@ description: beansc-এর usage ব্লক, পুরো subcommand-এর �
 `beansc` হলো Beans-এর compiler আর তার command-line tool। এটাই কোড lex করে,
 parse করে, check করে, run করে, আর build করে। সাথে package manager, language server
 আর debug adapter — সবই এর ভেতরে আছে। শুরুর পয়েন্ট হলো
-[`compiler/beans/main.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/main.b),
+[`src/main.b`](https://github.com/beans-lang/beans/blob/main/src/main.b),
 আর সেটা চালায়
-[`compiler/beans/driver.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/driver.b)।
+[`src/driver.b`](https://github.com/beans-lang/beans/blob/main/src/driver.b)।
 
 ## Usage
 

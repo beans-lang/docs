@@ -40,9 +40,8 @@ jobs:
         uses: actions/checkout@v4
 
       # The coverage check reads the public Beans source to build its inventory:
-      # the stdlib packages, the self-hosted checker (compiler/beans), and the
-      # builtin type registry. Everything it needs is in this public checkout;
-      # the private bootstrap submodule is not required.
+      # the stdlib packages, the self-hosted checker (src), and the
+      # builtin type registry. Everything it needs is in this public checkout.
       - name: Checkout Beans compiler (coverage source)
         uses: actions/checkout@v4
         with:
@@ -65,8 +64,8 @@ jobs:
       # self-hosted compiler, then validate snippets with that current build.
       - name: Build current beansc
         run: |
-          "$HOME/.beans/bin/beansc" build \
-            beans-src/compiler/beans/main.b \
+          "$HOME/.beans/bin/beansc" build --release \
+            beans-src/src/main.b \
             -o "$RUNNER_TEMP/beansc-docs"
           "$RUNNER_TEMP/beansc-docs" --version
 
@@ -83,6 +82,11 @@ jobs:
         env:
           BEANS_REPO: ${{ github.workspace }}/beans-src
         run: npm run test:signatures
+
+      - name: Version check
+        env:
+          BEANS_REPO: ${{ github.workspace }}/beans-src
+        run: npm run version:check
 
       - name: Coverage check
         env:

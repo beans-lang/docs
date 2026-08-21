@@ -17,6 +17,9 @@ method signature গুলো positional: প্রতিটা জায়গ�
 collection-টা বদলায় এমন method call করতে একটা `var` binding লাগে। এটা কী বোঝায়,
 সেটা দেখতে [memory model](/bn/guide/memory/) পড়ুন।
 
+এরা owned type থেকে `Send` পায়: `List<T>` তখন `Send`, যখন `T` `Send`;
+`Map<K, V>` আর `OrderedMap<K, V>`-এর দুই stored type-ই `Send` হতে হবে।
+
 ## List&lt;T&gt;
 
 `List<T>` `T` type-এর item গুলো ক্রম মেনে রাখে। square bracket দিয়ে একটা list

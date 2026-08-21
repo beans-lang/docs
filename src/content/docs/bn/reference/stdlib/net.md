@@ -4,7 +4,7 @@ description: TCP আর UDP socket, address resolve করা, আর async read
 ---
 
 <!-- coverage:summary -->
-**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 2টা package function · 5টা type · 1টা constructor · 6টা static method · 32টা instance method · 4টা public field।
+**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 2টা package function · 6টা type · 1টা constructor · 8টা static method · 31টা instance method · 4টা public field।
 <!-- coverage:summary:end -->
 
 `std.net` দেয় TCP আর UDP socket, name resolve করার সুবিধা, আর দুটো async readiness helper। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
@@ -16,7 +16,7 @@ import std.net
 ## যে নিয়মগুলো এই package-টাকে গড়ে তুলেছে
 
 - **socket বানাতে constructor না, একটা named static লাগে।** যে construction fail করতে পারে সেটা `Result` ফেরত দেয়, তাই লেখা হয় `TcpStream.connect(...)`, `TcpListener.bind(...)`, আর `UdpSocket.bind(...)` — একদম `File.open`-এর মতো গড়ন।
-- **প্রতিটা socket একটা `unique class`।** এটা move-only, আর scope থেকে বেরিয়ে গেলে `deinit`-এ নিজেই বন্ধ হয়ে যায়। socket-কে `thread.spawn`-এ ধরে নেওয়া যায় না, কারণ `unique` `Send` না। close-এর error দেখতে চাইলে `close()` আছে; না দেখলে scope শেষ হলেই কাজটা হয়ে যায়।
+- **প্রতিটা socket move-only এবং `Send`।** scope থেকে বেরিয়ে গেলে `deinit`-এ নিজেই বন্ধ হয়ে যায়। একটা worker-কে ownership দিতে `fn() move(socket)` ব্যবহার করুন। close-এর error দেখতে চাইলে `close()` আছে; না দেখলে scope শেষ হলেই কাজটা হয়ে যায়।
 - **address family বাছা হয় না, resolve হয়।** প্রতিটা entry point host-টাকে `getaddrinfo` দিয়ে চালায়, তাই `"localhost"`, `"127.0.0.1"`, আর `"::1"` — সবই কোনো family flag ছাড়াই চলে।
 - **read আর write নিয়ম করেই partial।** `read` যা এসেছে তা-ই ফেরত দেয়, আর `write` কতটা গেল সেটা জানায়। `read` থেকে খালি `Bytes` বলতে বোঝায় peer connection বন্ধ করে দিয়েছে। `write_all` আর `read_exact` নিজে থেকে loop করে নেয়।
 - **blocking call EINTR-এ আবার চেষ্টা করে।** timeout হলে `timeout` kind-এর একটা `err` আসে, কখনো hang হয় না।
@@ -53,12 +53,27 @@ pub from: Address
 pub data: Bytes
 ```
 
+## ByteStream
+
+Raw TCP আর TLS-এর common transport interface। HTTP/2 আর WebSocket এই interface
+ব্যবহার করে।
+
+```beans
+pub interface ByteStream {
+    fn write_all(data: Bytes) -> Result<int>
+    fn read(max: int) -> Result<Bytes>
+    fn shutdown_write() -> Result<bool>
+    fn close() -> Result<bool>
+    fn poll_handle() -> int
+}
+```
+
 ## TcpStream
 
 একটা connected TCP socket। move-only; `move` দিয়ে পাস করা হয়, `?` দিয়ে `Result` থেকে বের করে নেওয়া হয়।
 
 ```beans
-pub unique class TcpStream
+pub unique class TcpStream implements ByteStream, Send
 
 pub static fn connect(host: string, port: int) -> Result<TcpStream>
 pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStream>
@@ -67,12 +82,14 @@ pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
 pub fn read(max: int) -> Result<Bytes>
+pub fn read_into(buffer: Bytes) -> Result<int>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
 pub fn close() -> Result<bool>
@@ -82,6 +99,10 @@ pub fn poll_handle() -> int
 - `connect` OS যতক্ষণ অপেক্ষা করে ততক্ষণ অপেক্ষা করে; `connect_timeout` `ms` মিলিসেকেন্ড পরে হাল ছেড়ে `timeout` kind দেয়।
 - `write` হয়তো `data`-র পুরোটা না পাঠিয়ে count ফেরত দেয়। `write_all` সব পাঠানো শেষ না হওয়া পর্যন্ত loop করে। `read` বড়জোর `max` বাইট ফেরত দেয়; খালি result বলতে বোঝায় peer বন্ধ করে দিয়েছে। `read_exact` `count` বাইট আসার আগেই peer বন্ধ করলে `eof` kind-এ fail করে। `read_exact` আর `read_to_end` copy-করা chunk জোড়া না দিয়ে একটাই result buffer বড় করে। `write_text` string storage সরাসরি পাঠিয়ে দেয়।
 - `shutdown_write` peer-কে EOF পাঠায়, কিন্তু read half খোলা রাখে।
+- `read_into` আগে থেকে বানানো non-empty `Bytes`-এ লেখে এবং count দেয়। zero মানে
+  EOF। buffer-এর length বদলায় না; শুধু `0..count` এই read-এর data।
+- `into_raw` descriptor-এর ownership lower-level transport-কে দেয়। এরপর নতুন
+  owner-ই সেটা close করবে।
 - `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller বা async helper-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
 
 loopback-এর উপর ছোট্ট একটা request আর reply:
@@ -112,10 +133,12 @@ fn main() {
 একটা socket যেটা আসা TCP connection accept করে।
 
 ```beans
-pub unique class TcpListener
+pub unique class TcpListener implements Send
 
 pub static fn bind(host: string, port: int) -> Result<TcpListener>
 pub static fn bind_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>
+pub static fn bind_reuse_port(host: string, port: int) -> Result<TcpListener>
+pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
@@ -127,6 +150,8 @@ pub fn poll_handle() -> int
 ```
 
 - `bind` 128-এর backlog ব্যবহার করে; `bind_with_backlog` দিয়ে accept-queue-র depth নিজে ঠিক করা যায়।
+- `bind_reuse_port` দিয়ে আলাদা listener একই port share করে; macOS আর Linux নতুন
+  connection ভাগ করে দেয়। Windows `unsupported` ফেরত দেয়।
 - port `0` দিলে system একটা খালি port দিয়ে দেয়। `port()` দিয়ে সেটা পড়ে নেওয়া যায় — একটা test এভাবেই কোনো নম্বর আন্দাজ না করে bind করে।
 - `accept` connection আসা পর্যন্ত block করে। `accept_timeout(0)` হলো একটা non-blocking check; positive timeout শেষ হয়ে গেলে `timeout` kind।
 
@@ -135,7 +160,7 @@ pub fn poll_handle() -> int
 একটা bound UDP socket। প্রতিটা send একটা message, আর প্রতিটা receive একটা message ফেরত দেয়, সাথে পাঠানোর address জুড়ে।
 
 ```beans
-pub unique class UdpSocket
+pub unique class UdpSocket implements Send
 
 pub static fn bind(host: string, port: int) -> Result<UdpSocket>
 

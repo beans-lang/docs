@@ -49,9 +49,10 @@ let back: Bytes = compress.gzip_decompress(packed, 1048576)?
 
 ## Deflater
 
-streaming compressor। move-only; `finish` stream শেষ করে দেয় আর handle-টা এরপর কাজ নেয় না।
+streaming compressor। move-only এবং `Send`; `finish` stream শেষ করে দেয় আর handle-টা এরপর কাজ নেয় না।
 
 ```beans
+pub unique class Deflater implements Send
 pub static fn open(format: Format, level: int = 6) -> Result<Deflater>
 pub fn push(data: Bytes) -> Result<Bytes>
 pub fn finish() -> Result<Bytes>
@@ -69,9 +70,10 @@ wire.append(press.finish()?)
 
 ## Inflater
 
-streaming decompressor, যার একটা limit তার পুরো জীবনজুড়ে চলে।
+move-only `Send` streaming decompressor, যার একটা limit তার পুরো জীবনজুড়ে চলে।
 
 ```beans
+pub unique class Inflater implements Send
 pub static fn open(format: Format, limit: int) -> Result<Inflater>
 pub fn push(data: Bytes) -> Result<Bytes>
 pub fn finished() -> bool

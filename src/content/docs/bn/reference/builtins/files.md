@@ -11,12 +11,15 @@ file system নিয়ে কাজ করার জন্য Beans-এ তি
 `File`, directory-র জন্য `Dir`, আর memory-mapped file ও shared memory-র জন্য
 `MMap`। এগুলো native builtin, এদের কোনো `.b` source নেই, আর runtime ABI table দিয়ে
 এদের কাছে পৌঁছানো হয় —
-[`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b)-তে।
+[`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
 এগুলো builtin বলে এদের signature গুলো positional: parameter-এর type গুলো fixed, নাম
 গুলো signature-এর অংশ না। বেশিরভাগ call একটা [`Result`](/bn/reference/builtins/option-result/)
-দেয়, কারণ file নিয়ে কাজ ব্যর্থ হতে পারে। read আর write [`Bytes`](/bn/reference/builtins/bytes/)
-সরায়।
+দেয়, কারণ file নিয়ে কাজ ব্যর্থ হতে পারে। read আর write
+[`Bytes`](/bn/reference/builtins/bytes/) ব্যবহার করে।
+
+`File` আর `MMap` move-only `Send` owner, কিন্তু `Sync` না। একটা handle worker-এ
+move করা যায়; mutable alias copy বা share করা যায় না।
 
 ## File
 
@@ -185,13 +188,13 @@ MMap.get_u16(int) -> int
 MMap.get_u32(int) -> int
 MMap.get_u64(int) -> int
 MMap.get_i64(int) -> int
-MMap.put_u8(int, int) -> MMap
-MMap.put_u16(int, int) -> MMap
-MMap.put_u32(int, int) -> MMap
-MMap.put_u64(int, int) -> MMap
-MMap.put_i64(int, int) -> MMap
+MMap.put_u8(int, int)
+MMap.put_u16(int, int)
+MMap.put_u32(int, int)
+MMap.put_u64(int, int)
+MMap.put_i64(int, int)
 MMap.read(int, int) -> Bytes
-MMap.write(int, Bytes) -> MMap
+MMap.write(int, Bytes)
 MMap.flush() -> Result<bool>
 MMap.flush_range(int, int) -> Result<bool>
 MMap.resize(int) -> Result<bool>
@@ -201,10 +204,9 @@ MMap.close() -> Result<bool>
 - `len()` হলো map-করা আকার, byte-এ।
 - `get_*` reader গুলো একটা byte-অবস্থানে একটা integer পড়ে, little-endian আর
   bounds-checked; সীমার বাইরের অবস্থান হলে panic হয়। `put_*` writer গুলো একটা
-  অবস্থানে একটা integer লেখে, little-endian আর bounds-checked, আর একই mapping ফেরত
-  দেয় যাতে চেইন করা যায়।
+  অবস্থানে একটা integer লেখে, little-endian আর bounds-checked।
 - `read(pos, n)` `pos`-এ থাকা `n` byte একটা নতুন `Bytes`-এ copy করে। `write(pos, b)`
-  `b`-কে mapping-এর `pos`-এ copy করে আর mapping-টা ফেরত দেয়।
+  `b`-কে mapping-এর `pos`-এ copy করে।
 - `flush()` সব বদল আবার লিখে দেয় (msync); `flush_range(pos, n)` শুধু
   `[pos, pos + n)` flush করে। `resize(n)` mapping-টা resize করে আর এটা shared
   memory-তে পাওয়া যায় না। `close()` সেটা unmap করে।
@@ -217,7 +219,8 @@ fn main() {
     let name: string = "beans_docs_shm"
     let m: MMap = MMap.open_shared_memory(name, 64, true).expect("open")
 
-    m.put_u32(0, 123456789).put_u64(8, 42)
+    m.put_u32(0, 123456789)
+    m.put_u64(8, 42)
     io.println("{m.get_u32(0)} {m.get_u64(8)} over {m.len()} bytes")
 
     m.flush().expect("flush")

@@ -5,7 +5,7 @@ description: এক folder মানে এক package, sub-package আর impor
 
 নিজের বেশিরভাগ কোড থাকে **local package**-এ, module রুটের নিচে। নিয়মগুলো ছোট আর
 এক রকম। এই resolve করার কাজটা হয়
-[`compiler/beans/module.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/module.b)-তে।
+[`src/module.b`](https://github.com/beans-lang/beans/blob/main/src/module.b)-তে।
 
 ## এক directory, এক package
 

@@ -22,10 +22,17 @@ import std.websocket
 ## Module function
 
 ```beans
+pub fn available() -> bool
 pub fn accept_for_key(key: string) -> Result<string>
+pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
+pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
 ```
 
 client-এর `Sec-WebSocket-Key`-এর জন্য `Sec-WebSocket-Accept` মান: key আর একটা নির্দিষ্ট UUID জোড়া দিয়ে তার SHA-1-এর base64। যে server এটা ভুল করে তাকে প্রতিটা browser ফিরিয়ে দেয় — এ কারণেই এটা protocol-এর সবচেয়ে বেশি পরীক্ষিত লাইন।
+
+Generic helper-গুলো যেকোনো owned `net.ByteStream` upgrade, wrap বা accept করে।
+TLS transport-এর জন্য এগুলো ব্যবহার করুন।
 
 ## Message
 
@@ -41,11 +48,35 @@ pub enum Message {
 }
 ```
 
-## Connection
+## WebSocketTransport
 
-তৈরি হয়ে যাওয়া TCP stream-এর উপরে একটা WebSocket connection। move-only: socket-এর মালিক সে-ই, আর সে-ই বন্ধ করে।
+যেকোনো owned byte stream-এর উপর move-only WebSocket:
 
 ```beans
+pub unique class WebSocketTransport<T implements net.ByteStream> implements Send
+pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
+pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub fn receive() -> Result<Option<Message>>
+pub fn send_text(body: string) -> Result<bool>
+pub fn send_binary(body: Bytes) -> Result<bool>
+pub fn ping(body: Bytes) -> Result<bool>
+pub fn pong(body: Bytes) -> Result<bool>
+pub fn close(code: int, reason: string) -> Result<bool>
+pub fn peer_close_code() -> int
+pub fn is_open() -> bool
+pub fn poll_handle() -> int
+```
+
+`upgrade` client handshake লিখে ও verify করে। `accept` `std.http`-এর parse করা
+request-এর 101 response লেখে। `wrap` আগেই handshake হওয়া stream নেয়।
+
+## Connection
+
+`Connection` raw-TCP wrapper। এটা socket own করে এবং `Send`।
+
+```beans
+pub unique class Connection implements Send
 pub static fn connect(host: string, port: int, target: string) -> Result<Connection>
 pub static fn connect_timeout(host: string, port: int, target: string, ms: int) -> Result<Connection>
 pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>
@@ -58,6 +89,7 @@ pub fn pong(body: Bytes) -> Result<bool>
 pub fn close(code: int, reason: string) -> Result<bool>
 pub fn peer_close_code() -> int
 pub fn is_open() -> bool
+pub fn poll_handle() -> int
 ```
 
 `connect` TCP connect, HTTP upgrade আর accept-মান যাচাই — তিনটেই করে। `target` হলো request target (`"/chat"`), গোটা URL নয় — host আর port আগেই ঠিক হয়ে আছে। close handshake শেষ হলে `receive` `ok(none)` দেয়; `peer_close_code()` peer-এর পাঠানো code, নয়তো 0।

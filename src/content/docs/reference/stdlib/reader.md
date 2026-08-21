@@ -1,10 +1,10 @@
 ---
 title: std.reader
-description: Buffered line reading over a File, one line at a time, without moving the file cursor.
+description: Buffered line reading over an owned File, one line at a time, without moving the file cursor.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 1 constructor · 1 instance method.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 type · 1 constructor · 3 instance methods.
 <!-- coverage:summary:end -->
 
 `std.reader` gives you a `Reader` that reads a [`File`](/reference/builtins/files/)
@@ -18,18 +18,24 @@ import std.reader
 
 ## Reader
 
-You build one with `new`, handing it an open file:
+You build one with `new`, moving in an open file. The reader owns that handle:
 
 ```beans
 pub class Reader
-new Reader(file: File)
+new Reader(move file: File)
 
+pub fn file_position() -> int
+pub fn close() -> Result<bool>
 pub fn read_line() -> Result<Option<string>>
 ```
 
 - `read_line` returns `ok(some(line))` for each line, with the trailing newline
   removed. At end of file it returns `ok(none)`. If the read fails, you get an
   error.
+- `file_position` reports the underlying file cursor. Positional reads leave it
+  unchanged.
+- `close` closes the owned file. Bytes already buffered can still be returned;
+  the next refill reports the closed handle.
 
 The reader keeps its own offset and reads with `pread`, so it never moves the
 underlying file's cursor. You can read the same file another way at the same time
@@ -41,7 +47,7 @@ import std.reader
 
 fn main() {
     let file: File = File.open("log.txt", "r").expect("open")
-    let r: reader.Reader = new reader.Reader(file)
+    let r: reader.Reader = new reader.Reader(move file)
     for true {
         let line: Option<string> = r.read_line().expect("read")
         match line {
@@ -49,7 +55,7 @@ fn main() {
             none => { break },
         }
     }
-    file.close()
+    r.close().expect("close")
 }
 ```
 

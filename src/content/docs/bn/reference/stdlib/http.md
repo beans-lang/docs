@@ -12,6 +12,9 @@ import std.http
 ## যে নিয়মগুলো এই package-টাকে গড়ে তুলেছে
 
 - **parser push-based, আর সে কখনো block করে না।** `feed` যা এসেছে তা parser-কে দেয় আর যে event-গুলো সম্পূর্ণ হলো সেগুলো ফেরত দেয়। **একই input যেভাবেই byte-এ ভাগ করুন, event-এর ধারা হুবহু এক থাকে**, তাই আপনার read loop-এর গড়ন কখনো বদলে দিতে পারে না কী parse হলো। এই ধর্মটা llhttp-র নিজের corpus-কে প্রতিটা byte-এ ভাগ করে পরীক্ষা করা হয়।
+- **একই read buffer আবার ব্যবহার করা যায়।** `feed_range` একটা existing `Bytes`-এর
+  checked range parse করে। `TcpStream.read_into`-র সাথে ব্যবহার করলে প্রতি read-এ
+  নতুন input buffer লাগে না।
 - **কড়া mode-ই একমাত্র mode।** পুরোনো peer আর request-smuggling গবেষণাপত্রের জন্য যেসব lenient flag আছে, সেগুলো খোলা হয় না। llhttp যা ফিরিয়ে দেয়, এই package-ও তা ফিরিয়ে দেয়: ভাঙা message মানে `protocol` kind, আর যে connection থেকে সেটা এসেছে সে শেষ। parse fail করলে তার আগে আসা event-গুলো ফেলে দেওয়া হয় না, তাই pipeline করা buffer-এর তৃতীয় message ভাঙা হলেও প্রথম দুটো পাওয়া যায়।
 - **llhttp যেসব সীমার মালিক নয়, সেগুলো এখানে।** `Limits` header-এর সংখ্যা, মোট header byte আর target-এর দৈর্ঘ্য বাঁধে; সীমা ছাড়ালে `too_large`, কখনো কেটে ছোট করা নয়। `Client` আর `ServerConn` জমানো body-কে একইভাবে বাঁধে।
 - **header-এর ক্রম আর case অক্ষত থাকে।** `Headers` একটা ক্রমযুক্ত list, map নয়: একই নামের field ক্রম মেনে জোড়া লাগে, আর যে proxy সেগুলো এলোমেলো করে সে message-ই বদলে দেয়। খোঁজা হয় ASCII-case না মেনে, আর `get` প্রথম মিলটা দেয় — নিয়ম-মানা reader-কে ঠিক এটাই করতে হয়।
@@ -81,11 +84,28 @@ pub class Response {
 ```beans
 new Limits()
 pub class Limits {
-    pub max_header_count: int    // 128
-    pub max_header_bytes: int    // 65536
-    pub max_target_bytes: int    // 8192
+    pub max_header_count: int      // 128
+    pub max_header_bytes: int      // 65536
+    pub max_target_bytes: int      // 8192
+    pub max_head_span_bytes: int   // 16384
 }
 ```
+
+`max_head_span_bytes` llhttp-এর বাকি unbounded head field-গুলো বাঁধে — status
+reason phrase, আর chunk-extension-এর name ও value। এটা না থাকলে peer `1;` পাঠিয়ে
+অনন্ত token byte পাঠিয়ে parser buffer বাড়াতে পারে।
+
+## Writing headers safely
+
+Header name বা value-তে CR, LF বা NUL থাকলে socket-এ যাওয়ার আগেই `invalid`
+ফেরত আসে। এই byte-গুলো wire format-এ extra header বা পুরো response ঢুকিয়ে দিতে
+পারে। HTTP/1.1 name-এ `:` চলে না; HTTP/2-এ শুরুতে `:` pseudo-header হিসেবে চলে।
+
+```beans
+pub fn field_is_safe(text: string) -> bool
+```
+
+Message বানানোর আগে একই safety check করতে এই function ব্যবহার করুন।
 
 ## Parser event
 
@@ -115,6 +135,7 @@ pub enum ResponseEvent {
 new RequestParser()
 pub static fn with_limits(limits: Limits) -> RequestParser
 pub fn feed(data: Bytes) -> Result<List<RequestEvent>>
+pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>
 pub fn finish() -> Result<List<RequestEvent>>
 ```
 
@@ -122,10 +143,12 @@ pub fn finish() -> Result<List<RequestEvent>>
 new ResponseParser()
 pub static fn with_limits(limits: Limits) -> ResponseParser
 pub fn feed(data: Bytes) -> Result<List<ResponseEvent>>
+pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<ResponseEvent>>
 pub fn finish() -> Result<List<ResponseEvent>>
 ```
 
 `finish` জানায় stream শেষ: যে message শেষ হতে EOF-এর দরকার ছিল সে তার শেষ event-গুলো ওখানে দেয়, আর আগেই কেটে যাওয়া message `protocol` error হয়।
+`feed_range(data, from, to)` bounds check করে slice allocate না করেই ওই range parse করে।
 
 ```beans
 let parser: http.RequestParser = new http.RequestParser()
@@ -142,9 +165,10 @@ for event: http.RequestEvent in parser.feed(arrived)? {
 
 ## Client
 
-HTTP/1.1 বলা একটাই TCP connection, keep-alive default। move-only। ইচ্ছে করেই কোনো connection pool নেই: pool একটা নীতি, আর এটা সেই যন্ত্র যাকে pool করা হতো।
+HTTP/1.1 বলা একটাই TCP connection, keep-alive default। move-only এবং `Send`। ইচ্ছে করেই কোনো connection pool নেই: pool একটা নীতি, আর এটা সেই যন্ত্র যাকে pool করা হতো।
 
 ```beans
+pub unique class Client implements Send
 pub static fn connect(host: string, port: int) -> Result<Client>
 pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<Client>
 pub fn get(target: string) -> Result<ClientResponse>
@@ -177,7 +201,9 @@ io.println("{answer.status} {answer.body.len()}")
 ## Server আর ServerConn
 
 ```beans
+pub unique class Server implements Send
 pub static fn bind(host: string, port: int) -> Result<Server>
+pub static fn bind_reuse_port(host: string, port: int) -> Result<Server>
 pub fn port() -> Result<int>
 pub fn set_read_timeout(ms: int)
 pub fn accept() -> Result<ServerConn>
@@ -185,6 +211,7 @@ pub fn accept_timeout(ms: int) -> Result<ServerConn>
 ```
 
 ```beans
+pub unique class ServerConn implements Send
 pub fn read_request() -> Result<Option<ServedRequest>>
 pub fn respond(status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
 pub fn set_max_body(limit: int)
@@ -205,6 +232,9 @@ pub class ServedRequest {
 
 client পরিষ্কারভাবে শেষ করলে — অর্থাৎ দুই message-এর মাঝে connection বন্ধ করলে — `read_request` `ok(none)` দেয়। pipeline করা request সারিতে রেখে একটা একটা করে দেওয়া হয়। concurrency আপনার সিদ্ধান্ত: এক thread-এ accept করে connection-প্রতি spawn করুন, বা test-এ single-threaded চালান।
 
+`bind_reuse_port` shared port-এ independent accept loop বানায়। macOS আর Linux
+নতুন connection ভাগ করে দেয়; Windows `unsupported` ফেরত দেয়।
+
 ```beans
 let server: http.Server = http.Server.bind("127.0.0.1", 0)?
 let conn: http.ServerConn = server.accept()?
@@ -219,23 +249,27 @@ match conn.read_request()? {
 
 ## HTTP/2
 
-একটা stream-এ একটা exchange:
+Native bridge check করে যেকোনো owned byte stream নিন:
+
+```beans
+pub fn http2_available() -> bool
+pub fn adopt_http2<T implements net.ByteStream>(move stream: T, server: bool) -> Result<Http2Transport<T>>
+```
+
+একটা completed exchange:
 
 ```beans
 pub class Stream {
     pub id: int
-    pub headers: Headers
     pub body: Bytes
+    pub request: Option<Request>
+    pub response: Option<Response>
     pub complete: bool
 }
 pub fn method() -> string
 pub fn path() -> string
 pub fn status() -> int
-```
 
-চলার পথে connection যা জানায়:
-
-```beans
 pub enum Http2Event {
     message(stream: Stream)
     stream_closed(id: int, error_code: int)
@@ -243,22 +277,37 @@ pub enum Http2Event {
 }
 ```
 
-connection নিজে, দুই ভূমিকার জন্যই। move-only।
+Generic move-only connection যেকোনো `net.ByteStream` own করে:
 
 ```beans
-pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>
+pub unique class Http2Transport<T implements net.ByteStream> implements Send
+pub static fn adopt(move stream: T, server: bool) -> Result<Http2Transport<T>>
 pub fn run() -> Result<List<Http2Event>>
 pub fn request(method: string, scheme: string, authority: string, path: string, fields: Headers, body: Bytes) -> Result<int>
+pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>
 pub fn respond(stream_id: int, status: int, fields: Headers, body: Bytes) -> Result<bool>
+pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>
+pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>
 pub fn windows() -> List<int>
 pub fn poll_handle() -> int
 pub fn is_open() -> bool
 pub fn close() -> Result<bool>
 ```
 
-`adopt` এমন একটা socket নেয় যেটা আগে থেকেই HTTP/2 বলে — কারণ TLS ALPN `h2`-তে রাজি হয়েছে, বা দুই পক্ষ আগেই জানত। কোনো h2c upgrade নাচ নেই; ওই ব্যবস্থাটা পরিত্যক্ত আর browser-রা কখনো ওটা ship করেনি।
+`request` আর `respond` body buffer করে। stream করতে `request_headers` বা
+`respond_headers` দিয়ে শুরু করুন, তারপর `send_data` দিয়ে chunk পাঠান। শেষ chunk-এ
+`end_stream` true দিন। flow control আটকালে `would_block` আসে; connection run করে
+একই chunk আবার দিন।
 
-`run` এক দফা IO চালায় আর যা সম্পূর্ণ হলো তা দেয়। `request` একটা stream খোলে আর তার id দেয়, HTTP/2-র চাওয়া চারটে pseudo-header যোগ করে দিয়ে; `respond` id ধরে একটা stream-এর উত্তর দেয়, `:status` যোগ করে। `windows()` connection-স্তরের flow-control window জানায় — এ পাশ আর কতটা নিতে আর পাঠাতে পারে — যে হিসাবটা flow-control bug ভেঙে দেয়। `poll_handle()` ধার করা descriptor দেয়, যাতে এক thread অনেক connection চালাতে পারে।
+Raw TCP wrapper:
+
+```beans
+pub unique class Http2Connection implements Send
+pub static fn adopt(move stream: net.TcpStream, server: bool) -> Result<Http2Connection>
+pub fn respond_headers(stream_id: int, status: int, fields: Headers) -> Result<bool>
+pub fn request_headers(method: string, scheme: string, authority: string, path: string, fields: Headers) -> Result<int>
+pub fn send_data(stream_id: int, body: Bytes, end_stream: bool) -> Result<bool>
+```
 
 ```beans
 let session: http.Http2Connection =

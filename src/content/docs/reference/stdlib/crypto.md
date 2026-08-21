@@ -68,9 +68,10 @@ let mac: Bytes = crypto.hmac(crypto.Algorithm.sha256, key, message)?
 
 ## Hasher
 
-A streaming digest, for data that arrives in pieces. Move-only.
+A streaming digest, for data that arrives in pieces. Move-only and `Send`.
 
 ```beans
+pub unique class Hasher implements Send
 pub static fn open(algorithm: Algorithm) -> Result<Hasher>
 pub fn update(data: Bytes) -> Result<bool>
 pub fn finish() -> Result<Bytes>

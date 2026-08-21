@@ -4,7 +4,7 @@ description: value-এর মালিকানা রাখা, শেয়া
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 21 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 22 instance methods.
 <!-- coverage:summary:end -->
 
 **Ownership handle** হলো এমন একটা builtin type যেটা একটা value-এর মালিক, আর
@@ -17,6 +17,9 @@ description: value-এর মালিকানা রাখা, শেয়া
 `Box`, `Arena`, `Shared`, আর `Mutex` হলো move-only outer handle, ঠিক `List` আর
 `Map`-এর মতো। এদের bind, assign, বা return করার সময় `move` ব্যবহার করা হয়।
 function parameter default-এ borrow করে।
+
+`Box<T>` আর `Arena<T>` তখন `Send`, যখন `T` `Send`। `List<T>`-ও একই নিয়ম মানে;
+`Map<K, V>` আর `OrderedMap<K, V>`-এর দুই stored type-ই `Send` হতে হবে।
 
 ## Box&lt;T&gt;
 
@@ -139,9 +142,11 @@ Channel<T>.close()
 
 ```beans
 Thread<T>.join() -> T
+Thread<T>.detach()
 ```
 
 - `join()` thread-টা শেষ হওয়া পর্যন্ত অপেক্ষা করে আর তার result ফেরত দেয়।
+- `detach()` worker-কে নিজের মতো শেষ হতে দেয় এবং result ফেলে দেয়।
 
 ## AtomicInt
 

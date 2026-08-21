@@ -1,6 +1,6 @@
 ---
 title: std.tls
-description: platform-এর নিজের TLS stack, একটা TcpStream-কে filter হিসেবে মুড়ে।
+description: platform TLS stack দিয়ে client, server, PEM, PKCS#12, SNI আর ALPN।
 ---
 
 `std.tls` একটা connect করা `TcpStream`-কে TLS দিয়ে মুড়ে দেয়, operating system-এর নিজের implementation ব্যবহার করে — macOS-এ SecureTransport, Windows-এ SChannel, Linux/BSD-তে runtime-এ load করা OpenSSL 3 — আর API কোথাও বলে না কোনটা চলছে। source আছে এখানে: [`stdlib/std/tls/tls.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/tls/tls.b)।
@@ -15,12 +15,17 @@ import std.tls
 - **বাড়তি root যোগ হয়, বদলায় না।** `connect_with_roots` একটা connection-এর জন্য কোন anchor গ্রহণযোগ্য সেটা বাড়ায়, private CA বা pin করা root-এর জন্য। system store তবু কাজ করে, তাই সাধারণ public chain-ও আগের মতোই verify হয়।
 - **`close_notify` ছাড়া কেটে যাওয়া stream একটা error।** খালি `read` মানে peer শেষ ঘোষণা করেছে; তার আগে transport মরে গেলে সেটা `eof` kind — FIN-এ শেষ হোক বা RST-এ। এটাই truncation attack-কে লুকিয়ে না রেখে সামনে আনা — যে stack একে "data শেষ" বলে চালায়, সে আক্রমণকারীকে যেকোনো response নিজের পছন্দমতো জায়গায় কেটে দেওয়ার সুযোগ দেয়।
 - **stream তার socket-এর মালিক**, আর encryption-এর উপরে `TcpStream`-এর মতোই ব্যবহার হয়: partial read আর write, আর সবটুকু চাইলে `write_all` ও `read_exact`।
+- **TLS handle এক thread-এ থাকে।** `TlsStream` আর `TlsListener` move-only, কিন্তু
+  `Send` না। platform TLS state thread handoff-এর জন্য safe বলে ধরা হয় না।
 
 যেসব error kind দেখা যেতে পারে: `handshake` (certificate, hostname বা protocol), `eof` (truncation, বা handshake-এর মাঝে peer চলে যাওয়া), `protocol` (record layer), `unsupported` (এই platform-এ backend নেই), `closed`, আর transport-এর নিজের kind-গুলো।
 
 ## backend-এর একটা পার্থক্য জেনে রাখা ভালো
 
-macOS-এর SecureTransport **বড়জোর TLS 1.2** পর্যন্ত যায়। Apple ওতে কখনো 1.3 যোগ করেনি; উত্তরসূরি আছে Network.framework-এ। তাই কেবল-1.3 peer macOS-এ `handshake` kind দিয়ে ফিরিয়ে দেওয়া হয় আর অন্য সব জায়গায় গ্রহণ করা হয় — পরিষ্কার প্রত্যাখ্যান, চুপচাপ downgrade কখনো নয়। API এমনভাবে গড়া যে পরে macOS-কে Network.framework-এ সরালে caller-এর চোখে কিছুই বদলাবে না।
+macOS client আর `TlsStream.accept` SecureTransport ব্যবহার করে, তাই **বড়জোর
+TLS 1.2**। 1.3-only peer clean `handshake` error দেয়। macOS-এর `TlsListener`
+Network.framework ব্যবহার করে, তাই accepted connection-এ TLS 1.3, server ALPN
+আর SNI চলে।
 
 ## Module function
 
@@ -30,20 +35,36 @@ pub fn available() -> bool
 
 TLS backend আছে কি না। macOS-এ সবসময় আছে; Linux-এ runtime-এ একটা libssl থাকার উপর নির্ভর করে।
 
+## TlsIdentity
+
+একটা server certificate identity। empty `name` default; অন্য name SNI choice।
+
+```beans
+pub class TlsIdentity
+pub static fn pem(name: string, move certificate: Bytes, move private_key: Bytes, password: string = "") -> TlsIdentity
+pub static fn pkcs12(name: string, move bundle: Bytes, password: string) -> TlsIdentity
+```
+
 ## TlsStream
 
-একটা `TcpStream`-এর উপরে TLS connection। move-only: socket-এর মালিক সে-ই, আর বন্ধ করার সময় socket বন্ধ করার আগে `close_notify` পাঠায়।
+একটা `TcpStream`-এর উপরে TLS connection। move-only এবং এক thread-এ local: socket-এর মালিক সে-ই, আর বন্ধ করার সময় socket বন্ধ করার আগে `close_notify` পাঠায়।
 
 ```beans
 pub static fn connect(host: string, port: int, alpn: string) -> Result<TlsStream>
 pub static fn connect_timeout(host: string, port: int, alpn: string, ms: int) -> Result<TlsStream>
 pub static fn connect_with_roots(host: string, port: int, alpn: string, extra_roots: Bytes, ms: int) -> Result<TlsStream>
+pub static fn connect_address_with_roots(address: string, server_name: string, port: int, alpn: string, extra_roots: Bytes, ms: int) -> Result<TlsStream>
+pub static fn accept(move socket: net.TcpStream, move identities: List<TlsIdentity>, alpn: string, ms: int = 30000) -> Result<TlsStream>
+pub static fn accept_pem(move socket: net.TcpStream, move certificate: Bytes, move private_key: Bytes, alpn: string, ms: int = 30000) -> Result<TlsStream>
+pub static fn accept_pkcs12(move socket: net.TcpStream, move bundle: Bytes, password: string, alpn: string, ms: int = 30000) -> Result<TlsStream>
 pub fn protocol() -> string
 pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_exact(count: int) -> Result<Bytes>
+pub fn shutdown_write() -> Result<bool>
 pub fn close() -> Result<bool>
+pub fn poll_handle() -> int
 ```
 
 `alpn` হলো comma দিয়ে আলাদা করা protocol তালিকা — `"h2,http/1.1"` — বা কিছু না চাইলে খালি। `protocol()` বলে কোনটা ঠিক হলো, কিছু ঠিক না হলে খালি string। `extra_roots` একটা PEM bundle; খালি bundle দিলে `connect_with_roots` হুবহু `connect`।
@@ -68,3 +89,23 @@ let secure: tls.TlsStream =
 ```
 
 certificate-এর মেয়াদ, hostname আর chain — সবই তবু যাচাই হয়। anchor যোগ করা মানে কে sign করতে পারবে সেটা বলা, verification বাদ দেওয়া নয়।
+
+## TlsListener
+
+TLS connection accept এবং handshake করে। identity list-এ একটা empty-name default
+থাকতে হবে; বাকি name SNI choice।
+
+```beans
+pub unique class TlsListener
+pub static fn bind(host: string, port: int, move identities: List<TlsIdentity>, alpn: string, ms: int = 30000) -> Result<TlsListener>
+pub static fn bind_pem(host: string, port: int, move certificate: Bytes, move private_key: Bytes, alpn: string, ms: int = 30000) -> Result<TlsListener>
+pub static fn bind_pkcs12(host: string, port: int, move bundle: Bytes, password: string, alpn: string, ms: int = 30000) -> Result<TlsListener>
+pub fn accept() -> Result<TlsStream>
+pub fn accept_timeout(ms: int) -> Result<TlsStream>
+pub fn port() -> Result<int>
+pub fn close() -> Result<bool>
+pub fn poll_handle() -> int
+```
+
+Port `0` OS-কে free port বেছে নিতে বলে। macOS-এ `poll_handle` `-1`, কারণ
+Network.framework listener file descriptor দেয় না।

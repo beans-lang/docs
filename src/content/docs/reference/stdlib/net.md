@@ -1,10 +1,10 @@
 ---
 title: std.net
-description: TCP and UDP sockets, address resolution, and async readiness helpers.
+description: Sendable TCP and UDP sockets, reusable read buffers, address resolution, and async readiness helpers.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 5 types · 1 constructor · 6 static methods · 34 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 6 types · 1 constructor · 8 static methods · 31 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
 `std.net` provides TCP and UDP sockets, name resolution, and two async readiness
@@ -21,10 +21,10 @@ import std.net
   can fail returns a `Result`, so you write `TcpStream.connect(...)`,
   `TcpListener.bind(...)`, and `UdpSocket.bind(...)`, the same shape as
   `File.open`.
-- **Every socket is a `unique class`.** It is move-only and closes itself in
-  `deinit` when it goes out of scope. A socket cannot be captured into
-  `thread.spawn`, because `unique` is not `Send`. `close()` exists for when you
-  want to see the close error; otherwise scope exit handles it.
+- **Every socket is move-only and `Send`.** It closes itself in `deinit` when it
+  goes out of scope. Move it into a `send fn` worker when one thread should own
+  the connection. `close()` exists for when you want to see the close error;
+  otherwise scope exit handles it.
 - **The address family is resolved, never chosen.** Every entry point runs the
   host through `getaddrinfo`, so `"localhost"`, `"127.0.0.1"`, and `"::1"` all
   work with no family flag.
@@ -68,13 +68,28 @@ pub from: Address
 pub data: Bytes
 ```
 
+## ByteStream
+
+The transport shape shared by raw TCP and TLS. HTTP/2 and WebSocket use this
+interface, so the same protocol code works over either transport.
+
+```beans
+pub interface ByteStream {
+    fn write_all(data: Bytes) -> Result<int>
+    fn read(max: int) -> Result<Bytes>
+    fn shutdown_write() -> Result<bool>
+    fn close() -> Result<bool>
+    fn poll_handle() -> int
+}
+```
+
 ## TcpStream
 
 A connected TCP socket. Move-only; pass it with `move`, take it out of a
 `Result` with `?`.
 
 ```beans
-pub unique class TcpStream
+pub unique class TcpStream implements ByteStream, Send
 
 pub static fn connect(host: string, port: int) -> Result<TcpStream>
 pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStream>
@@ -83,12 +98,14 @@ pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
 pub fn read(max: int) -> Result<Bytes>
+pub fn read_into(buffer: Bytes) -> Result<int>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
 pub fn close() -> Result<bool>
@@ -103,6 +120,12 @@ pub fn poll_handle() -> int
   closes before `count` bytes arrive. `read_exact` and `read_to_end` grow one
   result buffer instead of joining copied chunks. `write_text` sends string
   storage directly.
+- `read_into` writes into an existing non-empty `Bytes` and returns the number
+  of bytes written. Zero means EOF. The buffer keeps its length and only
+  `0..count` belongs to that read, so one `Bytes.filled(...)` allocation can
+  serve the whole connection.
+- `into_raw` transfers the descriptor to a lower-level transport. The stream
+  stops owning it; the new owner must close it.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
 - `poll_handle` returns the descriptor **borrowed**, for registering with a
   poller or the async helpers. It does not transfer ownership; do not close it.
@@ -135,10 +158,12 @@ fn main() {
 A socket that accepts incoming TCP connections.
 
 ```beans
-pub unique class TcpListener
+pub unique class TcpListener implements Send
 
 pub static fn bind(host: string, port: int) -> Result<TcpListener>
 pub static fn bind_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>
+pub static fn bind_reuse_port(host: string, port: int) -> Result<TcpListener>
+pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) -> Result<TcpListener>
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
@@ -150,6 +175,9 @@ pub fn poll_handle() -> int
 ```
 
 - `bind` uses a backlog of 128; `bind_with_backlog` sets the accept-queue depth.
+- `bind_reuse_port` lets independent listeners share one port, and the OS spreads
+  new connections between them. It works on macOS and Linux. Windows returns
+  kind `unsupported`. The `_with_backlog` form also sets the queue depth.
 - Port `0` asks the system for a free port. Read it back with `port()`, which is
   how a test binds without guessing a number.
 - `accept` blocks until a connection arrives. `accept_timeout(0)` is a
@@ -161,7 +189,7 @@ A bound UDP socket. Each send is one message; each receive returns one message
 with the sender's address attached.
 
 ```beans
-pub unique class UdpSocket
+pub unique class UdpSocket implements Send
 
 pub static fn bind(host: string, port: int) -> Result<UdpSocket>
 

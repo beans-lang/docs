@@ -37,17 +37,21 @@ hits.add_and_get(1)
 ## spawn and join
 
 `thread.spawn(fn() -> T)` runs a closure on a new OS thread and returns a
-`Thread<T>`. `join()` waits for the thread to finish and returns its value. The
-returned value `T` must be `Send`, and so must everything the closure captures.
+`Thread<T>`. `join()` waits for the thread to finish and returns its value;
+`detach()` lets it finish independently and discards the result. The returned
+value `T` must be `Send`, and so must everything the closure captures.
 
 ## Send and Sync
 
 The type system stops data races before they happen. A `thread.spawn` closure
 may capture only `Send` values and must return a `Send` value.
 
-- **Not `Send`:** plain class references, `List`, `Map`, `Box`, `Arena`,
-  `Bytes`, `File`, `MMap`. These are local reference values.
-- **Can cross:** scalars, immutable strings, `AtomicInt`, `Mutex`, a `Channel`
+- **Local by default:** plain class references and plain `fn` closures.
+- **Conditional:** `List<T>`, `Box<T>`, and `Arena<T>` are `Send` when `T` is.
+  `Map<K, V>` and `OrderedMap<K, V>` need both types to be `Send`.
+- **Move-only owners:** `Bytes`, `File`, `MMap`, TCP/UDP sockets, pollers, and
+  HTTP/HTTP2/WebSocket handles are `Send`, but mutable owners are not `Sync`.
+- **Shared tools:** scalars, immutable strings, atomics, a `Mutex` or `Channel`
   of `Send` values, and `Shared<T>`/`Weak<T>` where `T` is `Send & Sync`.
 
 This makes a `class` a local reference by default. Capturing a non-`Send` value
@@ -57,10 +61,13 @@ in a spawned closure is a compile error that names the value and its type:
 ```beans
 import std.thread
 
+class Local {}
+
 fn main() {
-    var xs: List<int> = [1, 2, 3]
+    let item: Local = new Local()
+    var xs: List<Local> = [item]
     let t: Thread<int> = thread.spawn(fn() -> int {
-        return xs.len()            // error: cannot capture non-Send List<int>
+        return xs.len()            // error: List<Local> is not Send
     })
     t.join()
 }
@@ -68,6 +75,19 @@ fn main() {
 
 To share mutable data across threads, wrap it in a `Mutex`, which is `Send`. See
 [Memory and ownership](/guide/memory/).
+
+For one-owner handoff, move the value into the closure. A direct closure passed
+to `spawn` is inferred as `send fn`; a stored sendable closure can name that
+type:
+
+```beans
+let data: Bytes = Bytes.filled(4096, 0)
+let work: send fn() -> int =
+    fn() move(data) -> int { return data.len() }
+let worker: Thread<int> = thread.spawn(move work)
+```
+
+Plain `fn` values stay local and cloneable. A `send fn` is move-only.
 
 ## Mutex
 

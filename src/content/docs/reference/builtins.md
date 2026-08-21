@@ -15,18 +15,18 @@ This page lists every builtin and links to a page that explains it in full.
 Beans builds its builtins in two ways. You do not need to think about this while
 you write code, but it helps to know it once.
 
-- Some builtins are written in C++ and reached through a fixed runtime table (the
+- Some builtins are implemented by the C runtime and reached through a fixed table (the
   "runtime ABI"). These are `string`, `Bytes`, `File`, `MMap`, and the `std.*`
   modules that talk to the operating system. You can see the table at
-  [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+  [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 - The rest are written into the compiler's own type checker and turned into
   machine code by the code generator. These are the generic types (`List`, `Map`,
   `Box`, `Atomic`, `RawPtr`, `Slice`, SIMD) and compile-time helpers like
   `size_of`. You can see the checker at
-  [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+  [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
-The runtime ABI version for this compiler is `6`. The compiler reports version
-`0.1.18` and the language contract is frozen at `1.0`.
+The runtime ABI version for this compiler is `7`. The compiler reports version
+`0.1.26` and the language contract is frozen at `1.0`.
 
 ## Error handling is builtin
 

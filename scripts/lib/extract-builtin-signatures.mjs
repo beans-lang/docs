@@ -4,7 +4,7 @@ import { BEANS_REPO, compilerSource } from './paths.mjs';
 
 // Generate canonical signatures for the built-in methods, statics and module
 // functions straight from the checker's own typed registry
-// (compiler/beans/expression.b: builtin_method / builtin_static /
+// (src/expression.b: builtin_method / builtin_static /
 // builtin_module). These are the exact `(parameter types) -> result` shapes the
 // checker enforces, so a documented builtin signature can be verified against
 // the compiler and cannot silently drift.

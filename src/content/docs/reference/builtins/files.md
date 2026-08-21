@@ -10,12 +10,15 @@ description: The built-in File, Dir, and MMap types for reading, writing, listin
 Beans has three builtin types for working with the file system: `File` for a single
 file, `Dir` for directories, and `MMap` for memory-mapped files and shared memory.
 They are native builtins with no `.b` source, reached through the runtime ABI table
-in [`compiler/beans/expression.b`](https://github.com/beans-lang/beans/blob/main/compiler/beans/expression.b).
+in [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
 Because these are builtins, their signatures are positional: the parameter types
 are fixed, the names are not part of the signature. Most calls return a
 [`Result`](/reference/builtins/option-result/) because file work can fail. Reads and
-writes move [`Bytes`](/reference/builtins/bytes/).
+writes use [`Bytes`](/reference/builtins/bytes/).
+
+`File` and `MMap` are move-only `Send` owners, but not `Sync`. You can move one
+handle to a worker thread; you cannot copy or share a mutable alias.
 
 ## File
 
@@ -184,13 +187,13 @@ MMap.get_u16(int) -> int
 MMap.get_u32(int) -> int
 MMap.get_u64(int) -> int
 MMap.get_i64(int) -> int
-MMap.put_u8(int, int) -> MMap
-MMap.put_u16(int, int) -> MMap
-MMap.put_u32(int, int) -> MMap
-MMap.put_u64(int, int) -> MMap
-MMap.put_i64(int, int) -> MMap
+MMap.put_u8(int, int)
+MMap.put_u16(int, int)
+MMap.put_u32(int, int)
+MMap.put_u64(int, int)
+MMap.put_i64(int, int)
 MMap.read(int, int) -> Bytes
-MMap.write(int, Bytes) -> MMap
+MMap.write(int, Bytes)
 MMap.flush() -> Result<bool>
 MMap.flush_range(int, int) -> Result<bool>
 MMap.resize(int) -> Result<bool>
@@ -200,10 +203,9 @@ MMap.close() -> Result<bool>
 - `len()` is the mapped size in bytes.
 - The `get_*` readers return an integer read at a byte position, little-endian and
   bounds-checked; an out-of-range position panics. The `put_*` writers write an
-  integer at a position, little-endian and bounds-checked, and return the same
-  mapping so you can chain them.
+  integer at a position, little-endian and bounds-checked.
 - `read(pos, n)` copies `n` bytes at `pos` into a new `Bytes`. `write(pos, b)`
-  copies `b` into the mapping at `pos` and returns the mapping.
+  copies `b` into the mapping at `pos`.
 - `flush()` writes all changes back (msync); `flush_range(pos, n)` flushes only
   `[pos, pos + n)`. `resize(n)` resizes the mapping and is not available on shared
   memory. `close()` unmaps it.
@@ -216,7 +218,8 @@ fn main() {
     let name: string = "beans_docs_shm"
     let m: MMap = MMap.open_shared_memory(name, 64, true).expect("open")
 
-    m.put_u32(0, 123456789).put_u64(8, 42)
+    m.put_u32(0, 123456789)
+    m.put_u64(8, 42)
     io.println("{m.get_u32(0)} {m.get_u64(8)} over {m.len()} bytes")
 
     m.flush().expect("flush")

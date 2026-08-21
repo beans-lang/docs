@@ -83,14 +83,15 @@ VERSION      যে ভার্সন ইনস্টল হয়েছে
   `xcode-select --install` দিয়ে বসান। `check` আর `run` এগুলো ছাড়াও চলে।
 - **Git** শুধু তখনই লাগবে যখন Git package dependency টানা হবে।
 
-C++ bootstrap compiler, `beansc0`, কখনো ইনস্টল হয় না। ওটা লাগবে না।
+পুরোনো C++ bootstrap compiler `beansc0` আর নেই। release হওয়া `beansc` পরের
+compiler build করে।
 
 ## ভার্সন, জায়গা বা target বেছে নেওয়া
 
 ইনস্টলারকে অপশন দিতে হলে `-s --`-এর পরে দিন:
 
 ```bash
-curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.18 --prefix /opt/beans
+curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.26 --prefix /opt/beans
 ```
 
 কোন build target হবে সেটা `BEANS_TARGET` environment variable দিয়ে ঠিক করুন:

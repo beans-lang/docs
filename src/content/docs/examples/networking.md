@@ -7,7 +7,10 @@ Beans' networking lives in `std.net`.
 [`net.b`](https://github.com/beans-lang/beans/blob/main/examples/net.b) covers
 TCP and UDP, and
 [`poller.b`](https://github.com/beans-lang/beans/blob/main/examples/poller.b)
-shows how one thread waits on many sockets at once.
+shows how one thread waits on many sockets at once. The current stack also has
+[`http.b`](https://github.com/beans-lang/beans/blob/main/examples/http.b),
+[`http2.b`](https://github.com/beans-lang/beans/blob/main/examples/http2.b), and
+[`websocket.b`](https://github.com/beans-lang/beans/blob/main/examples/websocket.b).
 
 Both run entirely on loopback (`127.0.0.1`) inside **one process**. That is what
 makes them deterministic tests rather than demos that need a server somewhere: a
@@ -22,8 +25,8 @@ Two rules from the file's header explain the whole API:
   can fail and so cannot be a plain constructor. You call `TcpListener.bind`,
   `TcpStream.connect`, `UdpSocket.bind`, and `Address.resolve`, the same shape as
   `File.open`. There are no module-level functions in `std.net`.
-- **Sockets are `unique class`:** move-only, closed by `deinit`. One owner, one
-  close.
+- **Sockets are move-only `Send` owners:** closed by `deinit`, and transferable
+  to one worker with an explicit move capture. One owner, one close.
 
 ## Binding to any free port
 
@@ -78,6 +81,52 @@ looping forms. `write_all` keeps writing until everything is sent. `read_exact`
 keeps reading until it has the exact count you asked for, and fails with kind
 `eof` if the peer stops early, which is what code reading a fixed-size header
 needs.
+
+## Reuse one read buffer
+
+For a long-lived connection, allocate the buffer once:
+
+```beans
+let scratch: Bytes = Bytes.filled(16 * 1024, 0)
+let count: int = session.read_into(scratch)?
+if count > 0 {
+    let events: List<http.RequestEvent> =
+        parser.feed_range(scratch, 0, count)?
+}
+```
+
+`read_into` keeps `scratch.len()` unchanged and writes only `0..count`. Zero is
+EOF. `feed_range` parses that checked range without making a slice. This is the
+same allocation-free input path used by `http.ServerConn`.
+
+## Move a connection to a worker
+
+Socket and HTTP owners implement `Send`. The move must be clear in the closure:
+
+```beans
+let worker: Thread<Result<int>> = thread.spawn(
+    fn() move(session) -> Result<int> {
+        let scratch: Bytes = Bytes.filled(16 * 1024, 0)
+        return session.read_into(scratch)
+    })
+let count: int = worker.join()?
+```
+
+A plain capture is refused. `Error` and `Result` are sendable when their payloads
+are, so the worker can use `?` and return the failure.
+
+For independent accept loops, share one port at the OS level:
+
+```beans
+let first: net.TcpListener =
+    net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
+let second: net.TcpListener =
+    net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
+```
+
+macOS and Linux distribute new connections between the listeners. Windows
+returns kind `unsupported`. `http.Server.bind_reuse_port` exposes the same
+shape for HTTP/1.1 servers.
 
 ## UDP datagrams
 
