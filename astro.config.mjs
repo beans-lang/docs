@@ -171,6 +171,7 @@ export default defineConfig({
             { label: 'std.fs', slug: 'reference/stdlib/fs' },
             { label: 'std.reader', slug: 'reference/stdlib/reader' },
             { label: 'std.reflect', slug: 'reference/stdlib/reflect' },
+            { label: 'std.log', slug: 'reference/stdlib/log' },
             { label: 'std.encoding.json', slug: 'reference/stdlib/json' },
             { label: 'std.encoding.xml', slug: 'reference/stdlib/xml' },
             { label: 'std.encoding.base64', slug: 'reference/stdlib/base64' },

@@ -38,6 +38,7 @@ const STDLIB_PAGES = {
   'std.fs': S('fs'),
   'std.reader': S('reader'),
   'std.reflect': S('reflect'),
+  'std.log': S('log'),
   'std.encoding.json': S('json'),
   'std.encoding.xml': S('xml'),
   'std.encoding.base64': S('base64'),

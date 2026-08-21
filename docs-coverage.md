@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1167**
-- Symbols with an enforced signature: **797**
+- Total public symbols: **1252**
+- Symbols with an enforced signature: **846**
 - Builtin reference symbols: **317**
-- Standard-library symbols: **836**
+- Standard-library symbols: **921**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1064,6 +1064,96 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `std.io.println` | function | `println(any)` | `reference/stdlib/io-os` | ✓ |
 | `std.io.read_all` | function | `read_all() -> string` | `reference/stdlib/io-os` | ✓ |
 | `std.io.read_line` | function | `read_line() -> Option<string>` | `reference/stdlib/io-os` | ✓ |
+
+## std.log
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `backend_error` | function | `pub fn backend_error() -> string` | `reference/stdlib/log` | ✓ |
+| `backend_error_count` | function | `pub fn backend_error_count() -> int` | `reference/stdlib/log` | ✓ |
+| `Colour` | enum |  | `reference/stdlib/log` | ✓ |
+| `Colour.always` | variant |  | `reference/stdlib/log` | ✓ |
+| `Colour.automatic` | variant |  | `reference/stdlib/log` | ✓ |
+| `Colour.never` | variant |  | `reference/stdlib/log` | ✓ |
+| `debug` | function | `pub fn debug(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `dropped` | function | `pub fn dropped() -> int` | `reference/stdlib/log` | ✓ |
+| `enabled` | function | `pub fn enabled(level: Level) -> bool` | `reference/stdlib/log` | ✓ |
+| `error` | function | `pub fn error(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `ExportReader` | class |  | `reference/stdlib/log` | ✓ |
+| `ExportReader.dropped` | method | `pub fn dropped() -> int` | `reference/stdlib/log` | ✓ |
+| `ExportReader.next` | method | `pub fn next(timeout_millis: int = 0) -> Result<Option<Record>>` | `reference/stdlib/log` | ✓ |
+| `ExportReader.next_batch` | method | `pub fn next_batch(max_records: int = 64, timeout_millis: int = 0) -> Result<List<Record>>` | `reference/stdlib/log` | ✓ |
+| `ExportSink` | class |  | `reference/stdlib/log` | ✓ |
+| `ExportSink.dropped` | method | `pub fn dropped() -> int` | `reference/stdlib/log` | ✓ |
+| `ExportSink.next` | method | `pub fn next(timeout_millis: int = 0) -> Result<Option<Record>>` | `reference/stdlib/log` | ✓ |
+| `ExportSink.next_batch` | method | `pub fn next_batch(max_records: int = 64, timeout_millis: int = 0) -> Result<List<Record>>` | `reference/stdlib/log` | ✓ |
+| `ExportSink.open` | static | `pub static fn open(capacity: int = 1024) -> Result<ExportSink>` | `reference/stdlib/log` | ✓ |
+| `ExportSink.open_with` | static | `pub static fn open_with(capacity: int, overflow: Overflow, level: Level) -> Result<ExportSink>` | `reference/stdlib/log` | ✓ |
+| `ExportSink.reader` | method | `pub fn reader() -> ExportReader` | `reference/stdlib/log` | ✓ |
+| `ExportSink.sink` | method | `pub fn sink() -> Sink` | `reference/stdlib/log` | ✓ |
+| `fatal` | function | `pub fn fatal(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Field` | class |  | `reference/stdlib/log` | ✓ |
+| `Field.key` | field |  | `reference/stdlib/log` | ✓ |
+| `Field.value` | field |  | `reference/stdlib/log` | ✓ |
+| `flush` | function | `pub fn flush() -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `info` | function | `pub fn info(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Level` | enum |  | `reference/stdlib/log` | ✓ |
+| `Level.debug` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.error` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.fatal` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.info` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.off` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.trace` | variant |  | `reference/stdlib/log` | ✓ |
+| `Level.warn` | variant |  | `reference/stdlib/log` | ✓ |
+| `Logger` | class |  | `reference/stdlib/log` | ✓ |
+| `Logger.create` | static | `pub static fn create(name: string, sinks: List<Sink>, pattern: string = "") -> Result<Logger>` | `reference/stdlib/log` | ✓ |
+| `Logger.create_with_level` | static | `pub static fn create_with_level(name: string, sinks: List<Sink>, level: Level, pattern: string = "") -> Result<Logger>` | `reference/stdlib/log` | ✓ |
+| `Logger.debug` | method | `pub fn debug(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.enabled` | method | `pub fn enabled(level: Level) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.error` | method | `pub fn error(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.fatal` | method | `pub fn fatal(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.flush` | method | `pub fn flush() -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `Logger.info` | method | `pub fn info(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.log` | method | `pub fn log(level: Level, message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.log_at` | method | `pub fn log_at(level: Level, message: string, file: string, function: string, line: int, column: int) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.log_at_fields` | method | `pub fn log_at_fields(level: Level, message: string, fields: List<Field>, file: string, function: string, line: int, column: int) -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `Logger.log_fields` | method | `pub fn log_fields(level: Level, message: string, fields: List<Field>) -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `Logger.set_level` | method | `pub fn set_level(level: Level) -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `Logger.trace` | method | `pub fn trace(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `Logger.warn` | method | `pub fn warn(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `new Field` | constructor | `new Field(key: string, value: string)` | `reference/stdlib/log` | ✓ |
+| `Overflow` | enum |  | `reference/stdlib/log` | ✓ |
+| `Overflow.block` | variant |  | `reference/stdlib/log` | ✓ |
+| `Overflow.drop_newest` | variant |  | `reference/stdlib/log` | ✓ |
+| `Overflow.drop_oldest` | variant |  | `reference/stdlib/log` | ✓ |
+| `Record` | class |  | `reference/stdlib/log` | ✓ |
+| `Record.column` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.fields` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.file` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.function` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.level` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.line` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.logger` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.message` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.process_id` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.thread_id` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.thread_name` | field |  | `reference/stdlib/log` | ✓ |
+| `Record.timestamp_nanos` | field |  | `reference/stdlib/log` | ✓ |
+| `set_default` | function | `pub fn set_default(logger: Logger)` | `reference/stdlib/log` | ✓ |
+| `shutdown` | function | `pub fn shutdown() -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `Sink` | class |  | `reference/stdlib/log` | ✓ |
+| `Sink.console` | static | `pub static fn console(stderr: bool = true) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.console_with` | static | `pub static fn console_with(level: Level, colour: Colour, stderr: bool = true) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.file` | static | `pub static fn file(path: string, append: bool = true, fsync: bool = false) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.file_with` | static | `pub static fn file_with(path: string, level: Level, append: bool = true, fsync: bool = false) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.json_file` | static | `pub static fn json_file(path: string, append: bool = true, fsync: bool = false) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.json_file_with` | static | `pub static fn json_file_with(path: string, level: Level, append: bool = true, fsync: bool = false) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.rotating_file` | static | `pub static fn rotating_file(path: string, max_bytes: int, max_backups: int = 5, append: bool = true) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `Sink.rotating_file_with` | static | `pub static fn rotating_file_with(path: string, max_bytes: int, level: Level, max_backups: int = 5, append: bool = true) -> Result<Sink>` | `reference/stdlib/log` | ✓ |
+| `trace` | function | `pub fn trace(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `warn` | function | `pub fn warn(message: string) -> bool` | `reference/stdlib/log` | ✓ |
+| `write_at_fields` | function | `pub fn write_at_fields(level: Level, message: string, fields: List<Field>, file: string, function: string, line: int, column: int) -> Result<bool>` | `reference/stdlib/log` | ✓ |
+| `write_fields` | function | `pub fn write_fields(level: Level, message: string, fields: List<Field>) -> Result<bool>` | `reference/stdlib/log` | ✓ |
 
 ## std.math
 

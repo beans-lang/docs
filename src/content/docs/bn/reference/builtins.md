@@ -27,7 +27,7 @@ Beans তার builtin গুলো দুই ভাবে তৈরি কর�
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
 এই compiler-এর runtime ABI version হলো `7`। compiler নিজের version জানায়
-`0.1.26`, আর language contract `1.0`-তে আটকানো আছে।
+`0.1.27`, আর language contract `1.0`-তে আটকানো আছে।
 
 ## Error handling নিজেই builtin
 

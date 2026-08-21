@@ -26,7 +26,7 @@ you write code, but it helps to know it once.
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
 The runtime ABI version for this compiler is `7`. The compiler reports version
-`0.1.26` and the language contract is frozen at `1.0`.
+`0.1.27` and the language contract is frozen at `1.0`.
 
 ## Error handling is builtin
 

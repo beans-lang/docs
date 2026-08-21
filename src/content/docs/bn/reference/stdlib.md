@@ -4,8 +4,8 @@ description: Beans-এর স্ট্যান্ডার্ড লাইব�
 ---
 
 `import std.*` দিয়ে যেসব প্যাকেজ ব্যবহার করা হয়, সেগুলো মিলেই স্ট্যান্ডার্ড লাইব্রেরি।
-এতে থাকে ফাইল, টেক্সট ফরম্যাটিং, math, collections-এর helper, encoding, networking,
-process, thread, time, randomness, আর নিচু-লেভেলের মেশিন অ্যাক্সেস।
+এতে থাকে ফাইল, টেক্সট ফরম্যাটিং, math, collections-এর helper, structured logging,
+encoding, networking, process, thread, time, randomness, আর নিচু-লেভেলের মেশিন অ্যাক্সেস।
 
 একটা প্যাকেজ ইমপোর্ট করা হয় তার dotted নাম দিয়ে, আর ব্যবহার করা হয় তার শেষ নাম দিয়ে:
 
@@ -27,8 +27,9 @@ fn main() {
   `stdlib/std/<pkg>/<pkg>.b`-তে আসে। এদের কোড নিজে পড়া যায়। যেমন:
   `std.fmt` আছে
   [`stdlib/std/fmt/fmt.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/fmt/fmt.b)-তে,
-  আর সাথে `std.collections`, `std.math`, `std.path`, `std.fs`, আর encoding
-  প্যাকেজগুলো।
+  আর সাথে `std.collections`, `std.math`, `std.path`, `std.fs`, `std.log`, আর
+  encoding প্যাকেজগুলো। কিছু Beans-সোর্স package OS বা third-party library-র
+  কাজের জন্য native bridge ব্যবহার করে।
 - **নেটিভ মডিউল।** এগুলো কম্পাইলার আর runtime-এর ভেতরেই বানানো, `stdlib/std/`-তে
   না। এগুলোই সেই অংশ যেগুলোকে সরাসরি operating system বা CPU-র সাথে কথা বলতে হয়:
   `std.io`, `std.os`, `std.thread`, `std.time`, `std.random`, `std.target`,
@@ -82,6 +83,7 @@ fn main() {
 | [std.fs](/bn/reference/stdlib/fs/) | পুরো ফাইল পড়া আর লেখা |
 | [std.reader](/bn/reference/stdlib/reader/) | একটা `File`-এর উপর buffered লাইন পড়া |
 | [std.reflect](/bn/reference/stdlib/reflect/) | runtime type, member, annotation, checked field access আর call |
+| [std.log](/bn/reference/stdlib/log/) | asynchronous structured log, file, rotation, NDJSON আর export sink |
 | [std.encoding.json](/bn/reference/stdlib/json/) | JSON parse আর build করা |
 | [std.encoding.xml](/bn/reference/stdlib/xml/) | XML parse আর build করা |
 | [std.encoding.base64](/bn/reference/stdlib/base64/) | Base64 encode আর decode |

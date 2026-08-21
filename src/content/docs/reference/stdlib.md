@@ -4,8 +4,9 @@ description: What the Beans standard library is, how it is split into Beans-sour
 ---
 
 The standard library is the set of packages you reach with `import std.*`. It
-covers files, text formatting, math, collections helpers, encoding, networking,
-processes, threads, time, randomness, and low-level machine access.
+covers files, text formatting, math, collections helpers, structured logging,
+encoding, networking, processes, threads, time, randomness, and low-level
+machine access.
 
 You import a package by its dotted name and then call into it by its last name:
 
@@ -27,8 +28,9 @@ The library comes in two layers.
   compiler under `stdlib/std/<pkg>/<pkg>.b`. You can read their code. Examples:
   `std.fmt` at
   [`stdlib/std/fmt/fmt.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/fmt/fmt.b),
-  `std.collections`, `std.math`, `std.path`, `std.fs`, and the encoding
-  packages.
+  `std.collections`, `std.math`, `std.path`, `std.fs`, `std.log`, and the
+  encoding packages. Some source packages use a native bridge for their
+  operating-system or third-party-library work.
 - **Native modules.** These are built into the compiler and runtime, not into
   `stdlib/std/`. They are the parts that must talk to the operating system or the
   CPU directly: `std.io`, `std.os`, `std.thread`, `std.time`, `std.random`,
@@ -83,6 +85,7 @@ Ignore it.
 | [std.fs](/reference/stdlib/fs/) | read and write whole files |
 | [std.reader](/reference/stdlib/reader/) | buffered line reading over a `File` |
 | [std.reflect](/reference/stdlib/reflect/) | runtime types, members, annotations, checked field access and calls |
+| [std.log](/reference/stdlib/log/) | asynchronous structured logging, files, rotation, NDJSON and export sinks |
 | [std.encoding.json](/reference/stdlib/json/) | JSON parsing and building |
 | [std.encoding.xml](/reference/stdlib/xml/) | XML parsing and building |
 | [std.encoding.base64](/reference/stdlib/base64/) | Base64 encode and decode |

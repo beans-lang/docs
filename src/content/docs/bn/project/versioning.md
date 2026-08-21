@@ -12,12 +12,12 @@ Beans-এর version কত সেটা বলার একটাই জায�
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)।
 
 ```text
-compiler=0.1.26
+compiler=0.1.27
 language=1.0
 runtime_abi=7
 ```
 
-- **compiler**: compiler-এর version (`0.1.26`)।
+- **compiler**: compiler-এর version (`0.1.27`)।
 - **language**: language-এর version (`1.0`)।
 - **runtime_abi**: runtime ABI number (`7`)।
 
