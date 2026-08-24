@@ -58,7 +58,11 @@ pub fn value_at(index: int) -> string
 pub fn get(name: string) -> Option<string>
 pub fn all(name: string) -> List<string>
 pub fn has(name: string) -> bool
+pub fn clear()
 ```
+
+`clear` removes every field while keeping the backing storage, so one
+collection can serve a whole keep-alive connection.
 
 One field, exactly as it arrived:
 
@@ -167,6 +171,9 @@ pub static fn with_limits(limits: Limits) -> RequestParser
 pub fn feed(data: Bytes) -> Result<List<RequestEvent>>
 pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>
 pub fn finish() -> Result<List<RequestEvent>>
+pub fn feed_range_into(data: Bytes, from: int, to: int, events: List<RequestEvent>) -> Result<bool>
+pub fn finish_into(events: List<RequestEvent>) -> Result<bool>
+pub fn recycle(done: Request)
 ```
 
 ```beans
@@ -181,6 +188,15 @@ pub fn finish() -> Result<List<ResponseEvent>>
 final events there, and a message cut short becomes a `protocol` error.
 `feed_range(data, from, to)` checks the bounds and parses only that range
 without allocating a slice.
+
+The `_into` pair is the allocation-free form for a server's read loop:
+`feed_range_into` appends events into a caller-owned list, and `finish_into`
+signals end-of-stream the same way. The caller clears the list between feeds;
+events are valid until then. `recycle` hands a delivered request head back for
+reuse — the next message fills that shell instead of allocating one, and reuses
+its target and header strings when the peer repeats them byte-for-byte, the
+shape of every keep-alive connection. Only recycle a request nothing will read
+again: the parser rewrites every field in place.
 
 ```beans
 let parser: http.RequestParser = new http.RequestParser()
@@ -289,6 +305,24 @@ match conn.read_request()? {
     none => {}
 }
 ```
+
+### Framing responses yourself
+
+A server that owns its sockets — nonblocking writes, an output queue per
+connection — still wants `std.http` to own the wire format. Two package
+functions encode one complete HTTP/1.1 response into caller-owned storage:
+
+```beans
+pub fn encode_response_into(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
+pub fn encode_response_append(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
+```
+
+`encode_response_into` resets `target` first, so one buffer is reused across
+responses. `encode_response_append` writes after whatever `target` already
+holds — the form for a server that frames each response straight into its
+connection's output queue instead of staging it in a side buffer. Both apply
+the same header-safety validation as `respond`, and a validation failure
+leaves `target` untouched.
 
 ## HTTP/2
 

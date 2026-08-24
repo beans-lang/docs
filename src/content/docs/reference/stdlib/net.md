@@ -97,14 +97,18 @@ pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStr
 pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
+pub fn write_from(data: Bytes, offset: int) -> Result<int>
+pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn set_nodelay(on: bool) -> Result<bool>
 pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
@@ -124,6 +128,15 @@ pub fn poll_handle() -> int
   of bytes written. Zero means EOF. The buffer keeps its length and only
   `0..count` belongs to that read, so one `Bytes.filled(...)` allocation can
   serve the whole connection.
+- `write_from` writes starting at `offset` without slicing or copying `data` —
+  the offset-aware form an output queue needs to resume a short write.
+- The `try_` pair serves nonblocking streams: `try_write_from` and
+  `try_read_into` return `ok(none)` when the socket would block, instead of an
+  error. For `try_read_into`, `ok(some(0))` is EOF, so a quiet socket and a
+  closed peer remain different facts.
+- `set_nodelay(true)` disables Nagle's algorithm (and `false` restores it). A
+  request/response server wants it disabled, so a small response is not held
+  back for a coalescing timer.
 - `into_raw` transfers the descriptor to a lower-level transport. The stream
   stops owning it; the new owner must close it.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
@@ -167,6 +180,7 @@ pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) 
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
+pub fn try_accept() -> Result<Option<TcpStream>>
 pub fn local_address() -> Result<Address>
 pub fn port() -> Result<int>
 pub fn set_nonblocking(on: bool) -> Result<bool>
@@ -182,6 +196,9 @@ pub fn poll_handle() -> int
   how a test binds without guessing a number.
 - `accept` blocks until a connection arrives. `accept_timeout(0)` is a
   non-blocking check; a positive timeout that runs out is kind `timeout`.
+- `try_accept` accepts one connection without waiting: `ok(none)` means the
+  accept queue is empty. This is the form a poller-driven accept loop uses
+  after the listener's descriptor reports readable.
 
 ## UdpSocket
 

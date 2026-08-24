@@ -18,7 +18,7 @@ See [Versioning](/project/versioning/) for how the numbers are assigned.
 
 ## The runtime ABI
 
-The runtime ABI has its own number (`runtime_abi=7`). It changes
+The runtime ABI has its own number (`runtime_abi=10`). It changes
 whenever compiler-generated code and the shipped runtime stop being compatible.
 If you mix a compiler and a runtime with different ABI numbers, they do not fit
 together. Staying on one installed release keeps them matched.

@@ -81,14 +81,18 @@ pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStr
 pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
+pub fn write_from(data: Bytes, offset: int) -> Result<int>
+pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn set_nodelay(on: bool) -> Result<bool>
 pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
@@ -101,6 +105,15 @@ pub fn poll_handle() -> int
 - `shutdown_write` peer-কে EOF পাঠায়, কিন্তু read half খোলা রাখে।
 - `read_into` আগে থেকে বানানো non-empty `Bytes`-এ লেখে এবং count দেয়। zero মানে
   EOF। buffer-এর length বদলায় না; শুধু `0..count` এই read-এর data।
+- `write_from` `data` slice বা copy না করে `offset` থেকে লেখা শুরু করে — একটা
+  output queue-র short write resume করতে এই offset-জানা form-টাই লাগে।
+- `try_` জোড়াটা nonblocking stream-এর জন্য: socket block করত এমন অবস্থায়
+  `try_write_from` আর `try_read_into` error না দিয়ে `ok(none)` দেয়।
+  `try_read_into`-তে `ok(some(0))` মানে EOF — চুপচাপ socket আর বন্ধ peer
+  আলাদা ঘটনাই থাকে।
+- `set_nodelay(true)` Nagle-এর algorithm বন্ধ করে (`false` ফিরিয়ে আনে)।
+  request/response server এটা বন্ধই চায়, যাতে ছোট response একটা coalescing
+  timer-এর জন্য আটকে না থাকে।
 - `into_raw` descriptor-এর ownership lower-level transport-কে দেয়। এরপর নতুন
   owner-ই সেটা close করবে।
 - `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
@@ -142,6 +155,7 @@ pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) 
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
+pub fn try_accept() -> Result<Option<TcpStream>>
 pub fn local_address() -> Result<Address>
 pub fn port() -> Result<int>
 pub fn set_nonblocking(on: bool) -> Result<bool>
@@ -154,6 +168,9 @@ pub fn poll_handle() -> int
   connection ভাগ করে দেয়। Windows `unsupported` ফেরত দেয়।
 - port `0` দিলে system একটা খালি port দিয়ে দেয়। `port()` দিয়ে সেটা পড়ে নেওয়া যায় — একটা test এভাবেই কোনো নম্বর আন্দাজ না করে bind করে।
 - `accept` connection আসা পর্যন্ত block করে। `accept_timeout(0)` হলো একটা non-blocking check; positive timeout শেষ হয়ে গেলে `timeout` kind।
+- `try_accept` অপেক্ষা না করে একটা connection নেয়: `ok(none)` মানে accept queue
+  খালি। poller-চালিত accept loop listener-এর descriptor readable দেখানোর পর
+  এই form-টাই ব্যবহার করে।
 
 ## UdpSocket
 

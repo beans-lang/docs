@@ -35,7 +35,11 @@ pub fn value_at(index: int) -> string
 pub fn get(name: string) -> Option<string>
 pub fn all(name: string) -> List<string>
 pub fn has(name: string) -> bool
+pub fn clear()
 ```
+
+`clear` প্রতিটা field মুছে দেয় কিন্তু পেছনের storage রেখে দেয়, তাই একটাই
+collection একটা গোটা keep-alive connection-কে serve করতে পারে।
 
 একটা field, যেমনটি এসেছিল ঠিক তেমন:
 
@@ -137,6 +141,9 @@ pub static fn with_limits(limits: Limits) -> RequestParser
 pub fn feed(data: Bytes) -> Result<List<RequestEvent>>
 pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>
 pub fn finish() -> Result<List<RequestEvent>>
+pub fn feed_range_into(data: Bytes, from: int, to: int, events: List<RequestEvent>) -> Result<bool>
+pub fn finish_into(events: List<RequestEvent>) -> Result<bool>
+pub fn recycle(done: Request)
 ```
 
 ```beans
@@ -149,6 +156,15 @@ pub fn finish() -> Result<List<ResponseEvent>>
 
 `finish` জানায় stream শেষ: যে message শেষ হতে EOF-এর দরকার ছিল সে তার শেষ event-গুলো ওখানে দেয়, আর আগেই কেটে যাওয়া message `protocol` error হয়।
 `feed_range(data, from, to)` bounds check করে slice allocate না করেই ওই range parse করে।
+
+`_into` জোড়াটা server-এর read loop-এর allocation-free form: `feed_range_into`
+caller-এর নিজের list-এ event append করে, আর `finish_into` একইভাবে stream-এর
+শেষ জানায়। feed-এর ফাঁকে list-টা caller-ই clear করে; ততক্ষণ পর্যন্ত event-গুলো
+valid। `recycle` একটা deliver-হওয়া request head ফেরত দিয়ে দেয় আবার ব্যবহারের
+জন্য — পরের message নতুন allocate না করে ওই খোলটাই ভরে, আর peer byte-for-byte
+একই target বা header পাঠালে string-গুলোও reuse করে (প্রতিটা keep-alive
+connection-এর চেহারাই এমন)। শুধু এমন request recycle করবে যেটা আর কেউ পড়বে
+না: parser প্রতিটা field জায়গায় বসেই নতুন করে লেখে।
 
 ```beans
 let parser: http.RequestParser = new http.RequestParser()
@@ -246,6 +262,23 @@ match conn.read_request()? {
     none => {}
 }
 ```
+
+### Response-এর framing নিজে করা
+
+যে server নিজের socket নিজে চালায় — nonblocking write, connection-প্রতি একটা
+output queue — সে-ও wire format-টা `std.http`-এর হাতেই রাখতে চায়। দুটো package
+function একটা সম্পূর্ণ HTTP/1.1 response caller-এর storage-এ encode করে দেয়:
+
+```beans
+pub fn encode_response_into(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
+pub fn encode_response_append(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
+```
+
+`encode_response_into` আগে `target` reset করে, তাই একই buffer response-এর পর
+response-এ reuse হয়। `encode_response_append` `target`-এ যা আছে তার পরে লেখে —
+যে server প্রতিটা response side buffer-এ না রেখে সরাসরি connection-এর output
+queue-তে frame করে, এটা তার form। দুটোই `respond`-এর মতো একই header-safety
+validation চালায়, আর validation fail করলে `target` অক্ষত থাকে।
 
 ## HTTP/2
 
