@@ -130,7 +130,6 @@ export default defineConfig({
             { label: 'Pattern matching', slug: 'guide/pattern-matching' },
             { label: 'Memory and ownership', slug: 'guide/memory' },
             { label: 'Concurrency', slug: 'guide/concurrency' },
-            { label: 'Async and await', slug: 'guide/async' },
             { label: 'Compile-time features', slug: 'guide/compile-time' },
             { label: 'Annotations', slug: 'guide/annotations' },
             { label: 'Runtime hooks', slug: 'guide/runtime-hooks' },

@@ -112,7 +112,7 @@ Walked through in [C interop (FFI)](/examples/ffi/).
 
 | Example | Shows | Runnable |
 | --- | --- | --- |
-| [child_process.b](https://github.com/beans-lang/beans/blob/main/examples/child_process.b) | `Command.start()` returning a `Child` (uses async) | yes |
+| [child_process.b](https://github.com/beans-lang/beans/blob/main/examples/child_process.b) | `Command.start()` returning a `Child` | yes |
 | [processes.b](https://github.com/beans-lang/beans/blob/main/examples/processes.b) | `Command.run()` | yes |
 | [clocks_random.b](https://github.com/beans-lang/beans/blob/main/examples/clocks_random.b) | Time and random | yes |
 | [cpu_dispatch.b](https://github.com/beans-lang/beans/blob/main/examples/cpu_dispatch.b) | `cpu.has` and a feature-gated function | yes (feature-gated code needs the CPU feature) |

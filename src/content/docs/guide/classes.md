@@ -271,8 +271,7 @@ The guarantee is enforced in the body: a Self-returning method must
 `return self` (or a chain of Self-returning calls on `self`). Overrides and
 interface conformances match `Self` only against `Self`, a generic class's
 `Self` carries its own type parameters, and nothing about layout or ABI
-changes. `Self` is not available on static methods, free functions, or async
-methods.
+changes. `Self` is not available on static methods or free functions.
 
 ## A complete example
 

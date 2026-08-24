@@ -121,7 +121,7 @@ method, static method, virtual override আর initializer। এরা না�
 
 - `pub` না এমন member, `priv` field আর method-সহ
 - `deinit`
-- open generic, async, `extern`, variadic বা `inout` call-এর গড়ন
+- open generic, `extern`, variadic বা `inout` call-এর গড়ন
 - ভুল receiver, ভুল argument সংখ্যা, বা ভুল argument type
 
 স্থির error kind-গুলো হলো `missing`, `inaccessible`, `receiver_type`,

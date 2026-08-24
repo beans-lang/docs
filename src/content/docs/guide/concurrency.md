@@ -4,10 +4,9 @@ description: OS threads, channels, mutexes, and atomics in Beans, with checked S
 ---
 
 Beans threads are **OS threads**. `thread.spawn` runs a closure on a new OS
-thread, and there are no green threads or coroutines in this model. For
-cooperative, single-threaded concurrency instead, see [async and
-await](/guide/async/); `thread.spawn` is the tool for CPU-heavy or blocking
-work. Closures plus `std.thread` do the whole job.
+thread, and there are no green threads or coroutines in this model yet — a
+fiber-based model is planned. `thread.spawn` is the tool for CPU-heavy or
+blocking work. Closures plus `std.thread` do the whole job.
 
 ```beans
 import std.thread
@@ -155,6 +154,5 @@ fn main() {
 
 ## Readiness waits
 
-To wait for a socket without blocking a thread, use the [async](/guide/async/)
-model together with `std.net`'s `readable`/`writable`, or the
-[`std.poll`](/reference/stdlib/poll/) poller for many descriptors at once.
+To wait on many sockets from one thread, register them with the
+[`std.poll`](/reference/stdlib/poll/) poller and wait for readiness events.

@@ -34,8 +34,8 @@ The list below is what works today:
 - **A native backend.** MIR compiled to LLVM for debug, release, and LTO builds,
   with automatic reference counting plus a cycle collector.
 - **A reference interpreter** with behavior identical to the native backend.
-- **Concurrency.** OS threads, typed atomics, mutexes, channels, structured
-  `async`/`await`, and readiness waits.
+- **Concurrency.** OS threads, typed atomics, mutexes, channels, and
+  readiness waits.
 - **Package management.** Canonical package identity, a hashed `beans.lock`,
   locked and offline builds, and a Git cache.
 - **Full C interop.** Imports, exports, headers, bindgen, records, unions,

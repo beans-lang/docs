@@ -37,7 +37,7 @@ annotation fields in schema order. All parameters are borrowed. A handler must
 be concrete, synchronous, non-generic, non-extern, and return no value.
 
 Version one allows active annotations only on concrete, synchronous functions
-and methods. It rejects async, abstract, extern, generic, `init`, and `deinit`
+and methods. It rejects abstract, extern, generic, `init`, and `deinit`
 targets.
 
 ## Order and normal return
@@ -79,7 +79,7 @@ their hook handlers are skipped on that thread. This prevents accidental hook
 recursion. A handler panic follows the normal Beans panic rule.
 
 This release does not provide `around` or `proceed`, argument or result
-rewriting, async-completion hooks, local-variable hooks, or a `@test` runner.
+rewriting, local-variable hooks, or a `@test` runner.
 
 See [Annotations](/guide/annotations/) for schemas, targets, retention, and
 repeatable uses.

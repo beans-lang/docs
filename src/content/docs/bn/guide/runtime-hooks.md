@@ -76,8 +76,8 @@ Handler চলার সময় nested annotated function-এর body চল�
 তার hook handler skip হয়। এতে ভুল করে hook recursion হয় না। Handler panic
 করলে Beans-এর সাধারণ panic rule চলে।
 
-এই release-এ `around` বা `proceed`, argument বা result বদলানো, async-completion
-hook, local-variable hook, আর `@test` runner নেই।
+এই release-এ `around` বা `proceed`, argument বা result বদলানো, local-variable
+hook, আর `@test` runner নেই।
 
 Schema, target, retention, আর repeatable use-এর জন্য দেখুন
 [Annotation](/bn/guide/annotations/)।

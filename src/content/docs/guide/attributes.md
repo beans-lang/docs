@@ -1,6 +1,6 @@
 ---
 title: Attributes and modifiers
-description: Built-in Beans modifiers for visibility, OOP, layout, ownership, async code, and CPU features.
+description: Built-in Beans modifiers for visibility, OOP, layout, ownership, and CPU features.
 ---
 
 Beans has custom [annotations](/guide/annotations/) for typed metadata and a
@@ -92,14 +92,6 @@ feature "aes" fn mix_fast(seed: int) -> int { /* ... */ }
 - **`inout fn`** declares a mutating struct method. It gets mutable `self` and
   must be called on a `var` local. The caller does not write `inout` before the
   receiver.
-
-## async
-
-- **`async`** before `fn` declares an async function.
-- **`await`** inside an async body waits on an async call.
-
-Both are contextual and stay usable as ordinary identifiers elsewhere. See
-[Async and await](/guide/async/).
 
 ## Modifier order
 

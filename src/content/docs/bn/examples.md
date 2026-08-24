@@ -112,7 +112,7 @@ beansc run examples/shop/main.b
 
 | উদাহরণ | কী দেখায় | চালানো যায়? |
 | --- | --- | --- |
-| [child_process.b](https://github.com/beans-lang/beans/blob/main/examples/child_process.b) | `Command.start()`, যেটা একটা `Child` ফেরত দেয় (async ব্যবহার করে) | হ্যাঁ |
+| [child_process.b](https://github.com/beans-lang/beans/blob/main/examples/child_process.b) | `Command.start()`, যেটা একটা `Child` ফেরত দেয় | হ্যাঁ |
 | [processes.b](https://github.com/beans-lang/beans/blob/main/examples/processes.b) | `Command.run()` | হ্যাঁ |
 | [clocks_random.b](https://github.com/beans-lang/beans/blob/main/examples/clocks_random.b) | সময় আর random | হ্যাঁ |
 | [cpu_dispatch.b](https://github.com/beans-lang/beans/blob/main/examples/cpu_dispatch.b) | `cpu.has` আর একটা feature-gated function | হ্যাঁ (feature-gated কোডের জন্য ওই CPU feature লাগবে) |

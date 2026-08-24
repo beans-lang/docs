@@ -271,7 +271,7 @@ fn main() {
 করতেই হবে (নয়তো `self`-এর ওপর Self-returning call-এর একটা chain)। override
 আর interface conformance-এ `Self` শুধু `Self`-এর সাথেই মেলে, generic class-এর
 `Self` তার নিজের type parameter বয়ে নেয়, আর layout বা ABI-র কিছুই বদলায় না।
-static method, free function বা async method-এ `Self` নেই।
+static method বা free function-এ `Self` নেই।
 
 ## একটা পুরো উদাহরণ
 

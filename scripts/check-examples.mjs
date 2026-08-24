@@ -89,7 +89,7 @@ function lintBlock(code) {
   const violations = [];
   const lines = code.split('\n');
   for (let k = 0; k < lines.length; k++) {
-    const m = lines[k].match(/^\s*(?:async\s+)?(let|var)\s+([A-Za-z_]\w*)\s*=/);
+    const m = lines[k].match(/^\s*(let|var)\s+([A-Za-z_]\w*)\s*=/);
     if (m) violations.push({ line: k + 1, text: lines[k].trim() });
   }
   return violations;

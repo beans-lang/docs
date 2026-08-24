@@ -4,7 +4,7 @@ description: HTTP/1.1 and HTTP/2 — a strict push-based parser, a client, a ser
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 3 package functions · 18 types · 5 constructors · 8 static methods · 50 instance methods · 44 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 5 package functions · 18 types · 5 constructors · 8 static methods · 54 instance methods · 44 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.http` provides HTTP/1.1 parsing and exchanges over llhttp, and HTTP/2 over

@@ -4,7 +4,7 @@ description: Wait on many file descriptors at once with epoll or kqueue, level-t
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 package function · 3 types · 1 constructor · 4 static methods · 7 instance methods · 7 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 package function · 3 types · 1 constructor · 4 static methods · 8 instance methods · 7 public fields.
 <!-- coverage:summary:end -->
 
 `std.poll` lets one thread wait on many descriptors at once and learn which ones

@@ -32,7 +32,7 @@ Beans এখন 1.0 stabilization লাইনে একটা production previe
 - **একটা native backend।** MIR থেকে LLVM-এ compile হয় debug, release আর LTO build-এর জন্য,
   সাথে automatic reference counting আর একটা cycle collector।
 - **একটা reference interpreter** — যার আচরণ native backend-এর সাথে হুবহু এক।
-- **Concurrency।** OS thread, typed atomic, mutex, channel, structured `async`/`await`, আর
+- **Concurrency।** OS thread, typed atomic, mutex, channel, আর
   readiness wait।
 - **Package management।** Canonical package identity, hash করা একটা `beans.lock`, locked আর
   offline build, আর একটা Git cache।

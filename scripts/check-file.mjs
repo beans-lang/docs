@@ -43,7 +43,7 @@ const problems = [];
 let compiled = 0;
 for (const b of blocks(text)) {
   b.code.split('\n').forEach((l, k) => {
-    if (/^\s*(?:async\s+)?(let|var)\s+[A-Za-z_]\w*\s*=/.test(l))
+    if (/^\s*(let|var)\s+[A-Za-z_]\w*\s*=/.test(l))
       problems.push(`${file}:${b.line + k + 1} untyped binding: ${l.trim()}`);
   });
   const shouldCompile = b.marker === 'compile' || (b.hasMain && b.marker !== 'fragment');

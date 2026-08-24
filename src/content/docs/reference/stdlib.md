@@ -65,13 +65,6 @@ The compiler finds the standard library on its own. If you need to override wher
 it looks, set the `BEANS_STDLIB` environment variable to another root directory
 and the loader will read packages from there instead.
 
-## A note on `std.async$rt`
-
-There is a compiler-internal package named `std.async$rt` that backs the async
-runtime. You cannot import it. Its directory name contains a `$`, which is not a
-legal character in an import path, so the name can never be written in your code.
-Ignore it.
-
 ## Package pages
 
 | Package | What it covers |

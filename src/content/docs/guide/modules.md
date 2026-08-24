@@ -142,7 +142,7 @@ self true false unique abstract singleton
 ```
 
 `some`, `none`, `ok`, and `err` are ordinary prelude names, not keywords.
-`super` is contextual. `priv`, `abstract`, `singleton`, `async`, `await`, and
+`super` is contextual. `priv`, `abstract`, `singleton`, and
 `package` are contextual too. They take their special meaning only in the
 matching field, class, function, or package position and stay usable as normal
 identifiers elsewhere.

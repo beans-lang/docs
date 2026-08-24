@@ -71,7 +71,6 @@ pub fn declaring_type() -> Type
 pub fn result_type() -> Type
 pub fn is_public() -> bool
 pub fn is_static() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn call(receiver: Value, move arguments: List<Value>) -> Result<Value, ReflectError>
@@ -83,7 +82,6 @@ pub fn annotations() -> List<Annotation>
 pub class Initializer
 pub fn declaring_type() -> Type
 pub fn is_public() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn annotations() -> List<Annotation>
@@ -105,7 +103,6 @@ pub fn qualified_name() -> string
 pub fn name() -> string
 pub fn result_type() -> Type
 pub fn is_public() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>

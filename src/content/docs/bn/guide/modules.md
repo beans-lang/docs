@@ -144,6 +144,6 @@ self true false unique abstract singleton
 ```
 
 `some`, `none`, `ok`, আর `err` সাধারণ prelude name, keyword না। `super` হলো
-contextual। `priv`, `abstract`, `singleton`, `async`, `await`, আর `package`-ও
+contextual। `priv`, `abstract`, `singleton`, আর `package`-ও
 contextual। এরা নিজেদের বিশেষ অর্থ নেয় শুধু ঠিক field, class, function, বা package
 position-এ; বাকি জায়গায় এগুলো সাধারণ identifier হিসেবেই ব্যবহার করা যায়।

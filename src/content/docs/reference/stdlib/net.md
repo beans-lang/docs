@@ -1,14 +1,14 @@
 ---
 title: std.net
-description: Sendable TCP and UDP sockets, reusable read buffers, address resolution, and async readiness helpers.
+description: Sendable TCP and UDP sockets, reusable read buffers, and address resolution.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 6 types · 1 constructor · 8 static methods · 31 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 36 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
-`std.net` provides TCP and UDP sockets, name resolution, and two async readiness
-helpers. It is the readable layer over the raw socket syscalls in `std.sock`. The
+`std.net` provides TCP and UDP sockets and name resolution. It is the readable
+layer over the raw socket syscalls in `std.sock`. The
 source is [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b).
 
 ```beans
@@ -128,7 +128,7 @@ pub fn poll_handle() -> int
   stops owning it; the new owner must close it.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
 - `poll_handle` returns the descriptor **borrowed**, for registering with a
-  poller or the async helpers. It does not transfer ownership; do not close it.
+  poller. It does not transfer ownership; do not close it.
 
 A short request and reply over loopback:
 
@@ -244,16 +244,8 @@ silent. The socket must be bound to the same address family. Leaving a group thi
 socket never joined is an `err` from the OS rather than a silent no-op: it is
 always a bookkeeping mistake in the caller.
 
-## Async readiness
+## Readiness
 
-Two `async` functions let an async task wait for a socket without holding a
-thread. Pass the descriptor from `poll_handle()`. They are level-triggered: if
-the socket is already ready, they complete at once.
-
-```beans
-pub async fn readable(handle: int) -> bool
-pub async fn writable(handle: int) -> bool
-```
-
-The [async guide](/guide/async/) explains how async functions run. To wait on
-many sockets from a single thread instead, use [std.poll](/reference/stdlib/poll/).
+To wait for a socket to become readable or writable without spinning, register
+the descriptor from `poll_handle()` with the
+[std.poll](/reference/stdlib/poll/) poller and wait for its events.

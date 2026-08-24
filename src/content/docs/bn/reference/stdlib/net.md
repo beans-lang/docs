@@ -1,13 +1,13 @@
 ---
 title: std.net
-description: TCP আর UDP socket, address resolve করা, আর async readiness helper।
+description: TCP আর UDP socket, reusable read buffer, আর address resolve করা।
 ---
 
 <!-- coverage:summary -->
 **API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 2টা package function · 6টা type · 1টা constructor · 8টা static method · 31টা instance method · 4টা public field।
 <!-- coverage:summary:end -->
 
-`std.net` দেয় TCP আর UDP socket, name resolve করার সুবিধা, আর দুটো async readiness helper। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
+`std.net` দেয় TCP আর UDP socket আর name resolve করার সুবিধা। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
 
 ```beans
 import std.net
@@ -103,7 +103,7 @@ pub fn poll_handle() -> int
   EOF। buffer-এর length বদলায় না; শুধু `0..count` এই read-এর data।
 - `into_raw` descriptor-এর ownership lower-level transport-কে দেয়। এরপর নতুন
   owner-ই সেটা close করবে।
-- `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller বা async helper-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
+- `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
 
 loopback-এর উপর ছোট্ট একটা request আর reply:
 
@@ -197,13 +197,6 @@ fn main() {
 }
 ```
 
-## Async readiness
+## Readiness
 
-দুটো `async` function দিয়ে একটা async task একটা thread না ধরে রেখেই socket-এর জন্য অপেক্ষা করতে পারে। `poll_handle()` থেকে পাওয়া descriptor-টা পাস করা হয়। এগুলো level-triggered: socket যদি আগে থেকেই ready থাকে, তবে সাথে সাথেই complete হয়ে যায়।
-
-```beans
-pub async fn readable(handle: int) -> bool
-pub async fn writable(handle: int) -> bool
-```
-
-async function কীভাবে চলে সেটা [async guide](/bn/guide/async/)-এ বোঝানো আছে। একটা thread থেকে একসাথে অনেক socket-এর জন্য অপেক্ষা করতে চাইলে বরং [std.poll](/bn/reference/stdlib/poll/) ব্যবহার করুন।
+কোনো socket readable বা writable হওয়ার জন্য busy-loop না করে অপেক্ষা করতে চাইলে `poll_handle()` থেকে পাওয়া descriptor-টা [std.poll](/bn/reference/stdlib/poll/) poller-এ register করে তার event-এর জন্য wait করুন।
