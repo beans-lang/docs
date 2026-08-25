@@ -3,7 +3,8 @@ title: Threads and channels
 description: A walk through examples/threads.b, and how wide struct and enum values move across channels and through a mutex.
 ---
 
-Beans uses real OS threads (there are no green threads). This page walks through
+This page is about real OS threads; for green threads see
+[Fibers and brew](/guide/fibers/). It walks through
 [`threads.b`](https://github.com/beans-lang/beans/blob/main/examples/threads.b)
 and then shows how full struct and enum values travel across channels
 ([`wide_concurrency.b`](https://github.com/beans-lang/beans/blob/main/examples/wide_concurrency.b))

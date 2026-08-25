@@ -18,7 +18,7 @@ number গুলো কীভাবে বসানো হয় সেটা �
 
 ## runtime ABI
 
-runtime ABI-র নিজের একটা number আছে (`runtime_abi=10`)। এটা বদলায়
+runtime ABI-র নিজের একটা number আছে (`runtime_abi=11`)। এটা বদলায়
 যখনই compiler-এর generate করা কোড আর ship করা runtime একে অপরের সাথে আর মানানসই
 থাকে না। আলাদা ABI number-এর একটা compiler আর একটা runtime মিলিয়ে ফেললে ওরা এক
 সাথে খাপ খায় না। একটাই install করা release-এ থাকলে ওরা মিলে থাকে।

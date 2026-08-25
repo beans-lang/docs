@@ -34,8 +34,9 @@ Fast native code তৈরি করাটা project-এর একটা ঘো
   যেটা check করতে ভুলে যাওয়ার ভয় থাকে।
 - **কোনো exception নেই।** ব্যর্থতা হলো `Result<T>`। কোনো `throw` নেই, `try` নেই। আর
   তিনটা function নিচ থেকে হঠাৎ কোনো stack unwinding চমকে দেবে না।
-- **কোনো green thread নেই।** Beans সত্যিকারের OS thread ব্যবহার করে। পিছনে লুকানো
-  কোনো runtime scheduler নেই যেটা হালকা task-গুলোকে thread-এর উপর ভাগ করে চালায়।
+- **কোনো colored function নেই।** [`brew`](/bn/guide/fibers/) দিয়ে শুরু করা fiber
+  হলো green thread, কিন্তু কোনো `async` keyword নেই আর `await` করারও কিছু নেই।
+  যেকোনো function park করতে পারে, আর caller-এর তা জানার বা ভাবার দরকার নেই।
 - **কোনো implicit conversion নেই।** একটা number চুপচাপ type বদলায় না। `int`-কে
   `decimal` করতে হলে লিখতে হয় `x as decimal`।
 - **কোনো tracing garbage collector নেই।** মেমরি চলে automatic reference counting আর

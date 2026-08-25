@@ -26,7 +26,7 @@ Beans তার builtin গুলো দুই ভাবে তৈরি কর�
   `size_of`। checker দেখা যাবে
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
-এই compiler-এর runtime ABI version হলো `10`। compiler নিজের version জানায়
+এই compiler-এর runtime ABI version হলো `11`। compiler নিজের version জানায়
 `0.1.30`, আর language contract `1.0`-তে আটকানো আছে।
 
 ## Error handling নিজেই builtin
@@ -52,7 +52,7 @@ Beans-এ null নেই, exception নেই। এর বদলে "হয়�
 | [Bytes](/bn/reference/builtins/bytes/) | বাড়তে পারা byte buffer `Bytes` |
 | [Collections](/bn/reference/builtins/collections/) | `List`, `Map`, আর `OrderedMap` |
 | [Option, Result, আর Error](/bn/reference/builtins/option-result/) | `Option`, `Result`, `Error`, `some`/`none`/`ok`/`err`, আর `?` operator |
-| [Ownership handle](/bn/reference/builtins/handles/) | `Box`, `Arena`, `Shared`, `Weak`, `Mutex`, `Channel`, `Thread`, `AtomicInt` |
+| [Ownership handle](/bn/reference/builtins/handles/) | `Box`, `Arena`, `Shared`, `Weak`, `Mutex`, `Channel`, `Thread`, `Brew`, `TaskGroup`, `Gate`, `AtomicInt` |
 | [Atomics](/bn/reference/builtins/atomics/) | `Atomic<T>` আর `MemoryOrder` |
 | [File আর mapping](/bn/reference/builtins/files/) | `File`, `Dir`, `MMap` |
 | [SIMD, array, আর pointer](/bn/reference/builtins/simd/) | `Simd{N}{elem}`, `[T; N]`, `Slice<T>`, `RawPtr<T>` |

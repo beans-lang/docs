@@ -4,9 +4,12 @@ description: OS threads, channels, mutexes, and atomics in Beans, with checked S
 ---
 
 Beans threads are **OS threads**. `thread.spawn` runs a closure on a new OS
-thread, and there are no green threads or coroutines in this model yet — a
-fiber-based model is planned. `thread.spawn` is the tool for CPU-heavy or
-blocking work. Closures plus `std.thread` do the whole job.
+thread, so it is the tool for CPU-heavy work and for reaching another core.
+Closures plus `std.thread` do the whole job.
+
+For work that mostly waits — thousands of connections, timers, channel
+handoffs — reach for a fiber instead: `brew` starts a green thread that parks
+rather than blocking. See [Fibers and brew](/guide/fibers/).
 
 ```beans
 import std.thread

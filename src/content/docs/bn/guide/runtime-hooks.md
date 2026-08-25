@@ -37,7 +37,7 @@ parameter borrowed। Handler concrete, synchronous, non-generic, non-extern হ
 হবে, আর কিছু return করবে না।
 
 Version one-এ active annotation শুধু concrete synchronous function আর method-এ
-চলে। Async, abstract, extern, generic, `init`, আর `deinit` target নাকচ হয়।
+চলে। abstract, extern, generic, `init`, আর `deinit` target নাকচ হয়।
 
 ## Order আর normal return
 

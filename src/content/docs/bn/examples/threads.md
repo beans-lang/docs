@@ -3,7 +3,8 @@ title: Threads and channels
 description: examples/threads.b ঘুরে দেখা, আর channel পেরিয়ে ও mutex-এর মধ্য দিয়ে পুরো struct আর enum value কীভাবে যায় সেটা।
 ---
 
-Beans আসল OS thread ব্যবহার করে (কোনো green thread নেই)। এই পেজে আগে
+এই পেজটা আসল OS thread নিয়ে; green thread-এর জন্য দেখুন
+[Fiber আর brew](/bn/guide/fibers/)। এই পেজে আগে
 [`threads.b`](https://github.com/beans-lang/beans/blob/main/examples/threads.b)
 ঘুরে দেখব, তারপর দেখব পুরো struct আর enum value কীভাবে channel পেরিয়ে
 ([`wide_concurrency.b`](https://github.com/beans-lang/beans/blob/main/examples/wide_concurrency.b))

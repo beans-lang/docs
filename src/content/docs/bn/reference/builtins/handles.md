@@ -4,7 +4,7 @@ description: value-এর মালিকানা রাখা, শেয়া
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 8 types · 22 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 11 types · 24 instance methods.
 <!-- coverage:summary:end -->
 
 **Ownership handle** হলো এমন একটা builtin type যেটা একটা value-এর মালিক, আর
@@ -127,12 +127,22 @@ m.with_lock(fn(v: int) -> unit {
 new Channel(capacity)
 Channel<T>.send(T)
 Channel<T>.receive() -> Option<T>
+Channel<T>.try_send(T) -> bool
+Channel<T>.try_receive() -> Option<T>
 Channel<T>.close()
 ```
 
 - `send(x)` একটা value ভেতরে দেয়।
 - `receive()` একটা value বের করে নেয়; channel বন্ধ আর খালি হয়ে গেলে `none` দেয়।
+- `try_send(x)` সাথে সাথেই উত্তর দেয়: value ঢুকলে `true`, channel ভর্তি বা বন্ধ
+  থাকলে `false`। move-only `T`-র জন্য এটা নেই — নাকচ হওয়া send সেই value আর
+  ফেরত দিতে পারত না।
+- `try_receive()` সাথে সাথেই উত্তর দেয়: `some(v)`, নয়তো কিছু অপেক্ষায় না থাকলে
+  `none`।
 - `close()` জানায় যে আর কোনো value পাঠানো হবে না।
+
+কোনো fiber-এ `send` আর `receive` worker block না করে park করে। দেখুন
+[Fiber আর brew](/bn/guide/fibers/)।
 
 ## Thread&lt;T&gt;
 
@@ -147,6 +157,69 @@ Thread<T>.detach()
 
 - `join()` thread-টা শেষ হওয়া পর্যন্ত অপেক্ষা করে আর তার result ফেরত দেয়।
 - `detach()` worker-কে নিজের মতো শেষ হতে দেয় এবং result ফেলে দেয়।
+
+## Brew&lt;T&gt;
+
+`Brew<T>` হলো একটা চলমান fiber — একটা green thread। এটা `new` দিয়ে বানানো হয় না;
+এটা আসে `brew` থেকে ([Fiber আর brew](/bn/guide/fibers/) দেখুন)। এটা move-only
+আর scope-bound: handle-টা field-এ রাখা, capture করা, return করা, বা অন্য
+thread-এ পাঠানো যায় না।
+
+```beans
+Brew<T>.join() -> Result<T>
+Brew<T>.cancel()
+```
+
+- `join()` child শেষ না হওয়া পর্যন্ত caller-কে park করে, তারপর `ok(value)` দেয়;
+  child panic করলে `panic` kind-এ, cancel হলে `cancelled` kind-এ, আর দ্বিতীয়বার
+  join করলে `closed` kind-এ `err` দেয়।
+- `cancel()` cancel-এর অনুরোধ জানিয়ে সাথে সাথে ফিরে আসে। অনুরোধটা child-এর পরের
+  park-এ দেখা হয়।
+
+scope যে child-কে join করে না, scope exit সেটাকে join করে — তাই কোনো fiber
+হারিয়ে যেতে পারে না।
+
+## TaskGroup&lt;T&gt;
+
+`TaskGroup<T>` হলো fiber-এর একটা বহর, যখন সংখ্যাটা runtime-এ ঠিক হয়। এটা
+move-only আর `Brew<T>`-র মতোই scope-bound নিয়ম মানে।
+
+```beans
+new TaskGroup<T>()
+TaskGroup<T>.next() -> Option<Result<T>>
+TaskGroup<T>.try_next() -> Option<Result<T>>
+TaskGroup<T>.wait_all() -> Result<List<T>>
+TaskGroup<T>.cancel_all()
+```
+
+- `group.brew(f(x))` group-এ একটা child শুরু করে, যেকোনো block depth-এ।
+- `next()` সবচেয়ে আগে শেষ হওয়া অদাবিকৃত completion-এর জন্য park করে; বহর খালি
+  হয়ে গেলে `none` দেয়। delivery হয় completion order-এ।
+- `try_next()` সাথে সাথেই উত্তর দেয়; কিছু না এলে `none`।
+- `wait_all()` বাকিদের join করে spawn order-এ list দেয়, নয়তো spawn order-এর
+  প্রথম failure দেয়।
+- `cancel_all()` নতুন থেকে পুরোনো দিকে cancel করে, join করে, আর সব outcome ফেলে
+  দেয়।
+
+খালি হয়ে যাওয়া group আবার ব্যবহার করা যায়।
+
+## Gate
+
+`Gate` হলো একটা sticky broadcast flag। একটা `open()` park হয়ে থাকা সব waiter-কে
+জাগিয়ে দেয়, আর gate-টা পরের সব `wait()`-এর জন্য খোলা থাকে। বাকি fiber handle-এর
+মতো না — `Gate` `Send`, তাই কোনো OS thread এমন gate খুলতে পারে যেখানে fiber
+park করে আছে।
+
+```beans
+new Gate()
+Gate.wait()
+Gate.open()
+Gate.is_open() -> bool
+```
+
+- `wait()` gate না খোলা পর্যন্ত park করে; আগে থেকে খোলা থাকলে সাথে সাথেই ফেরে।
+- `open()` gate খুলে দেয় আর অপেক্ষার সারিটাকে FIFO order-এ জাগায়।
+- `is_open()` park না করেই flag-টা পড়ে।
 
 ## AtomicInt
 

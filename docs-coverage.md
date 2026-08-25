@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1259**
-- Symbols with an enforced signature: **853**
-- Builtin reference symbols: **317**
-- Standard-library symbols: **928**
+- Total public symbols: **1265**
+- Symbols with an enforced signature: **856**
+- Builtin reference symbols: **322**
+- Standard-library symbols: **929**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -110,6 +110,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Channel.close` | method | `Channel<T>.close()` | `reference/builtins/handles` | ✓ |
 | `Channel.receive` | method | `Channel<T>.receive() -> Option<T>` | `reference/builtins/handles` | ✓ |
 | `Channel.send` | method | `Channel<T>.send(T)` | `reference/builtins/handles` | ✓ |
+| `Channel.try_receive` | method | `Channel<T>.try_receive() -> Option<T>` | `reference/builtins/handles` | ✓ |
+| `Channel.try_send` | method | `Channel<T>.try_send(T) -> bool` | `reference/builtins/handles` | ✓ |
 
 ## builtin Dir
 
@@ -348,6 +350,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `AtomicInt` | type |  | `reference/builtins/handles` | ✓ |
 | `bool` | type |  | `reference/builtins/primitives` | ✓ |
 | `Box` | type |  | `reference/builtins/handles` | ✓ |
+| `Brew` | type |  | `reference/builtins/handles` | ✓ |
 | `byte` | type |  | `reference/builtins/primitives` | ✓ |
 | `Bytes` | type |  | `reference/builtins/bytes` | ✓ |
 | `CFunctionPtr` | type |  | `guide/ffi` | ✓ |
@@ -362,6 +365,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `f64` | type |  | `reference/builtins/primitives` | ✓ |
 | `File` | type |  | `reference/builtins/files` | ✓ |
 | `float` | type |  | `reference/builtins/primitives` | ✓ |
+| `Gate` | type |  | `reference/builtins/handles` | ✓ |
 | `Hash` | type |  | `guide/generics` | ✓ |
 | `i16` | type |  | `reference/builtins/primitives` | ✓ |
 | `i32` | type |  | `reference/builtins/primitives` | ✓ |
@@ -387,6 +391,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `StoredCallback` | type |  | `guide/ffi` | ✓ |
 | `string` | type |  | `reference/builtins/primitives` | ✓ |
 | `Sync` | type |  | `guide/generics` | ✓ |
+| `TaskGroup` | type |  | `reference/builtins/handles` | ✓ |
 | `Thread` | type |  | `reference/builtins/handles` | ✓ |
 | `u16` | type |  | `reference/builtins/primitives` | ✓ |
 | `u32` | type |  | `reference/builtins/primitives` | ✓ |
@@ -1205,6 +1210,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpStream.peer_address` | method | `pub fn peer_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_exact` | method | `pub fn read_exact(count: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_into` | method | `pub fn read_into(buffer: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.read_into_waiting` | method | `pub fn read_into_waiting(buffer: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_to_end` | method | `pub fn read_to_end(limit: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_nodelay` | method | `pub fn set_nodelay(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |

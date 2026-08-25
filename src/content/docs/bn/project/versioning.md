@@ -14,12 +14,12 @@ Beans-এর version কত সেটা বলার একটাই জায�
 ```text
 compiler=0.1.30
 language=1.0
-runtime_abi=10
+runtime_abi=11
 ```
 
 - **compiler**: compiler-এর version (`0.1.30`)।
 - **language**: language-এর version (`1.0`)।
-- **runtime_abi**: runtime ABI number (`10`)।
+- **runtime_abi**: runtime ABI number (`11`)।
 
 ওই file থেকেই `src/version.b` generate হয়। একটা test
 (`test/version.sh`) পুরানো একটা copy মানতে চায় না, তাই generate হওয়া Beans ফাইল

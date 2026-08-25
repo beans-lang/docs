@@ -15,7 +15,7 @@ phrase means something specific:
   write against are settled. Code you write now is meant to keep working.
 - **The latest compiler release is `0.1.30`.** The language is `1.0`; the tool
   that implements it is still on its way to a matching release number.
-- **The runtime ABI is `10`.**
+- **The runtime ABI is `11`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
 has open work, listed below.
@@ -34,8 +34,8 @@ The list below is what works today:
 - **A native backend.** MIR compiled to LLVM for debug, release, and LTO builds,
   with automatic reference counting plus a cycle collector.
 - **A reference interpreter** with behavior identical to the native backend.
-- **Concurrency.** OS threads, typed atomics, mutexes, channels, and
-  readiness waits.
+- **Concurrency.** Fibers with `brew`, OS threads, typed atomics, mutexes,
+  channels, and readiness waits.
 - **Package management.** Canonical package identity, a hashed `beans.lock`,
   locked and offline builds, and a Git cache.
 - **Full C interop.** Imports, exports, headers, bindgen, records, unions,

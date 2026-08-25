@@ -4,9 +4,12 @@ description: Beans-এ OS thread, channel, mutex আর atomic — সাথে 
 ---
 
 Beans-এর thread হলো **OS thread**। `thread.spawn` একটা closure-কে নতুন একটা
-OS thread-এ চালায়, আর এই model-এ এখনো কোনো green thread বা coroutine নেই —
-fiber-ভিত্তিক একটা model পরিকল্পনায় আছে। `thread.spawn` হলো CPU-ভারী বা
-blocking কাজের জন্য tool। closure আর `std.thread` মিলেই পুরো কাজটা সেরে দেয়।
+OS thread-এ চালায়, তাই CPU-ভারী কাজ আর আরেকটা core-এ পৌঁছানোর জন্য এটাই tool।
+closure আর `std.thread` মিলেই পুরো কাজটা সেরে দেয়।
+
+যে কাজ বেশিরভাগ সময় অপেক্ষাই করে — হাজারো connection, timer, channel handoff —
+তার জন্য fiber নিন: `brew` একটা green thread শুরু করে যেটা block না করে park
+করে। দেখুন [Fiber আর brew](/bn/guide/fibers/)।
 
 ```beans
 import std.thread

@@ -4,7 +4,7 @@ description: Sendable TCP and UDP sockets, reusable read buffers, and address re
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 36 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 37 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
 `std.net` provides TCP and UDP sockets and name resolution. It is the readable
@@ -101,6 +101,7 @@ pub fn write_from(data: Bytes, offset: int) -> Result<int>
 pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn read_into_waiting(buffer: Bytes) -> Result<int>
 pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
@@ -128,6 +129,11 @@ pub fn poll_handle() -> int
   of bytes written. Zero means EOF. The buffer keeps its length and only
   `0..count` belongs to that read, so one `Bytes.filled(...)` allocation can
   serve the whole connection.
+- `read_into_waiting` reads like `read_into`, but on a fiber it waits for
+  readability before the first recv. A caller that just drained the socket knows
+  the next recv would only report would-block, so this form spends one poller
+  wait instead of that wasted syscall. Off a fiber it behaves exactly like
+  `read_into`.
 - `write_from` writes starting at `offset` without slicing or copying `data` —
   the offset-aware form an output queue needs to resume a short write.
 - The `try_` pair serves nonblocking streams: `try_write_from` and

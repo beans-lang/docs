@@ -7,8 +7,9 @@ description: Run a closure on a new OS thread and get its result back with join.
 **API summary** (generated from the Beans source by `npm run coverage`): 1 package function.
 <!-- coverage:summary:end -->
 
-`std.thread` runs a closure on a real operating-system thread. These are not
-green threads; each one is a full OS thread. It is a native module, built into the
+`std.thread` runs a closure on a real operating-system thread. Each one is a
+full OS thread, not a green thread — for those, `brew` starts a fiber
+([Fibers and brew](/guide/fibers/)). It is a native module, built into the
 compiler and runtime.
 
 ```beans

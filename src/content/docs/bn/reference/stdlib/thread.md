@@ -7,7 +7,7 @@ description: একটা নতুন OS thread-এ একটা closure চা
 **API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 1টা package function।
 <!-- coverage:summary:end -->
 
-`std.thread` একটা সত্যিকারের operating-system thread-এ একটা closure চালায়। এগুলো green thread না; প্রতিটাই একটা পুরো OS thread। এটা একটা native module, compiler আর runtime-এর ভেতরেই বানানো।
+`std.thread` একটা সত্যিকারের operating-system thread-এ একটা closure চালায়। প্রতিটাই একটা পুরো OS thread, green thread না — green thread-এর জন্য `brew` একটা fiber শুরু করে ([Fiber আর brew](/bn/guide/fibers/))। এটা একটা native module, compiler আর runtime-এর ভেতরেই বানানো।
 
 ```beans
 import std.thread

@@ -35,8 +35,9 @@ waiting to be filled.
   to check.
 - **No exceptions.** Failures are `Result<T>`. There is no `throw`, no `try`, and
   no stack unwinding surprising you from three functions down.
-- **No green threads.** Beans uses real OS threads. There is no hidden runtime
-  scheduler multiplexing lightweight tasks onto them.
+- **No colored functions.** Fibers are green threads you start with
+  [`brew`](/guide/fibers/), but there is no `async` keyword and nothing to
+  `await`. Any function may park, and the caller neither knows nor cares.
 - **No implicit conversions.** A number does not silently change type. To turn an
   `int` into a `decimal`, you write `x as decimal`.
 - **No tracing garbage collector.** Memory uses automatic reference counting plus

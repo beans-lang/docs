@@ -4,7 +4,7 @@ description: TCP আর UDP socket, reusable read buffer, আর address resolve
 ---
 
 <!-- coverage:summary -->
-**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 2টা package function · 6টা type · 1টা constructor · 8টা static method · 31টা instance method · 4টা public field।
+**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 6টা type · 1টা constructor · 8টা static method · 37টা instance method · 4টা public field।
 <!-- coverage:summary:end -->
 
 `std.net` দেয় TCP আর UDP socket আর name resolve করার সুবিধা। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
@@ -85,6 +85,7 @@ pub fn write_from(data: Bytes, offset: int) -> Result<int>
 pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn read_into_waiting(buffer: Bytes) -> Result<int>
 pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
@@ -105,6 +106,10 @@ pub fn poll_handle() -> int
 - `shutdown_write` peer-কে EOF পাঠায়, কিন্তু read half খোলা রাখে।
 - `read_into` আগে থেকে বানানো non-empty `Bytes`-এ লেখে এবং count দেয়। zero মানে
   EOF। buffer-এর length বদলায় না; শুধু `0..count` এই read-এর data।
+- `read_into_waiting` `read_into`-র মতোই পড়ে, তবে fiber-এ প্রথম recv-এর আগে
+  readability-র জন্য অপেক্ষা করে। যে caller সবে socket খালি করেছে সে জানে পরের
+  recv শুধু would-block-ই বলবে — তাই এই form সেই বাজে syscall-টার বদলে একটা
+  poller wait খরচ করে। fiber-এর বাইরে এটা হুবহু `read_into`-র মতো।
 - `write_from` `data` slice বা copy না করে `offset` থেকে লেখা শুরু করে — একটা
   output queue-র short write resume করতে এই offset-জানা form-টাই লাগে।
 - `try_` জোড়াটা nonblocking stream-এর জন্য: socket block করত এমন অবস্থায়
