@@ -4,7 +4,7 @@ description: Wait on many file descriptors at once with epoll or kqueue, level-t
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 1 package function · 3 types · 1 constructor · 4 static methods · 7 instance methods · 7 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 1 package function · 3 types · 1 constructor · 4 static methods · 8 instance methods · 7 public fields.
 <!-- coverage:summary:end -->
 
 `std.poll` lets one thread wait on many descriptors at once and learn which ones
@@ -76,6 +76,7 @@ pub fn add(fd: int, token: int, want: Interest) -> Result<bool>
 pub fn modify(fd: int, token: int, want: Interest) -> Result<bool>
 pub fn remove(fd: int) -> Result<bool>
 pub fn wait(max_events: int, timeout_ms: int) -> Result<List<Event>>
+pub fn wait_into(max_events: int, timeout_ms: int, events: List<Event>) -> Result<int>
 pub fn wake() -> Result<bool>
 pub fn wake_handle() -> int
 pub fn close() -> Result<bool>
@@ -93,6 +94,10 @@ pub fn close() -> Result<bool>
   the allocation. A negative `timeout_ms` waits indefinitely, `0` is a non-blocking
   check, and any other value waits up to that many milliseconds. Running out of
   time gives an **empty list, not an error**.
+- `wait_into` is `wait` into a caller-kept list, filled in place, and returns
+  the ready count. The first `count` entries are overwritten; entries past the
+  count keep stale data from earlier calls, so read only `0..count`. A steady
+  event loop that passes the same list every time allocates nothing per wake.
 - `wake` makes a blocked `wait` return promptly. Repeated wakes collapse into one,
   and a wake is never reported as an event.
 - `wake_handle` returns an `int` that **can cross a thread boundary**. It is not the

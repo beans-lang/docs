@@ -1,14 +1,14 @@
 ---
 title: std.net
-description: Sendable TCP and UDP sockets, reusable read buffers, address resolution, and async readiness helpers.
+description: Sendable TCP and UDP sockets, reusable read buffers, and address resolution.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 2 package functions · 6 types · 1 constructor · 8 static methods · 31 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 37 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
-`std.net` provides TCP and UDP sockets, name resolution, and two async readiness
-helpers. It is the readable layer over the raw socket syscalls in `std.sock`. The
+`std.net` provides TCP and UDP sockets and name resolution. It is the readable
+layer over the raw socket syscalls in `std.sock`. The
 source is [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b).
 
 ```beans
@@ -97,14 +97,19 @@ pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStr
 pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
+pub fn write_from(data: Bytes, offset: int) -> Result<int>
+pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn read_into_waiting(buffer: Bytes) -> Result<int>
+pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn set_nodelay(on: bool) -> Result<bool>
 pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
@@ -124,11 +129,25 @@ pub fn poll_handle() -> int
   of bytes written. Zero means EOF. The buffer keeps its length and only
   `0..count` belongs to that read, so one `Bytes.filled(...)` allocation can
   serve the whole connection.
+- `read_into_waiting` reads like `read_into`, but on a fiber it waits for
+  readability before the first recv. A caller that just drained the socket knows
+  the next recv would only report would-block, so this form spends one poller
+  wait instead of that wasted syscall. Off a fiber it behaves exactly like
+  `read_into`.
+- `write_from` writes starting at `offset` without slicing or copying `data` —
+  the offset-aware form an output queue needs to resume a short write.
+- The `try_` pair serves nonblocking streams: `try_write_from` and
+  `try_read_into` return `ok(none)` when the socket would block, instead of an
+  error. For `try_read_into`, `ok(some(0))` is EOF, so a quiet socket and a
+  closed peer remain different facts.
+- `set_nodelay(true)` disables Nagle's algorithm (and `false` restores it). A
+  request/response server wants it disabled, so a small response is not held
+  back for a coalescing timer.
 - `into_raw` transfers the descriptor to a lower-level transport. The stream
   stops owning it; the new owner must close it.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
 - `poll_handle` returns the descriptor **borrowed**, for registering with a
-  poller or the async helpers. It does not transfer ownership; do not close it.
+  poller. It does not transfer ownership; do not close it.
 
 A short request and reply over loopback:
 
@@ -167,6 +186,7 @@ pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) 
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
+pub fn try_accept() -> Result<Option<TcpStream>>
 pub fn local_address() -> Result<Address>
 pub fn port() -> Result<int>
 pub fn set_nonblocking(on: bool) -> Result<bool>
@@ -182,6 +202,9 @@ pub fn poll_handle() -> int
   how a test binds without guessing a number.
 - `accept` blocks until a connection arrives. `accept_timeout(0)` is a
   non-blocking check; a positive timeout that runs out is kind `timeout`.
+- `try_accept` accepts one connection without waiting: `ok(none)` means the
+  accept queue is empty. This is the form a poller-driven accept loop uses
+  after the listener's descriptor reports readable.
 
 ## UdpSocket
 
@@ -244,16 +267,8 @@ silent. The socket must be bound to the same address family. Leaving a group thi
 socket never joined is an `err` from the OS rather than a silent no-op: it is
 always a bookkeeping mistake in the caller.
 
-## Async readiness
+## Readiness
 
-Two `async` functions let an async task wait for a socket without holding a
-thread. Pass the descriptor from `poll_handle()`. They are level-triggered: if
-the socket is already ready, they complete at once.
-
-```beans
-pub async fn readable(handle: int) -> bool
-pub async fn writable(handle: int) -> bool
-```
-
-The [async guide](/guide/async/) explains how async functions run. To wait on
-many sockets from a single thread instead, use [std.poll](/reference/stdlib/poll/).
+To wait for a socket to become readable or writable without spinning, register
+the descriptor from `poll_handle()` with the
+[std.poll](/reference/stdlib/poll/) poller and wait for its events.

@@ -8,7 +8,7 @@ description: Fast asynchronous structured logging with console, file, rotating, 
 <!-- coverage:summary:end -->
 
 `std.log` is the standard asynchronous logger. It is available from Beans
-`0.1.27` on hosted targets and uses the pinned Quill 12.1.0 C++17 engine behind
+`0.1.30` on hosted targets and uses the pinned Quill 12.1.0 C++17 engine behind
 a Beans API. A program that does not import `std.log` links no logging bridge or
 Quill code.
 

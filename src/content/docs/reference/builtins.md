@@ -25,8 +25,8 @@ you write code, but it helps to know it once.
   `size_of`. You can see the checker at
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
-The runtime ABI version for this compiler is `7`. The compiler reports version
-`0.1.27` and the language contract is frozen at `1.0`.
+The runtime ABI version for this compiler is `11`. The compiler reports version
+`0.1.30` and the language contract is frozen at `1.0`.
 
 ## Error handling is builtin
 
@@ -50,7 +50,7 @@ These, and the collection types like `List` and `Map`, are all builtin. Read
 | [Bytes](/reference/builtins/bytes/) | the growable byte buffer `Bytes` |
 | [Collections](/reference/builtins/collections/) | `List`, `Map`, and `OrderedMap` |
 | [Option, Result, and Error](/reference/builtins/option-result/) | `Option`, `Result`, `Error`, `some`/`none`/`ok`/`err`, the `?` operator |
-| [Ownership handles](/reference/builtins/handles/) | `Box`, `Arena`, `Shared`, `Weak`, `Mutex`, `Channel`, `Thread`, `AtomicInt` |
+| [Ownership handles](/reference/builtins/handles/) | `Box`, `Arena`, `Shared`, `Weak`, `Mutex`, `Channel`, `Thread`, `Brew`, `TaskGroup`, `Gate`, `AtomicInt` |
 | [Atomics](/reference/builtins/atomics/) | `Atomic<T>` and `MemoryOrder` |
 | [Files and mapping](/reference/builtins/files/) | `File`, `Dir`, `MMap` |
 | [SIMD, arrays, and pointers](/reference/builtins/simd/) | `Simd{N}{elem}`, `[T; N]`, `Slice<T>`, `RawPtr<T>` |

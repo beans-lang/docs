@@ -4,10 +4,12 @@ description: Beans-এ OS thread, channel, mutex আর atomic — সাথে 
 ---
 
 Beans-এর thread হলো **OS thread**। `thread.spawn` একটা closure-কে নতুন একটা
-OS thread-এ চালায়, আর এই model-এ কোনো green thread বা coroutine নেই।
-সহযোগিতামূলক, একক-thread-এর concurrency চাইলে বরং দেখুন [async আর
-await](/bn/guide/async/); `thread.spawn` হলো CPU-ভারী বা blocking কাজের জন্য
-tool। closure আর `std.thread` মিলেই পুরো কাজটা সেরে দেয়।
+OS thread-এ চালায়, তাই CPU-ভারী কাজ আর আরেকটা core-এ পৌঁছানোর জন্য এটাই tool।
+closure আর `std.thread` মিলেই পুরো কাজটা সেরে দেয়।
+
+যে কাজ বেশিরভাগ সময় অপেক্ষাই করে — হাজারো connection, timer, channel handoff —
+তার জন্য fiber নিন: `brew` একটা green thread শুরু করে যেটা block না করে park
+করে। দেখুন [Fiber আর brew](/bn/guide/fibers/)।
 
 ```beans
 import std.thread
@@ -155,7 +157,6 @@ fn main() {
 
 ## Readiness wait
 
-কোনো thread block না করে একটা socket-এর জন্য অপেক্ষা করতে চাইলে
-[async](/bn/guide/async/) model-টা `std.net`-এর `readable`/`writable`-এর সাথে
-ব্যবহার করুন; আর একসাথে অনেক descriptor-এর জন্য
-[`std.poll`](/bn/reference/stdlib/poll/) poller ব্যবহার করুন।
+এক thread থেকে অনেক socket-এর জন্য অপেক্ষা করতে চাইলে descriptor-গুলো
+[`std.poll`](/bn/reference/stdlib/poll/) poller-এ register করে তার readiness
+event-এর জন্য wait করুন।

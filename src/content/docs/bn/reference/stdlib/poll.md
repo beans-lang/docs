@@ -62,6 +62,7 @@ pub fn add(fd: int, token: int, want: Interest) -> Result<bool>
 pub fn modify(fd: int, token: int, want: Interest) -> Result<bool>
 pub fn remove(fd: int) -> Result<bool>
 pub fn wait(max_events: int, timeout_ms: int) -> Result<List<Event>>
+pub fn wait_into(max_events: int, timeout_ms: int, events: List<Event>) -> Result<int>
 pub fn wake() -> Result<bool>
 pub fn wake_handle() -> int
 pub fn close() -> Result<bool>
@@ -72,6 +73,10 @@ pub fn close() -> Result<bool>
 - `modify` একটা descriptor কী জন্য দেখা হচ্ছে সেটা বদলায়, আর তার token-ও।
 - `remove` একটা descriptor-এর উপর নজর রাখা বন্ধ করে। **descriptor বন্ধ করার আগে এটা করতে হবে।** বন্ধ করলে ঠিকই kernel-এর সেট থেকে ওটা বাদ পড়ে যায়, কিন্তু এই batch-এ যে event-গুলো এর মধ্যেই আছে সেগুলো এখনো ওই token বহন করে, আর ততক্ষণে number-টা হয়তো অন্য কিছুর দখলে চলে গেছে।
 - `wait` ready descriptor-গুলো ফেরত দেয়, বড়জোর `max_events`-টা, যেটা allocation-এর সীমা বেঁধে দেয়। negative `timeout_ms` অনন্তকাল অপেক্ষা করে, `0` হলো non-blocking check, আর বাকি যেকোনো value বড়জোর তত মিলিসেকেন্ড অপেক্ষা করে। সময় ফুরিয়ে গেলে **একটা খালি list, error না**।
+- `wait_into` হলো `wait`-ই, কিন্তু caller-এর রেখে দেওয়া list-এ — জায়গায় বসে ভরে
+  দেয় আর ready count ফেরত দেয়। প্রথম `count`-টা entry নতুন করে লেখা হয়; count-এর
+  পরের entry-গুলোয় আগের call-এর বাসি data থেকে যায়, তাই শুধু `0..count` পড়বে।
+  যে event loop প্রতিবার একই list পাঠায় সে প্রতি wake-এ কিছুই allocate করে না।
 - `wake` একটা block হয়ে থাকা `wait`-কে চটপট ফিরিয়ে আনে। বারবার wake করলে সেগুলো একটাতেই মিশে যায়, আর একটা wake কখনো event হিসেবে জানানো হয় না।
 - `wake_handle` একটা `int` ফেরত দেয় যেটা **thread boundary পার হতে পারে**। এটা descriptor না: এটা একটা slot আর একটা generation-কে নির্দেশ করে, তাই এই poller বন্ধ হওয়ার পর দেওয়া কোনো wake সেই descriptor number-এর দখল নেওয়া জিনিসে না লিখে বরং `closed` kind জানায়।
 - poller একবার বন্ধ হলে প্রতিটা method `closed` kind ফেরত দেয়।

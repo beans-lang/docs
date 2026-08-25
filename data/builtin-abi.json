@@ -653,38 +653,6 @@
       "name": "close"
     },
     {
-      "module": "std.ready",
-      "name": "task_slot"
-    },
-    {
-      "module": "std.ready",
-      "name": "set_task_slot"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_note"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_bind"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_forget"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_stale"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_dead"
-    },
-    {
-      "module": "std.ready",
-      "name": "park_shutdown"
-    },
-    {
       "module": "std.time",
       "name": "monotonic_nanos"
     },

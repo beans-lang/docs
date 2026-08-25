@@ -12,7 +12,7 @@ import { BEANS_REPO, walk } from './paths.mjs';
 // types), across multiple lines when a declaration wraps.
 //
 // Returns: [{ importPath, file, functions:[Sig], types:[Type] }]
-//   Sig  = { name, kind: 'fn'|'static'|'async', signature }
+//   Sig  = { name, kind: 'fn'|'static', signature }
 //   Type = { kind:'class'|'struct'|'enum'|'interface', name, unique,
 //            constructor: Sig|null, methods:[Sig], statics:[Sig],
 //            fields:[{name,type,signature}], variants:[{name,signature}] }
@@ -80,8 +80,6 @@ function classify(line) {
   const unique = /\bunique\b/.test(trimmed.replace(/^pub\s+/, '').split(/\s+/).slice(0, 2).join(' '));
   const staticFn = rest.match(/^static\s+fn\s+([a-z_][A-Za-z0-9_]*)\b/);
   if (staticFn) return { isPub, kind: 'static', name: staticFn[1] };
-  const asyncFn = rest.match(/^async\s+fn\s+([a-z_][A-Za-z0-9_]*)\b/);
-  if (asyncFn) return { isPub, kind: 'async', name: asyncFn[1] };
   const fn = rest.match(/^fn\s+([a-z_][A-Za-z0-9_]*)\b/);
   if (fn) return { isPub, kind: 'fn', name: fn[1] };
   for (const k of TYPE_KINDS) {
@@ -117,7 +115,6 @@ export function extractStdlibSignatures() {
   const packages = new Map();
 
   for (const file of files) {
-    if (file.includes('async$rt')) continue; // compiler-internal, not importable
     const importPath = importPathFor(file);
     if (!packages.has(importPath)) {
       packages.set(importPath, {
@@ -158,7 +155,7 @@ export function extractStdlibSignatures() {
         typeDepth = depth;
         inEnum = info.typeKind === 'enum';
       } else if (info && depth === 0 && info.isPub &&
-                 (info.kind === 'fn' || info.kind === 'static' || info.kind === 'async')) {
+                 (info.kind === 'fn' || info.kind === 'static')) {
         pkg.functions.push({ name: info.name, kind: info.kind, signature: readHeader(lines, i) });
       } else if (currentType && depth === typeDepth + 1 && !info &&
                  inEnum && currentType.kind === 'enum') {
@@ -169,7 +166,7 @@ export function extractStdlibSignatures() {
           currentType.variants.push({ name: v[1], signature: v[1] + (v[2] ?? '') });
         }
       } else if (currentType && depth === typeDepth + 1 && info) {
-        if (info.kind === 'fn' || info.kind === 'static' || info.kind === 'async') {
+        if (info.kind === 'fn' || info.kind === 'static') {
           const signature = readHeader(lines, i);
           if (info.name === 'init') {
             // A constructor. Public constructors let another package write

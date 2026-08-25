@@ -4,7 +4,7 @@ description: Runtime type, member, annotation, value, construction, and call des
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions · 18 types · 94 instance methods · 40 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions · 18 types · 91 instance methods · 40 enum variants.
 <!-- coverage:summary:end -->
 
 `std.reflect` provides safe runtime metadata and checked dynamic actions. See
@@ -71,7 +71,6 @@ pub fn declaring_type() -> Type
 pub fn result_type() -> Type
 pub fn is_public() -> bool
 pub fn is_static() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn call(receiver: Value, move arguments: List<Value>) -> Result<Value, ReflectError>
@@ -83,7 +82,6 @@ pub fn annotations() -> List<Annotation>
 pub class Initializer
 pub fn declaring_type() -> Type
 pub fn is_public() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn annotations() -> List<Annotation>
@@ -105,7 +103,6 @@ pub fn qualified_name() -> string
 pub fn name() -> string
 pub fn result_type() -> Type
 pub fn is_public() -> bool
-pub fn is_async() -> bool
 pub fn is_generic() -> bool
 pub fn parameters() -> List<Parameter>
 pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>

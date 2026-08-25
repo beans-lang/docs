@@ -1,13 +1,13 @@
 ---
 title: std.net
-description: TCP আর UDP socket, address resolve করা, আর async readiness helper।
+description: TCP আর UDP socket, reusable read buffer, আর address resolve করা।
 ---
 
 <!-- coverage:summary -->
-**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 2টা package function · 6টা type · 1টা constructor · 8টা static method · 31টা instance method · 4টা public field।
+**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 6টা type · 1টা constructor · 8টা static method · 37টা instance method · 4টা public field।
 <!-- coverage:summary:end -->
 
-`std.net` দেয় TCP আর UDP socket, name resolve করার সুবিধা, আর দুটো async readiness helper। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
+`std.net` দেয় TCP আর UDP socket আর name resolve করার সুবিধা। এটা `std.sock`-এর raw socket syscall-গুলোর উপর একটা সহজে-পড়া layer। source আছে এখানে: [`stdlib/std/net/net.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/net/net.b)।
 
 ```beans
 import std.net
@@ -81,14 +81,19 @@ pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStr
 pub fn write(data: Bytes) -> Result<int>
 pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
+pub fn write_from(data: Bytes, offset: int) -> Result<int>
+pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
+pub fn read_into_waiting(buffer: Bytes) -> Result<int>
+pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>
 pub fn read_exact(count: int) -> Result<Bytes>
 pub fn read_to_end(limit: int) -> Result<Bytes>
 pub fn peer_address() -> Result<Address>
 pub fn local_address() -> Result<Address>
 pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>
 pub fn set_nonblocking(on: bool) -> Result<bool>
+pub fn set_nodelay(on: bool) -> Result<bool>
 pub fn into_raw() -> Result<int>
 pub fn shutdown_write() -> Result<bool>
 pub fn shutdown_read() -> Result<bool>
@@ -101,9 +106,22 @@ pub fn poll_handle() -> int
 - `shutdown_write` peer-কে EOF পাঠায়, কিন্তু read half খোলা রাখে।
 - `read_into` আগে থেকে বানানো non-empty `Bytes`-এ লেখে এবং count দেয়। zero মানে
   EOF। buffer-এর length বদলায় না; শুধু `0..count` এই read-এর data।
+- `read_into_waiting` `read_into`-র মতোই পড়ে, তবে fiber-এ প্রথম recv-এর আগে
+  readability-র জন্য অপেক্ষা করে। যে caller সবে socket খালি করেছে সে জানে পরের
+  recv শুধু would-block-ই বলবে — তাই এই form সেই বাজে syscall-টার বদলে একটা
+  poller wait খরচ করে। fiber-এর বাইরে এটা হুবহু `read_into`-র মতো।
+- `write_from` `data` slice বা copy না করে `offset` থেকে লেখা শুরু করে — একটা
+  output queue-র short write resume করতে এই offset-জানা form-টাই লাগে।
+- `try_` জোড়াটা nonblocking stream-এর জন্য: socket block করত এমন অবস্থায়
+  `try_write_from` আর `try_read_into` error না দিয়ে `ok(none)` দেয়।
+  `try_read_into`-তে `ok(some(0))` মানে EOF — চুপচাপ socket আর বন্ধ peer
+  আলাদা ঘটনাই থাকে।
+- `set_nodelay(true)` Nagle-এর algorithm বন্ধ করে (`false` ফিরিয়ে আনে)।
+  request/response server এটা বন্ধই চায়, যাতে ছোট response একটা coalescing
+  timer-এর জন্য আটকে না থাকে।
 - `into_raw` descriptor-এর ownership lower-level transport-কে দেয়। এরপর নতুন
   owner-ই সেটা close করবে।
-- `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller বা async helper-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
+- `poll_handle` descriptor-টা **borrow করে** ফেরত দেয়, যাতে একটা poller-এ register করা যায়। এটা ownership হস্তান্তর করে না; ওটা close করা যাবে না।
 
 loopback-এর উপর ছোট্ট একটা request আর reply:
 
@@ -142,6 +160,7 @@ pub static fn bind_reuse_port_with_backlog(host: string, port: int, depth: int) 
 
 pub fn accept() -> Result<TcpStream>
 pub fn accept_timeout(ms: int) -> Result<TcpStream>
+pub fn try_accept() -> Result<Option<TcpStream>>
 pub fn local_address() -> Result<Address>
 pub fn port() -> Result<int>
 pub fn set_nonblocking(on: bool) -> Result<bool>
@@ -154,6 +173,9 @@ pub fn poll_handle() -> int
   connection ভাগ করে দেয়। Windows `unsupported` ফেরত দেয়।
 - port `0` দিলে system একটা খালি port দিয়ে দেয়। `port()` দিয়ে সেটা পড়ে নেওয়া যায় — একটা test এভাবেই কোনো নম্বর আন্দাজ না করে bind করে।
 - `accept` connection আসা পর্যন্ত block করে। `accept_timeout(0)` হলো একটা non-blocking check; positive timeout শেষ হয়ে গেলে `timeout` kind।
+- `try_accept` অপেক্ষা না করে একটা connection নেয়: `ok(none)` মানে accept queue
+  খালি। poller-চালিত accept loop listener-এর descriptor readable দেখানোর পর
+  এই form-টাই ব্যবহার করে।
 
 ## UdpSocket
 
@@ -197,13 +219,6 @@ fn main() {
 }
 ```
 
-## Async readiness
+## Readiness
 
-দুটো `async` function দিয়ে একটা async task একটা thread না ধরে রেখেই socket-এর জন্য অপেক্ষা করতে পারে। `poll_handle()` থেকে পাওয়া descriptor-টা পাস করা হয়। এগুলো level-triggered: socket যদি আগে থেকেই ready থাকে, তবে সাথে সাথেই complete হয়ে যায়।
-
-```beans
-pub async fn readable(handle: int) -> bool
-pub async fn writable(handle: int) -> bool
-```
-
-async function কীভাবে চলে সেটা [async guide](/bn/guide/async/)-এ বোঝানো আছে। একটা thread থেকে একসাথে অনেক socket-এর জন্য অপেক্ষা করতে চাইলে বরং [std.poll](/bn/reference/stdlib/poll/) ব্যবহার করুন।
+কোনো socket readable বা writable হওয়ার জন্য busy-loop না করে অপেক্ষা করতে চাইলে `poll_handle()` থেকে পাওয়া descriptor-টা [std.poll](/bn/reference/stdlib/poll/) poller-এ register করে তার event-এর জন্য wait করুন।

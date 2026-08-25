@@ -3,7 +3,7 @@ title: std.log
 description: Console, file, rotating, NDJSON আর pull-based export sink-সহ দ্রুত asynchronous structured logging।
 ---
 
-`std.log` হলো Beans-এর standard asynchronous logger। এটা Beans `0.1.27` থেকে
+`std.log` হলো Beans-এর standard asynchronous logger। এটা Beans `0.1.30` থেকে
 hosted target-এ পাওয়া যায়। ভেতরে pinned Quill 12.1.0 C++17 engine চলে, কিন্তু
 public API পুরোটা Beans। কোনো program `std.log` import না করলে logging bridge বা
 Quill code link হয় না।

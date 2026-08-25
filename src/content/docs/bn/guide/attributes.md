@@ -1,6 +1,6 @@
 ---
 title: Attributes and modifiers
-description: visibility, OOP, layout, ownership, async code আর CPU feature-এর জন্য Beans-এর built-in modifier।
+description: visibility, OOP, layout, ownership আর CPU feature-এর জন্য Beans-এর built-in modifier।
 ---
 
 Beans-এ typed metadata-র জন্য নিজের [annotation](/bn/guide/annotations/) আছে,
@@ -94,14 +94,6 @@ feature "aes" fn mix_fast(seed: int) -> int { /* ... */ }
 - **`inout fn`** একটা mutating struct method ঘোষণা করে। এটা mutable `self`
   পায় আর একটা `var` local-এ call করতে হয়। caller receiver-এর আগে `inout`
   লেখে না।
-
-## async
-
-- **`async`** `fn`-এর আগে বসে একটা async function ঘোষণা করে।
-- **`await`** কোনো async body-র ভেতরে একটা async call-এর উপর অপেক্ষা করে।
-
-দুটোই contextual, আর অন্য জায়গায় সাধারণ identifier হিসেবে ব্যবহারযোগ্যই
-থাকে। দেখুন [Async আর await](/bn/guide/async/)।
 
 ## Modifier-এর ক্রম
 

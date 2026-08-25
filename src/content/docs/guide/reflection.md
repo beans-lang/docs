@@ -119,7 +119,7 @@ static methods, virtual overrides, and initializers. They reject:
 
 - non-`pub` members, including `priv` fields and methods
 - `deinit`
-- open generic, async, `extern`, variadic, or `inout` call shapes
+- open generic, `extern`, variadic, or `inout` call shapes
 - a wrong receiver, argument count, or argument type
 
 The stable error kinds are `missing`, `inaccessible`, `receiver_type`,

@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1252**
-- Symbols with an enforced signature: **846**
-- Builtin reference symbols: **317**
-- Standard-library symbols: **921**
+- Total public symbols: **1265**
+- Symbols with an enforced signature: **856**
+- Builtin reference symbols: **322**
+- Standard-library symbols: **929**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -110,6 +110,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Channel.close` | method | `Channel<T>.close()` | `reference/builtins/handles` | ✓ |
 | `Channel.receive` | method | `Channel<T>.receive() -> Option<T>` | `reference/builtins/handles` | ✓ |
 | `Channel.send` | method | `Channel<T>.send(T)` | `reference/builtins/handles` | ✓ |
+| `Channel.try_receive` | method | `Channel<T>.try_receive() -> Option<T>` | `reference/builtins/handles` | ✓ |
+| `Channel.try_send` | method | `Channel<T>.try_send(T) -> bool` | `reference/builtins/handles` | ✓ |
 
 ## builtin Dir
 
@@ -348,6 +350,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `AtomicInt` | type |  | `reference/builtins/handles` | ✓ |
 | `bool` | type |  | `reference/builtins/primitives` | ✓ |
 | `Box` | type |  | `reference/builtins/handles` | ✓ |
+| `Brew` | type |  | `reference/builtins/handles` | ✓ |
 | `byte` | type |  | `reference/builtins/primitives` | ✓ |
 | `Bytes` | type |  | `reference/builtins/bytes` | ✓ |
 | `CFunctionPtr` | type |  | `guide/ffi` | ✓ |
@@ -362,6 +365,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `f64` | type |  | `reference/builtins/primitives` | ✓ |
 | `File` | type |  | `reference/builtins/files` | ✓ |
 | `float` | type |  | `reference/builtins/primitives` | ✓ |
+| `Gate` | type |  | `reference/builtins/handles` | ✓ |
 | `Hash` | type |  | `guide/generics` | ✓ |
 | `i16` | type |  | `reference/builtins/primitives` | ✓ |
 | `i32` | type |  | `reference/builtins/primitives` | ✓ |
@@ -387,6 +391,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `StoredCallback` | type |  | `guide/ffi` | ✓ |
 | `string` | type |  | `reference/builtins/primitives` | ✓ |
 | `Sync` | type |  | `guide/generics` | ✓ |
+| `TaskGroup` | type |  | `reference/builtins/handles` | ✓ |
 | `Thread` | type |  | `reference/builtins/handles` | ✓ |
 | `u16` | type |  | `reference/builtins/primitives` | ✓ |
 | `u32` | type |  | `reference/builtins/primitives` | ✓ |
@@ -907,6 +912,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `ClientResponse.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
 | `ClientResponse.reason` | field |  | `reference/stdlib/http` | ✓ |
 | `ClientResponse.status` | field |  | `reference/stdlib/http` | ✓ |
+| `encode_response_append` | function | `pub fn encode_response_append(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `encode_response_into` | function | `pub fn encode_response_into(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Field` | class |  | `reference/stdlib/http` | ✓ |
 | `field_is_safe` | function | `pub fn field_is_safe(text: string) -> bool` | `reference/stdlib/http` | ✓ |
 | `Field.name` | field |  | `reference/stdlib/http` | ✓ |
@@ -914,6 +921,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Headers` | class |  | `reference/stdlib/http` | ✓ |
 | `Headers.add` | method | `pub fn add(name: string, value: string)` | `reference/stdlib/http` | ✓ |
 | `Headers.all` | method | `pub fn all(name: string) -> List<string>` | `reference/stdlib/http` | ✓ |
+| `Headers.clear` | method | `pub fn clear()` | `reference/stdlib/http` | ✓ |
 | `Headers.count` | method | `pub fn count() -> int` | `reference/stdlib/http` | ✓ |
 | `Headers.get` | method | `pub fn get(name: string) -> Option<string>` | `reference/stdlib/http` | ✓ |
 | `Headers.has` | method | `pub fn has(name: string) -> bool` | `reference/stdlib/http` | ✓ |
@@ -983,7 +991,10 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `RequestParser` | class |  | `reference/stdlib/http` | ✓ |
 | `RequestParser.feed` | method | `pub fn feed(data: Bytes) -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
 | `RequestParser.feed_range` | method | `pub fn feed_range(data: Bytes, from: int, to: int) -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.feed_range_into` | method | `pub fn feed_range_into(data: Bytes, from: int, to: int, events: List<RequestEvent>) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `RequestParser.finish` | method | `pub fn finish() -> Result<List<RequestEvent>>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.finish_into` | method | `pub fn finish_into(events: List<RequestEvent>) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `RequestParser.recycle` | method | `pub fn recycle(done: Request)` | `reference/stdlib/http` | ✓ |
 | `RequestParser.with_limits` | static | `pub static fn with_limits(limits: Limits) -> RequestParser` | `reference/stdlib/http` | ✓ |
 | `Response` | class |  | `reference/stdlib/http` | ✓ |
 | `Response.chunked` | field |  | `reference/stdlib/http` | ✓ |
@@ -1178,7 +1189,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Datagram.data` | field |  | `reference/stdlib/net` | ✓ |
 | `Datagram.from` | field |  | `reference/stdlib/net` | ✓ |
 | `new Address` | constructor | `new Address(host: string, port: int)` | `reference/stdlib/net` | ✓ |
-| `readable` | function | `pub async fn readable(handle: int) -> bool` | `reference/stdlib/net` | ✓ |
 | `TcpListener` | class |  | `reference/stdlib/net` | ✓ |
 | `TcpListener.accept` | method | `pub fn accept() -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.accept_timeout` | method | `pub fn accept_timeout(ms: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
@@ -1191,6 +1201,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpListener.poll_handle` | method | `pub fn poll_handle() -> int` | `reference/stdlib/net` | ✓ |
 | `TcpListener.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpListener.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
+| `TcpListener.try_accept` | method | `pub fn try_accept() -> Result<Option<TcpStream>>` | `reference/stdlib/net` | ✓ |
 | `TcpStream` | class |  | `reference/stdlib/net` | ✓ |
 | `TcpStream.connect` | static | `pub static fn connect(host: string, port: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, ms: int) -> Result<TcpStream>` | `reference/stdlib/net` | ✓ |
@@ -1199,11 +1210,16 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpStream.peer_address` | method | `pub fn peer_address() -> Result<Address>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_exact` | method | `pub fn read_exact(count: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_into` | method | `pub fn read_into(buffer: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.read_into_waiting` | method | `pub fn read_into_waiting(buffer: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.read_to_end` | method | `pub fn read_to_end(limit: int) -> Result<Bytes>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.set_nodelay` | method | `pub fn set_nodelay(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.set_timeouts` | method | `pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.shutdown_read` | method | `pub fn shutdown_read() -> Result<bool>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.try_read_into` | method | `pub fn try_read_into(buffer: Bytes) -> Result<Option<int>>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.try_write_from` | method | `pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write` | method | `pub fn write(data: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.write_from` | method | `pub fn write_from(data: Bytes, offset: int) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write_text` | method | `pub fn write_text(text: string) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket` | class |  | `reference/stdlib/net` | ✓ |
 | `UdpSocket.bind` | static | `pub static fn bind(host: string, port: int) -> Result<UdpSocket>` | `reference/stdlib/net` | ✓ |
@@ -1217,7 +1233,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `UdpSocket.send_to` | method | `pub fn send_to(data: Bytes, to: Address) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.set_nonblocking` | method | `pub fn set_nonblocking(on: bool) -> Result<bool>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.set_timeouts` | method | `pub fn set_timeouts(read_ms: int, write_ms: int) -> Result<bool>` | `reference/stdlib/net` | ✓ |
-| `writable` | function | `pub async fn writable(handle: int) -> bool` | `reference/stdlib/net` | ✓ |
 
 ## std.os
 
@@ -1261,6 +1276,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Poller.open` | static | `pub static fn open() -> Result<Poller>` | `reference/stdlib/poll` | ✓ |
 | `Poller.remove` | method | `pub fn remove(fd: int) -> Result<bool>` | `reference/stdlib/poll` | ✓ |
 | `Poller.wait` | method | `pub fn wait(max_events: int, timeout_ms: int) -> Result<List<Event>>` | `reference/stdlib/poll` | ✓ |
+| `Poller.wait_into` | method | `pub fn wait_into(max_events: int, timeout_ms: int, events: List<Event>) -> Result<int>` | `reference/stdlib/poll` | ✓ |
 | `Poller.wake` | method | `pub fn wake() -> Result<bool>` | `reference/stdlib/poll` | ✓ |
 | `Poller.wake_handle` | method | `pub fn wake_handle() -> int` | `reference/stdlib/poll` | ✓ |
 | `wake` | function | `pub fn wake(signal: int) -> Result<bool>` | `reference/stdlib/poll` | ✓ |
@@ -1399,7 +1415,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Function` | class |  | `reference/stdlib/reflect` | ✓ |
 | `Function.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
 | `Function.call` | method | `pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
-| `Function.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Function.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Function.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Function.name` | method | `pub fn name() -> string` | `reference/stdlib/reflect` | ✓ |
@@ -1411,7 +1426,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Initializer.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
 | `Initializer.call` | method | `pub fn call(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
 | `Initializer.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
-| `Initializer.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Initializer.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Initializer.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Initializer.parameters` | method | `pub fn parameters() -> List<Parameter>` | `reference/stdlib/reflect` | ✓ |
@@ -1442,7 +1456,6 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Method.call` | method | `pub fn call(receiver: Value, move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
 | `Method.call_static` | method | `pub fn call_static(move arguments: List<Value>) -> Result<Value, ReflectError>` | `reference/stdlib/reflect` | ✓ |
 | `Method.declaring_type` | method | `pub fn declaring_type() -> Type` | `reference/stdlib/reflect` | ✓ |
-| `Method.is_async` | method | `pub fn is_async() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Method.is_generic` | method | `pub fn is_generic() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Method.is_public` | method | `pub fn is_public() -> bool` | `reference/stdlib/reflect` | ✓ |
 | `Method.is_static` | method | `pub fn is_static() -> bool` | `reference/stdlib/reflect` | ✓ |

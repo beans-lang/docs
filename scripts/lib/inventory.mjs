@@ -124,6 +124,7 @@ const TYPE_PAGE = {
   Option: B('option-result'), Result: B('option-result'), Error: B('option-result'),
   Box: B('handles'), Arena: B('handles'), Shared: B('handles'), Weak: B('handles'),
   Mutex: B('handles'), Channel: B('handles'), Thread: B('handles'), AtomicInt: B('handles'),
+  Brew: B('handles'), TaskGroup: B('handles'), Gate: B('handles'),
   Atomic: B('atomics'), MemoryOrder: B('atomics'),
   Bytes: B('bytes'), File: B('files'), Dir: B('files'), MMap: B('files'),
   CpuFeature: S('cpu-intrinsic'), StoredCallback: 'guide/ffi',

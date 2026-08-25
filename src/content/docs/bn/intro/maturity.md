@@ -13,9 +13,9 @@ Beans এখন 1.0 stabilization লাইনে একটা production previe
 
 - **ভাষার contract `1.0`-এ আটকানো।** যে syntax আর semantics-এর উপর কোড লেখা হয়, সেটা
   পাকা হয়ে গেছে। এখন যে কোড লেখা হবে সেটা পরেও চলবে, এটাই লক্ষ্য।
-- **সর্বশেষ compiler release `0.1.27`।** ভাষা `1.0`, কিন্তু যে tool সেটা বানায় সেটা এখনো
+- **সর্বশেষ compiler release `0.1.30`।** ভাষা `1.0`, কিন্তু যে tool সেটা বানায় সেটা এখনো
   মিলে যাওয়া release number-এর দিকে যাচ্ছে।
-- **Runtime ABI `7`।**
+- **Runtime ABI `11`।**
 
 এটা একটা preview, পুরো 1.0 না। ব্যবহার করা যায়, কিন্তু পুরো 1.0 release-এর আগে এখনো কিছু
 কাজ বাকি — নিচে দেওয়া আছে।
@@ -32,8 +32,8 @@ Beans এখন 1.0 stabilization লাইনে একটা production previe
 - **একটা native backend।** MIR থেকে LLVM-এ compile হয় debug, release আর LTO build-এর জন্য,
   সাথে automatic reference counting আর একটা cycle collector।
 - **একটা reference interpreter** — যার আচরণ native backend-এর সাথে হুবহু এক।
-- **Concurrency।** OS thread, typed atomic, mutex, channel, structured `async`/`await`, আর
-  readiness wait।
+- **Concurrency।** `brew` দিয়ে fiber, OS thread, typed atomic, mutex, channel,
+  আর readiness wait।
 - **Package management।** Canonical package identity, hash করা একটা `beans.lock`, locked আর
   offline build, আর একটা Git cache।
 - **পুরো C interop।** Import, export, header, bindgen, record, union, global, thread-local
