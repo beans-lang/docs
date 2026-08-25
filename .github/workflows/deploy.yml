@@ -62,8 +62,18 @@ jobs:
       # The docs follow compiler main, which can be newer than the latest
       # release. Use the release compiler only to bootstrap the current
       # self-hosted compiler, then validate snippets with that current build.
+      # The released launcher exports its own package's BEANS_* source roots,
+      # so without these it would compile these sources against the release's
+      # runtime and stdlib — and the link breaks the first time src/ needs a
+      # runtime symbol the release does not ship. Pin every root to the
+      # checkout being built, the same way the compiler's own Makefile does.
       - name: Build current beansc
         run: |
+          BEANS_RUNTIME="$GITHUB_WORKSPACE/beans-src/runtime/beans_rt.c" \
+          BEANS_STDLIB="$GITHUB_WORKSPACE/beans-src/stdlib/std" \
+          BEANS_ENCODING="$GITHUB_WORKSPACE/beans-src/runtime/encoding" \
+          BEANS_NET="$GITHUB_WORKSPACE/beans-src/runtime/net" \
+          BEANS_LOG="$GITHUB_WORKSPACE/beans-src/runtime/log" \
           "$HOME/.beans/bin/beansc" build --release \
             beans-src/src/main.b \
             -o "$RUNNER_TEMP/beansc-docs"
