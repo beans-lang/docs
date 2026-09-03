@@ -4,7 +4,7 @@ description: Turn numbers into strings, hex, binary, grouped digits, padding, fi
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions.
+**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions · 1 type · 1 constructor · 11 instance methods.
 <!-- coverage:summary:end -->
 
 `std.fmt` turns numbers into text in the shapes you often need: hexadecimal,
@@ -94,6 +94,64 @@ fn main() {
 
 See [Numbers and decimal](/reference/builtins/numbers/) for the `decimal` type
 itself.
+
+## StringBuilder
+
+Interpolation renders one value. A builder accumulates a stream of them into one
+buffer, which is the difference between O(n) and O(n²) when you are building a
+string in a loop: `text = "{text}piece"` copies everything written so far on
+every turn, while a builder appends and converts once.
+
+```beans
+new StringBuilder(capacity: int = 0)
+
+pub fn push(text: string)
+pub fn push_line(text: string)
+pub fn push_int(value: int)
+pub fn push_bool(value: bool)
+pub fn push_byte(value: int)
+pub fn len() -> int
+pub fn is_empty() -> bool
+pub fn reserve(capacity: int)
+pub fn clear()
+pub fn to_string() -> string
+pub fn to_bytes() -> Bytes
+```
+
+- `push` appends text. `push_line` appends it followed by a newline.
+  `push_int`, `push_bool` and `push_byte` append a value without going through
+  interpolation first — `push_byte` writes one raw byte.
+- `len` is the number of bytes accumulated so far, not characters, and
+  `is_empty` is `len() == 0`. `reserve` grows the buffer up front when you know
+  roughly how much is coming; `clear` empties it and keeps the capacity, so one
+  builder can be reused across rounds.
+- `to_string` converts once at the end. `to_bytes` hands back the raw buffer
+  instead, for a caller that wants bytes.
+
+The buffer holds bytes and nothing here validates UTF-8, exactly as `Bytes`
+does not. Anything already rendered — by interpolation, or by `fmt.float`,
+`fmt.decimal` or `fmt.pad_left` above — goes in with `push`.
+
+<!-- beans:compile -->
+```beans
+import std.io
+import std.fmt
+
+fn main() {
+    var out: fmt.StringBuilder = new fmt.StringBuilder(64)
+    var index: int = 0
+    for index < 3 {
+        out.push("row ")
+        out.push_int(index)
+        out.push_line("")
+        index += 1
+    }
+    io.print(out.to_string())
+    io.println(out.len())        // 18
+    out.clear()
+    io.println(out.is_empty())   // true
+}
+```
 
 ## Format specs in interpolation
 

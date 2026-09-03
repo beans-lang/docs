@@ -65,7 +65,13 @@ their element is a real inline place.
 - There are **no implicit numeric conversions**. Mixing `int`, `float`, and
   `decimal` needs an explicit `as`.
 - Float comparisons follow IEEE-754: a NaN operand makes `==`, `<`, `<=`, `>`,
-  `>=` false and `!=` true.
+  `>=` false and `!=` true, and `-0.0 == 0.0` is true.
+- **Ordering and keying do not use the operators.** `sort`, a `Map` or `Set`
+  key, a `SortedMap`, a `PriorityQueue` — anything that goes through the `Order`
+  or `Eq` interface — uses IEEE 754 totalOrder instead, because an IEEE compare
+  is not an order at all: NaN is unordered with everything, so a container that
+  sorted or searched on it would give wrong answers rather than merely unsorted
+  ones. See [Numbers and decimal](/reference/builtins/numbers/#how-floats-order).
 
 See [Numbers and decimal](/reference/builtins/numbers/).
 

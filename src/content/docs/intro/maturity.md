@@ -13,9 +13,9 @@ phrase means something specific:
 
 - **The language contract is frozen at `1.0`.** The syntax and semantics you
   write against are settled. Code you write now is meant to keep working.
-- **The latest compiler release is `0.1.30`.** The language is `1.0`; the tool
+- **The latest compiler release is `0.1.36`.** The language is `1.0`; the tool
   that implements it is still on its way to a matching release number.
-- **The runtime ABI is `11`.**
+- **The runtime ABI is `14`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
 has open work, listed below.

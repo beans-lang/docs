@@ -4,7 +4,7 @@ description: The immutable UTF-8 string type in Beans and every method it has.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 28 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 29 instance methods.
 <!-- coverage:summary:end -->
 
 `string` is immutable UTF-8 text. Once you make a string, it never changes. A
@@ -141,11 +141,29 @@ Each returns a `Result` because the text may not be a number. See
 ```beans
 string.chars() -> List<string>
 string.count_chars(int, int) -> int
+string.width() -> int
 ```
 
 - `chars()` returns each UTF-8 character as its own one-character string.
 - `count_chars(from, to)` returns the number of characters in the byte range
   `[from, to)`.
+- `width()` is the third measure, beside bytes and characters: how many
+  terminal columns the string occupies. It is what `{s:N}` and `std.fmt`'s pads
+  fill to. Wide East Asian characters and emoji with emoji presentation take
+  two columns; combining marks, format and control characters, conjoining
+  Hangul jamo and the emoji skin-tone modifiers take none; everything else
+  takes one.
+
+```beans
+import std.io
+
+fn main() {
+    let text: string = "日本"
+    io.println(text.len())          // 6 bytes
+    io.println(text.chars().len())  // 2 characters
+    io.println(text.width())        // 4 columns
+}
+```
 
 ## Low-level helpers
 

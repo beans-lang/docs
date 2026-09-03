@@ -26,8 +26,8 @@ Beans তার builtin গুলো দুই ভাবে তৈরি কর�
   `size_of`। checker দেখা যাবে
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
-এই compiler-এর runtime ABI version হলো `11`। compiler নিজের version জানায়
-`0.1.30`, আর language contract `1.0`-তে আটকানো আছে।
+এই compiler-এর runtime ABI version হলো `14`। compiler নিজের version জানায়
+`0.1.36`, আর language contract `1.0`-তে আটকানো আছে।
 
 ## Error handling নিজেই builtin
 

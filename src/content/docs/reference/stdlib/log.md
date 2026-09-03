@@ -7,8 +7,8 @@ description: Fast asynchronous structured logging with console, file, rotating, 
 **API summary** (generated from the Beans source by `npm run coverage`): 15 package functions · 9 types · 1 constructor · 12 static methods · 21 instance methods · 14 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
-`std.log` is the standard asynchronous logger. It is available from Beans
-`0.1.30` on hosted targets and uses the pinned Quill 12.1.0 C++17 engine behind
+`std.log` is the standard asynchronous logger. It is available on hosted
+targets and uses the pinned Quill 12.1.0 C++17 engine behind
 a Beans API. A program that does not import `std.log` links no logging bridge or
 Quill code.
 

@@ -4,7 +4,7 @@ description: Runtime type, member, annotation, value, construction, and call des
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions · 18 types · 91 instance methods · 40 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions · 18 types · 92 instance methods · 40 enum variants.
 <!-- coverage:summary:end -->
 
 `std.reflect` provides safe runtime metadata and checked dynamic actions. See
@@ -185,7 +185,12 @@ pub fn items() -> List<AnnotationValue>
 pub class ReflectError
 pub fn kind() -> ErrorKind
 pub fn message() -> string
+pub fn to_error() -> Error
 ```
+
+`to_error()` hands back the same failure as a builtin `Error`, so `?` can carry
+a reflection failure out of a function that returns a plain `Result<T>`. The
+kind becomes the error's slug and the message is kept whole.
 
 `Kind` has `unit`, `boolean`, `signed_integer`, `unsigned_integer`, `floating`,
 `decimal`, `string`, `class_type`, `interface_type`, `struct_type`,

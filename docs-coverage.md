@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1265**
-- Symbols with an enforced signature: **856**
-- Builtin reference symbols: **322**
-- Standard-library symbols: **929**
+- Total public symbols: **1370**
+- Symbols with an enforced signature: **956**
+- Builtin reference symbols: **323**
+- Standard-library symbols: **1033**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -333,6 +333,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `string.trim` | method | `string.trim() -> string` | `reference/builtins/string` | ✓ |
 | `string.trim_end` | method | `string.trim_end() -> string` | `reference/builtins/string` | ✓ |
 | `string.trim_start` | method | `string.trim_start() -> string` | `reference/builtins/string` | ✓ |
+| `string.width` | method | `string.width() -> int` | `reference/builtins/string` | ✓ |
 
 ## builtin Thread
 
@@ -571,13 +572,80 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `count` | function | `pub fn count<T implements Eq>(values: List<T>, needle: T) -> int` | `reference/stdlib/collections` | ✓ |
+| `Deque` | class |  | `reference/stdlib/collections` | ✓ |
+| `Deque.clear` | method | `pub fn clear()` | `reference/stdlib/collections` | ✓ |
+| `Deque.first` | method | `pub fn first() -> Option<T>` | `reference/stdlib/collections` | ✓ |
+| `Deque.get` | method | `pub fn get(index: int) -> Option<T>` | `reference/stdlib/collections` | ✓ |
+| `Deque.is_empty` | method | `pub fn is_empty() -> bool` | `reference/stdlib/collections` | ✓ |
+| `Deque.last` | method | `pub fn last() -> Option<T>` | `reference/stdlib/collections` | ✓ |
+| `Deque.len` | method | `pub fn len() -> int` | `reference/stdlib/collections` | ✓ |
+| `Deque.pop_back` | method | `pub fn pop_back() -> Option<T>` | `reference/stdlib/collections` | ✓ |
+| `Deque.pop_front` | method | `pub fn pop_front() -> Option<T>` | `reference/stdlib/collections` | ✓ |
+| `Deque.push_back` | method | `pub fn push_back(value: T)` | `reference/stdlib/collections` | ✓ |
+| `Deque.push_front` | method | `pub fn push_front(value: T)` | `reference/stdlib/collections` | ✓ |
+| `Deque.to_list` | method | `pub fn to_list() -> List<T>` | `reference/stdlib/collections` | ✓ |
 | `filter` | function | `pub fn filter<T implements Clone>(values: List<T>, keep: fn(T) -> bool) -> List<T>` | `reference/stdlib/collections` | ✓ |
 | `frequencies` | function | `pub fn frequencies(values: List<string>) -> Map<string, int>` | `reference/stdlib/collections` | ✓ |
 | `get_or_insert_with` | function | `pub fn get_or_insert_with<K implements Eq & Hash, V implements Clone>(inout values: Map<K, V>, key: K, make: fn() -> V) -> V` | `reference/stdlib/collections` | ✓ |
 | `increment` | function | `pub fn increment<K implements Eq & Hash>(inout values: Map<K, int>, key: K, delta: int) -> int` | `reference/stdlib/collections` | ✓ |
 | `map_values_with_key` | function | `pub fn map_values_with_key<K implements Eq & Hash & Clone, V implements Clone, U>(values: Map<K, V>, apply: fn(K, V) -> U) -> Map<K, U>` | `reference/stdlib/collections` | ✓ |
 | `merge_with` | function | `pub fn merge_with<K implements Eq & Hash & Clone, V implements Clone>(inout target: Map<K, V>, source: Map<K, V>, combine: fn(V, V) -> V)` | `reference/stdlib/collections` | ✓ |
+| `new Deque` | constructor | `new Deque()` | `reference/stdlib/collections` | ✓ |
+| `new PriorityQueue` | constructor | `new PriorityQueue()` | `reference/stdlib/collections` | ✓ |
+| `new Set` | constructor | `new Set()` | `reference/stdlib/collections` | ✓ |
+| `new SortedMap` | constructor | `new SortedMap()` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue` | class |  | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.clear` | method | `pub fn clear()` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.is_empty` | method | `pub fn is_empty() -> bool` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.len` | method | `pub fn len() -> int` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.peek` | method | `pub fn peek() -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.peek_priority` | method | `pub fn peek_priority() -> Option<P>` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.pop` | method | `pub fn pop() -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `PriorityQueue.push` | method | `pub fn push(priority: P, value: V)` | `reference/stdlib/collections` | ✓ |
 | `remove_if` | function | `pub fn remove_if<K implements Eq & Hash & Clone, V implements Clone>(inout values: Map<K, V>, remove: fn(K, V) -> bool) -> int` | `reference/stdlib/collections` | ✓ |
+| `Set` | class |  | `reference/stdlib/collections` | ✓ |
+| `Set.add` | method | `pub fn add(value: T) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.add_all` | method | `pub fn add_all(values: List<T>) -> int` | `reference/stdlib/collections` | ✓ |
+| `Set.clear` | method | `pub fn clear()` | `reference/stdlib/collections` | ✓ |
+| `Set.contains` | method | `pub fn contains(value: T) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.difference` | method | `pub fn difference(other: Set<T>) -> Set<T>` | `reference/stdlib/collections` | ✓ |
+| `Set.equals` | method | `pub fn equals(other: Set<T>) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.intersection` | method | `pub fn intersection(other: Set<T>) -> Set<T>` | `reference/stdlib/collections` | ✓ |
+| `Set.is_disjoint_from` | method | `pub fn is_disjoint_from(other: Set<T>) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.is_empty` | method | `pub fn is_empty() -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.is_subset_of` | method | `pub fn is_subset_of(other: Set<T>) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.is_superset_of` | method | `pub fn is_superset_of(other: Set<T>) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.items` | method | `pub fn items() -> List<T>` | `reference/stdlib/collections` | ✓ |
+| `Set.len` | method | `pub fn len() -> int` | `reference/stdlib/collections` | ✓ |
+| `Set.remove` | method | `pub fn remove(value: T) -> bool` | `reference/stdlib/collections` | ✓ |
+| `Set.reserve` | method | `pub fn reserve(capacity: int)` | `reference/stdlib/collections` | ✓ |
+| `Set.symmetric_difference` | method | `pub fn symmetric_difference(other: Set<T>) -> Set<T>` | `reference/stdlib/collections` | ✓ |
+| `Set.union_with` | method | `pub fn union_with(other: Set<T>) -> Set<T>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap` | class |  | `reference/stdlib/collections` | ✓ |
+| `SortedMap.ceiling_key` | method | `pub fn ceiling_key(key: K) -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.clear` | method | `pub fn clear()` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.contains_key` | method | `pub fn contains_key(key: K) -> bool` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.first_key` | method | `pub fn first_key() -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.first_value` | method | `pub fn first_value() -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.floor_key` | method | `pub fn floor_key(key: K) -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.get` | method | `pub fn get(key: K) -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.higher_key` | method | `pub fn higher_key(key: K) -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.insert` | method | `pub fn insert(key: K, value: V) -> bool` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.is_empty` | method | `pub fn is_empty() -> bool` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.key_at` | method | `pub fn key_at(index: int) -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.keys` | method | `pub fn keys() -> List<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.last_key` | method | `pub fn last_key() -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.last_value` | method | `pub fn last_value() -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.len` | method | `pub fn len() -> int` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.lower_key` | method | `pub fn lower_key(key: K) -> Option<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.range_count` | method | `pub fn range_count(from: K, to: K) -> int` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.range_keys` | method | `pub fn range_keys(from: K, to: K) -> List<K>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.range_values` | method | `pub fn range_values(from: K, to: K) -> List<V>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.rank` | method | `pub fn rank(key: K) -> int` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.remove` | method | `pub fn remove(key: K) -> bool` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.set` | method | `pub fn set(key: K, value: V)` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.value_at` | method | `pub fn value_at(index: int) -> Option<V>` | `reference/stdlib/collections` | ✓ |
+| `SortedMap.values` | method | `pub fn values() -> List<V>` | `reference/stdlib/collections` | ✓ |
 | `sum_int` | function | `pub fn sum_int(values: List<int>) -> int` | `reference/stdlib/collections` | ✓ |
 | `transform` | function | `pub fn transform<T implements Clone, U>(values: List<T>, apply: fn(T) -> U) -> List<U>` | `reference/stdlib/collections` | ✓ |
 | `unique` | function | `pub fn unique<T implements Eq & Hash & Clone>(values: List<T>) -> List<T>` | `reference/stdlib/collections` | ✓ |
@@ -876,10 +944,23 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `binary` | function | `pub fn binary(value: int) -> string` | `reference/stdlib/fmt` | ✓ |
 | `group_digits` | function | `pub fn group_digits(value: int, separator: string) -> string` | `reference/stdlib/fmt` | ✓ |
 | `hex` | function | `pub fn hex(value: int) -> string` | `reference/stdlib/fmt` | ✓ |
+| `new StringBuilder` | constructor | `new StringBuilder(capacity: int = 0)` | `reference/stdlib/fmt` | ✓ |
 | `std.fmt.decimal` | function | `decimal(decimal, int) -> string` | `reference/stdlib/fmt` | ✓ |
 | `std.fmt.float` | function | `float(float, int) -> string` | `reference/stdlib/fmt` | ✓ |
 | `std.fmt.pad_left` | function | `pad_left(string, int) -> string` | `reference/stdlib/fmt` | ✓ |
 | `std.fmt.pad_right` | function | `pad_right(string, int) -> string` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder` | class |  | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.clear` | method | `pub fn clear()` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.is_empty` | method | `pub fn is_empty() -> bool` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.len` | method | `pub fn len() -> int` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.push` | method | `pub fn push(text: string)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.push_bool` | method | `pub fn push_bool(value: bool)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.push_byte` | method | `pub fn push_byte(value: int)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.push_int` | method | `pub fn push_int(value: int)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.push_line` | method | `pub fn push_line(text: string)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.reserve` | method | `pub fn reserve(capacity: int)` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.to_bytes` | method | `pub fn to_bytes() -> Bytes` | `reference/stdlib/fmt` | ✓ |
+| `StringBuilder.to_string` | method | `pub fn to_string() -> string` | `reference/stdlib/fmt` | ✓ |
 
 ## std.fs
 
@@ -1170,8 +1251,31 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `angle_limit` | function | `pub fn angle_limit() -> float` | `reference/stdlib/math` | ✓ |
 | `clamp` | function | `pub fn clamp(value: int, low: int, high: int) -> int` | `reference/stdlib/math` | ✓ |
+| `cos` | function | `pub fn cos(radians: float) -> float` | `reference/stdlib/math` | ✓ |
+| `cos32` | function | `pub fn cos32(radians: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `exp` | function | `pub fn exp(power: float) -> float` | `reference/stdlib/math` | ✓ |
+| `exp32` | function | `pub fn exp32(power: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `fclamp` | function | `pub fn fclamp(value: float, low: float, high: float) -> float` | `reference/stdlib/math` | ✓ |
+| `fclamp32` | function | `pub fn fclamp32(value: f32, low: f32, high: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `fmax` | function | `pub fn fmax(left: float, right: float) -> float` | `reference/stdlib/math` | ✓ |
+| `fmax32` | function | `pub fn fmax32(left: f32, right: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `fmin` | function | `pub fn fmin(left: float, right: float) -> float` | `reference/stdlib/math` | ✓ |
+| `fmin32` | function | `pub fn fmin32(left: f32, right: f32) -> f32` | `reference/stdlib/math` | ✓ |
 | `gcd` | function | `pub fn gcd(a: int, b: int) -> int` | `reference/stdlib/math` | ✓ |
+| `hypot` | function | `pub fn hypot(x: float, y: float) -> float` | `reference/stdlib/math` | ✓ |
+| `hypot32` | function | `pub fn hypot32(x: f32, y: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `infinity` | function | `pub fn infinity() -> float` | `reference/stdlib/math` | ✓ |
+| `infinity32` | function | `pub fn infinity32() -> f32` | `reference/stdlib/math` | ✓ |
+| `is_finite` | function | `pub fn is_finite(value: float) -> bool` | `reference/stdlib/math` | ✓ |
+| `is_finite32` | function | `pub fn is_finite32(value: f32) -> bool` | `reference/stdlib/math` | ✓ |
+| `rem_euclid` | function | `pub fn rem_euclid(value: float, divisor: float) -> float` | `reference/stdlib/math` | ✓ |
+| `rem_euclid32` | function | `pub fn rem_euclid32(value: f32, divisor: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `sin` | function | `pub fn sin(radians: float) -> float` | `reference/stdlib/math` | ✓ |
+| `sin32` | function | `pub fn sin32(radians: f32) -> f32` | `reference/stdlib/math` | ✓ |
+| `sqrt` | function | `pub fn sqrt(value: float) -> float` | `reference/stdlib/math` | ✓ |
+| `sqrt32` | function | `pub fn sqrt32(value: f32) -> f32` | `reference/stdlib/math` | ✓ |
 
 ## std.net
 
@@ -1474,6 +1578,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `ReflectError` | class |  | `reference/stdlib/reflect` | ✓ |
 | `ReflectError.kind` | method | `pub fn kind() -> ErrorKind` | `reference/stdlib/reflect` | ✓ |
 | `ReflectError.message` | method | `pub fn message() -> string` | `reference/stdlib/reflect` | ✓ |
+| `ReflectError.to_error` | method | `pub fn to_error() -> Error` | `reference/stdlib/reflect` | ✓ |
 | `Type` | class |  | `reference/stdlib/reflect` | ✓ |
 | `Type.annotations` | method | `pub fn annotations() -> List<Annotation>` | `reference/stdlib/reflect` | ✓ |
 | `Type.base_type` | method | `pub fn base_type() -> Option<Type>` | `reference/stdlib/reflect` | ✓ |

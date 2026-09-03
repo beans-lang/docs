@@ -78,8 +78,53 @@ When you cast between integer types with `as`:
 - `f32` is a real 32-bit value. It rounds after every literal, cast, and
   arithmetic operation.
 - Float comparisons follow IEEE-754. `NaN` makes `==`, `<`, `<=`, `>`, and `>=`
-  return `false`, and makes `!=` return `true`.
+  return `false`, and makes `!=` return `true`. `-0.0 == 0.0` is `true`.
 - Casting `NaN` or infinity to `decimal` panics with `"decimal overflow"`.
+
+## How floats order
+
+The operators above are for arithmetic. Anything that **orders** or **keys** a
+float goes through the `Order` and `Eq` interfaces instead, and those use IEEE
+754 **totalOrder**:
+
+```text
+-NaN  <  -inf  <  ...  <  -0.0  <  +0.0  <  ...  <  +inf  <  +NaN
+```
+
+Two floats are equal under that order exactly when their bits are equal. So two
+`NaN`s are one value when their sign and payload match, and `-0.0` and `+0.0`
+are two different values — two map keys, and a sort puts `-0.0` first.
+
+This applies to `List.sort`, a `Map` or `Set` key, `SortedMap`,
+`PriorityQueue`, and to a struct that derives its `Eq` from a float field. It
+applies to `f32` the same way.
+
+The reason is that an IEEE comparison is not an order: `NaN` is unordered with
+everything, so `neither less nor greater` does not mean `equal`. A container
+built on it does not merely come back unsorted — it gives wrong answers. It is
+the same split Java draws between `a < b` on a `double` and `Double.compare`.
+
+**The operators are untouched by this.** `nan < 1.0` is still `false`,
+`nan == nan` is still `false`, `-0.0 == 0.0` is still `true`, and arithmetic is
+unchanged.
+
+```beans
+import std.io
+
+fn main() {
+    let zero: float = 0.0
+    let minus: float = -0.0
+    io.println(minus == zero)          // true  -- the operator is IEEE
+
+    var seen: Map<float, string> = {}
+    seen[zero] = "positive zero"
+    seen[minus] = "negative zero"
+    io.println(seen.len())             // 2     -- the key is totalOrder
+}
+```
+
+The compiler ships a worked example of the whole rule at
+[`examples/float_order.b`](https://github.com/beans-lang/beans/blob/main/examples/float_order.b).
 
 ## decimal
 
