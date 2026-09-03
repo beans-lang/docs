@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1370**
-- Symbols with an enforced signature: **956**
-- Builtin reference symbols: **323**
-- Standard-library symbols: **1033**
+- Total public symbols: **1437**
+- Symbols with an enforced signature: **1007**
+- Builtin reference symbols: **332**
+- Standard-library symbols: **1091**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -63,6 +63,13 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 |---|---|---|---|---|
 | `Box.get` | method | `Box<T>.get() -> T` | `reference/builtins/handles` | ✓ |
 | `Box.set` | method | `Box<T>.set(T)` | `reference/builtins/handles` | ✓ |
+
+## builtin Brew
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Brew.cancel` | method | `Brew<T>.cancel()` | `reference/builtins/handles` | ✓ |
+| `Brew.join` | method | `Brew<T>.join() -> Result<T>` | `reference/builtins/handles` | ✓ |
 
 ## builtin Bytes
 
@@ -155,6 +162,14 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `File.write_at` | method | `File.write_at(int, Bytes) -> Result<int>` | `reference/builtins/files` | ✓ |
 | `File.write_text` | method | `File.write_text(string) -> Result<int>` | `reference/builtins/files` | ✓ |
 | `File.write_text_at` | method | `File.write_text_at(int, string) -> Result<int>` | `reference/builtins/files` | ✓ |
+
+## builtin Gate
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Gate.is_open` | method | `Gate.is_open() -> bool` | `reference/builtins/handles` | ✓ |
+| `Gate.open` | method | `Gate.open()` | `reference/builtins/handles` | ✓ |
+| `Gate.wait` | method | `Gate.wait()` | `reference/builtins/handles` | ✓ |
 
 ## builtin List
 
@@ -334,6 +349,15 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `string.trim_end` | method | `string.trim_end() -> string` | `reference/builtins/string` | ✓ |
 | `string.trim_start` | method | `string.trim_start() -> string` | `reference/builtins/string` | ✓ |
 | `string.width` | method | `string.width() -> int` | `reference/builtins/string` | ✓ |
+
+## builtin TaskGroup
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `TaskGroup.cancel_all` | method | `TaskGroup<T>.cancel_all()` | `reference/builtins/handles` | ✓ |
+| `TaskGroup.next` | method | `TaskGroup<T>.next() -> Option<Result<T>>` | `reference/builtins/handles` | ✓ |
+| `TaskGroup.try_next` | method | `TaskGroup<T>.try_next() -> Option<Result<T>>` | `reference/builtins/handles` | ✓ |
+| `TaskGroup.wait_all` | method | `TaskGroup<T>.wait_all() -> Result<List<T>>` | `reference/builtins/handles` | ✓ |
 
 ## builtin Thread
 
@@ -566,6 +590,62 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 |---|---|---|---|---|
 | `std.c.errno` | function | `errno() -> i32` | `reference/stdlib/io-os` | ✓ |
 | `std.c.set_errno` | function | `set_errno(i32)` | `reference/stdlib/io-os` | ✓ |
+
+## std.calendar
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `DateTime` | struct |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.compare` | method | `pub fn compare(other: DateTime) -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.day` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.day_of_year` | method | `pub fn day_of_year() -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.epoch` | static | `pub static fn epoch() -> DateTime` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.epoch_day` | method | `pub fn epoch_day() -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.epoch_millis` | method | `pub fn epoch_millis() -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.epoch_nanos` | method | `pub fn epoch_nanos() -> Result<int>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.epoch_seconds` | method | `pub fn epoch_seconds() -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.from_epoch_millis` | static | `pub static fn from_epoch_millis(millis: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.from_epoch_nanos` | static | `pub static fn from_epoch_nanos(nanos: int) -> DateTime` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.from_epoch_seconds` | static | `pub static fn from_epoch_seconds(seconds: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.hour` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.is_after` | method | `pub fn is_after(other: DateTime) -> bool` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.is_before` | method | `pub fn is_before(other: DateTime) -> bool` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.millis_until` | method | `pub fn millis_until(other: DateTime) -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.minute` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.month` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.nanosecond` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.now` | static | `pub static fn now() -> DateTime` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.of` | static | `pub static fn of(year: int, month: int, day: int, hour: int, minute: int, second: int, nanosecond: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.of_date` | static | `pub static fn of_date(year: int, month: int, day: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.parse_http_date` | static | `pub static fn parse_http_date(text: string) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.parse_rfc3339` | static | `pub static fn parse_rfc3339(text: string) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.plus_days` | method | `pub fn plus_days(days: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.plus_hours` | method | `pub fn plus_hours(hours: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.plus_minutes` | method | `pub fn plus_minutes(minutes: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.plus_nanos` | method | `pub fn plus_nanos(nanos: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.plus_seconds` | method | `pub fn plus_seconds(seconds: int) -> Result<DateTime>` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.second` | field |  | `reference/stdlib/calendar` | ✓ |
+| `DateTime.seconds_until` | method | `pub fn seconds_until(other: DateTime) -> int` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.to_date_string` | method | `pub fn to_date_string() -> string` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.to_http_date` | method | `pub fn to_http_date() -> string` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.to_rfc3339` | method | `pub fn to_rfc3339() -> string` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.to_time_string` | method | `pub fn to_time_string() -> string` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.weekday` | method | `pub fn weekday() -> Weekday` | `reference/stdlib/calendar` | ✓ |
+| `DateTime.year` | field |  | `reference/stdlib/calendar` | ✓ |
+| `days_from_civil` | function | `pub fn days_from_civil(year: int, month: int, day: int) -> int` | `reference/stdlib/calendar` | ✓ |
+| `days_in_month` | function | `pub fn days_in_month(year: int, month: int) -> int` | `reference/stdlib/calendar` | ✓ |
+| `is_leap_year` | function | `pub fn is_leap_year(year: int) -> bool` | `reference/stdlib/calendar` | ✓ |
+| `Weekday` | enum |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.friday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.monday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.name` | method | `pub fn name() -> string` | `reference/stdlib/calendar` | ✓ |
+| `Weekday.number` | method | `pub fn number() -> int` | `reference/stdlib/calendar` | ✓ |
+| `Weekday.saturday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.short_name` | method | `pub fn short_name() -> string` | `reference/stdlib/calendar` | ✓ |
+| `Weekday.sunday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.thursday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.tuesday` | variant |  | `reference/stdlib/calendar` | ✓ |
+| `Weekday.wednesday` | variant |  | `reference/stdlib/calendar` | ✓ |
 
 ## std.collections
 
@@ -1125,6 +1205,14 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Stream.request` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.response` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.status` | method | `pub fn status() -> int` | `reference/stdlib/http` | ✓ |
+
+## std.http_tls
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `adopt` | function | `pub fn adopt(move stream: tls.TlsStream, server: bool) -> Result<http.Http2Transport<tls.TlsStream>>` | `reference/stdlib/http` | ✓ |
+| `connect` | function | `pub fn connect(host: string, port: int, ms: int = 30000) -> Result<http.Http2Transport<tls.TlsStream>>` | `reference/stdlib/http` | ✓ |
+| `connect_with_roots` | function | `pub fn connect_with_roots(address: string, server_name: string, port: int, extra_roots: Bytes, ms: int = 30000) -> Result<http.Http2Transport<tls.TlsStream>>` | `reference/stdlib/http` | ✓ |
 
 ## std.intrinsic
 
@@ -1738,3 +1826,12 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `WebSocketTransport.upgrade` | static | `pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.wrap` | static | `pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 | `wrap_websocket` | function | `pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+
+## std.websocket_tls
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `accept` | function | `pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `connect` | function | `pub fn connect(host: string, port: int, target: string, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `connect_with_roots` | function | `pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `wrap` | function | `pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |

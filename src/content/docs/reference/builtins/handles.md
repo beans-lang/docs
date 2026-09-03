@@ -4,7 +4,7 @@ description: The built-in handle types for owning, sharing, locking, and moving 
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 11 types · 24 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 11 types · 33 instance methods.
 <!-- coverage:summary:end -->
 
 An **ownership handle** is a builtin type that owns a value and controls how you

@@ -166,6 +166,7 @@ export default defineConfig({
             { label: 'std.collections', slug: 'reference/stdlib/collections' },
             { label: 'std.fmt', slug: 'reference/stdlib/fmt' },
             { label: 'std.math', slug: 'reference/stdlib/math' },
+            { label: 'std.calendar', slug: 'reference/stdlib/calendar' },
             { label: 'std.bytes', slug: 'reference/stdlib/bytes' },
             { label: 'std.path', slug: 'reference/stdlib/path' },
             { label: 'std.fs', slug: 'reference/stdlib/fs' },

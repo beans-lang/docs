@@ -53,6 +53,9 @@ const STDLIB_PAGES = {
   'std.poll': S('poll'),
   'std.signal': S('signal'),
   'std.dylib': S('dylib'),
+  'std.calendar': S('calendar'),
+  'std.http_tls': S('http'),
+  'std.websocket_tls': S('websocket'),
 };
 
 // builtin method receiver -> page
@@ -71,6 +74,9 @@ const BUILTIN_METHOD_PAGE = {
   Mutex: B('handles'),
   Channel: B('handles'),
   Thread: B('handles'),
+  Brew: B('handles'),
+  TaskGroup: B('handles'),
+  Gate: B('handles'),
   AtomicInt: B('handles'),
   Atomic: B('atomics'),
   Bytes: B('bytes'),
@@ -104,7 +110,14 @@ const BUILTIN_MODULE_PAGE = {
   'std.intrinsic': S('cpu-intrinsic'),
   'std.cpu': S('cpu-intrinsic'),
 };
-const INTERNAL_MODULES = new Set(['std.proc', 'std.sock', 'std.sig', 'std.dl', 'std.ready']);
+// The raw primitive layers a readable stdlib package wraps. Each is imported
+// by exactly one public package and never by a program, so the public wrapper
+// is the documented surface: std.process over std.proc, std.net over std.sock,
+// std.signal over std.sig, std.dylib over std.dl, std.poll over std.ready, and
+// std.reflect over std.reflection.
+const INTERNAL_MODULES = new Set([
+  'std.proc', 'std.sock', 'std.sig', 'std.dl', 'std.ready', 'std.reflection',
+]);
 
 // Where each builtin TYPE name from resolve.b's builtin_type() is documented.
 // Every registry type must have an entry here or buildInventory() throws, so a
@@ -179,7 +192,15 @@ export function buildInventory() {
   // 1. stdlib source packages (full signatures with parameter names)
   for (const pkg of extractStdlibSignatures()) {
     const page = STDLIB_PAGES[pkg.importPath];
-    if (!page) continue; // unknown/internal package
+    // A package with no mapping used to be skipped in silence, so four of them
+    // — std.calendar among them, 51 symbols — sat outside the coverage report
+    // while it read zero gaps. Refuse instead: a new stdlib package now has to
+    // be given a documentation home before this passes.
+    if (!page)
+      throw new Error(
+        `stdlib package "${pkg.importPath}" has no documentation page in STDLIB_PAGES `
+        + `(scripts/lib/inventory.mjs). Add a mapping and document it, or add it to `
+        + `INTERNAL_MODULES if it is a raw layer a public package wraps.`);
     const group = pkg.importPath;
     for (const fn of pkg.functions)
       add({ group, name: fn.name, page, kind: 'function', summaryKind: 'function', signature: fn.signature });
@@ -206,20 +227,30 @@ export function buildInventory() {
   const bi = extractBuiltinSignatures();
   for (const recv of Object.keys(bi.methods)) {
     const page = BUILTIN_METHOD_PAGE[recv];
-    if (!page) continue;
+    if (!page)
+      throw new Error(
+        `builtin receiver "${recv}" has no documentation page in BUILTIN_METHOD_PAGE `
+        + `(scripts/lib/inventory.mjs). Add a mapping and document its methods.`);
     for (const m of bi.methods[recv])
       add({ group: `builtin ${recv}`, name: `${recv}.${m.name}`, token: m.name, page, kind: 'method', summaryKind: 'method', signature: m.signature });
   }
   for (const cls of Object.keys(bi.statics)) {
     const page = BUILTIN_STATIC_PAGE[cls];
-    if (!page) continue;
+    if (!page)
+      throw new Error(
+        `builtin type "${cls}" has statics but no page in BUILTIN_STATIC_PAGE `
+        + `(scripts/lib/inventory.mjs). Add a mapping and document them.`);
     for (const s of bi.statics[cls])
       add({ group: `builtin ${cls}`, name: `${cls}.${s.name}`, token: s.name, page, kind: 'static', summaryKind: 'static', signature: s.signature });
   }
   for (const mod of Object.keys(bi.modules)) {
     if (INTERNAL_MODULES.has(mod)) continue;
     const page = BUILTIN_MODULE_PAGE[mod];
-    if (!page) continue;
+    if (!page)
+      throw new Error(
+        `builtin module "${mod}" has no documentation page in BUILTIN_MODULE_PAGE `
+        + `(scripts/lib/inventory.mjs). Add a mapping and document it, or add it to `
+        + `INTERNAL_MODULES if a public package wraps it.`);
     for (const f of bi.modules[mod])
       add({ group: mod, name: `${mod}.${f.name}`, token: f.name, page, kind: 'function', summaryKind: 'function', signature: f.signature });
   }

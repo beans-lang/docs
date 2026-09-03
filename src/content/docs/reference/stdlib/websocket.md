@@ -4,7 +4,7 @@ description: RFC 6455 WebSocket over std.http's upgrade, yielding whole messages
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 5 package functions · 3 types · 7 static methods · 18 instance methods · 5 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 9 package functions · 3 types · 7 static methods · 18 instance methods · 5 enum variants.
 <!-- coverage:summary:end -->
 
 `std.websocket` speaks RFC 6455 on top of [`std.http`](/reference/stdlib/http/)'s
@@ -167,6 +167,32 @@ let parser: http.RequestParser = new http.RequestParser()
 let live: websocket.Connection =
     websocket.Connection.accept(move stream, request)?
 ```
+
+## Secure WebSocket
+
+`std.websocket_tls` is a separate package so a plain `ws`-only binary links no
+TLS backend. Import it for `wss`.
+
+```beans
+import std.websocket_tls
+
+pub fn connect(host: string, port: int, target: string, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+```
+
+- `connect` does the TLS handshake and then the ordinary WebSocket HTTP
+  upgrade against `target` (the request path). `ms` is the connect timeout.
+- `connect_with_roots` splits what to dial (`address`) from what to verify and
+  send as SNI (`server_name`), and adds trust anchors in PEM form.
+- `wrap` runs the protocol over a `tls.TlsStream` you already hold; `accept`
+  is the server side, completing the upgrade for a `http.Request` you have
+  already read. `max_message` caps a single message, defaulting to 8 MiB.
+
+What comes back is the ordinary `WebSocketTransport`, so
+[WebSocketTransport](#websockettransport) and [Connection](#connection) above
+apply unchanged.
 
 ## Conformance
 

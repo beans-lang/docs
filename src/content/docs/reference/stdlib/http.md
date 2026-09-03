@@ -4,7 +4,7 @@ description: HTTP/1.1 and HTTP/2 — a strict push-based parser, a client, a ser
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 5 package functions · 18 types · 5 constructors · 8 static methods · 54 instance methods · 44 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 8 package functions · 18 types · 5 constructors · 8 static methods · 54 instance methods · 44 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.http` provides HTTP/1.1 parsing and exchanges over llhttp, and HTTP/2 over
@@ -419,6 +419,34 @@ for event: http.Http2Event in session.run()? {
     }
 }
 ```
+
+## HTTP/2 over TLS
+
+`std.http_tls` is a separate package so that importing plain `std.http` never
+pulls a TLS backend into an HTTP/1-only program. Import it only when you want
+`https`.
+
+```beans
+import std.http_tls
+
+pub fn connect(host: string, port: int, ms: int = 30000) -> Result<http.Http2Transport<tls.TlsStream>>
+pub fn connect_with_roots(address: string, server_name: string, port: int, extra_roots: Bytes, ms: int = 30000) -> Result<http.Http2Transport<tls.TlsStream>>
+pub fn adopt(move stream: tls.TlsStream, server: bool) -> Result<http.Http2Transport<tls.TlsStream>>
+```
+
+- `connect` dials the host, asks for HTTP/2 through ALPN, checks the peer
+  actually selected it, and hands the secure stream to the same HTTP/2
+  connection logic as plain TCP. `ms` is the connect timeout.
+- `connect_with_roots` is the same with the certificate verification spelled
+  out: `address` is what to dial, `server_name` what to verify and send as SNI
+  (they differ behind a proxy or an IP literal), and `extra_roots` is extra
+  trust anchors in PEM form on top of the system store.
+- `adopt` takes a `tls.TlsStream` you already have — one you accepted as a
+  server, say — and runs HTTP/2 over it. `server` says which side of the
+  connection you are.
+
+The transport you get back is the ordinary `Http2Transport`, so everything in
+[HTTP/2](#http2) above applies unchanged.
 
 ## Conformance
 
