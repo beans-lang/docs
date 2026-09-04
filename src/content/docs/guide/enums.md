@@ -63,12 +63,12 @@ enum Level {
 }
 ```
 
-## An enum is a tag, not an object
+## Enums do not inherit
 
-Methods do not make an enum an object. An enum **value** is its variant tag —
-there is no heap allocation behind it and no descriptor word in it. Dynamic
-dispatch works by reading a descriptor out of an object's first word, so an enum
-has nothing to read, and the checker says so at the declaration:
+An enum cannot implement an interface, and it cannot extend a class. Only a
+class does either: an interface call finds the method through a descriptor in
+the object's header, and no enum carries one — an `enum(u8)` has no header at
+all. The checker refuses both at the declaration.
 
 <!-- beans:expect-error -->
 ```beans
@@ -92,8 +92,6 @@ object with a descriptor and an enum value is a tag, so only a class can
 implement one
 ```
 
-`extends` is refused the same way, because an enum has no base type at all:
-
 <!-- beans:expect-error -->
 ```beans
 class Base {
@@ -110,41 +108,13 @@ enum Colour extends Base {
 error: enum 'Colour' cannot extend 'main.Base' — enums have no base type
 ```
 
-This is not a gap to work around: no value type is ever boxed into an interface
-value in Beans. `let x: Eq = 5` is refused, a [struct](/guide/structs/) naming a
-relation is refused, and `enum(u8)` below is committed to a bare one-byte tag
-with no room for a pointer. When you want one name to cover several shapes,
-[use a class](/guide/interfaces/); when you want one closed set of cases with
-behaviour attached, a method plus `match` — the `Level.label` above — is the
-enum's answer.
+Write the behaviour as a method instead — `Level.label` above is the whole
+pattern. When you need one name to cover shapes that differ in their fields,
+that is what [a class and an interface](/guide/interfaces/) are for.
 
-What you keep without asking: an enum satisfies the `Clone`, `Eq` and `Hash`
-bounds and works as a `Map` key, none of which it has to name.
-
-```beans
-import std.io
-
-enum Suit {
-    clubs
-    hearts
-}
-
-fn tally<K implements Eq & Hash>(keys: List<K>) -> int {
-    var seen: Map<K, int> = {}
-    for k: K in keys {
-        seen[k] = 1
-    }
-    return seen.len()
-}
-
-fn main() {
-    io.println("{tally([Suit.clubs, Suit.hearts, Suit.clubs])}")
-    io.println("{Suit.clubs == Suit.hearts}")
-}
-```
-
-An enum does **not** satisfy `Order`, so `sort`, `max` and `min` do not reach it
-and `a < b` on two enum values is refused.
+An enum still satisfies the `Clone`, `Eq` and `Hash` bounds and works as a `Map`
+key without naming any of them. It does not satisfy `Order`, so `sort`, `max`
+and `min` do not reach it.
 
 ## Fixed representation: `enum(u8)`
 
