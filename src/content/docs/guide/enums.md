@@ -68,44 +68,22 @@ enum Level {
 An enum cannot implement an interface, and it cannot extend a class. Only a
 class does either: an interface call finds the method through a descriptor in
 the object's header, and no enum carries one — an `enum(u8)` has no header at
-all. The checker refuses both at the declaration.
+all. The checker refuses both at the declaration:
 
 <!-- beans:expect-error -->
 ```beans
-interface Shows {
-    fn show_it() -> string
-}
+interface Shows { fn show_it() -> string }
+class Base { fn init() {} }
 
-enum Colour implements Shows {
-    red
-    green
-
-    fn show_it() -> string {
-        return "colour"
-    }
-}
+enum Colour implements Shows { red, green }
+enum Shade extends Base { light, dark }
 ```
 
 ```
 error: enum 'Colour' cannot implement 'main.Shows' — an interface value is an
 object with a descriptor and an enum value is a tag, so only a class can
 implement one
-```
-
-<!-- beans:expect-error -->
-```beans
-class Base {
-    fn init() {}
-}
-
-enum Colour extends Base {
-    red
-    green
-}
-```
-
-```
-error: enum 'Colour' cannot extend 'main.Base' — enums have no base type
+error: enum 'Shade' cannot extend 'main.Base' — enums have no base type
 ```
 
 Write the behaviour as a method instead — `Level.label` above is the whole
