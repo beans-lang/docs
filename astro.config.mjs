@@ -186,6 +186,7 @@ export default defineConfig({
             { label: 'std.process', slug: 'reference/stdlib/process' },
             { label: 'std.poll', slug: 'reference/stdlib/poll' },
             { label: 'std.signal', slug: 'reference/stdlib/signal' },
+            { label: 'std.term', slug: 'reference/stdlib/term' },
             { label: 'std.dylib', slug: 'reference/stdlib/dylib' },
             { label: 'std.thread', slug: 'reference/stdlib/thread' },
             { label: 'std.time and std.random', slug: 'reference/stdlib/time-random' },

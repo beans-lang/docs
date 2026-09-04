@@ -91,7 +91,7 @@ builds the next compiler.
 Pass options to the installer after `-s --`:
 
 ```bash
-curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.36 --prefix /opt/beans
+curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.37 --prefix /opt/beans
 ```
 
 Pick a specific build target with the `BEANS_TARGET` environment variable:

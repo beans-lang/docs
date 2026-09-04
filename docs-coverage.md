@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1437**
-- Symbols with an enforced signature: **1007**
+- Total public symbols: **1501**
+- Symbols with an enforced signature: **1045**
 - Builtin reference symbols: **332**
-- Standard-library symbols: **1091**
+- Standard-library symbols: **1155**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1737,6 +1737,75 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `std.target.pointer_size` | function | `pointer_size() -> int` | `reference/stdlib/target` | ✓ |
 | `std.target.stack_align` | function | `stack_align() -> int` | `reference/stdlib/target` | ✓ |
 | `std.target.triple` | function | `triple() -> string` | `reference/stdlib/target` | ✓ |
+
+## std.term
+
+| Symbol | Kind | Signature | Page | Documented |
+|---|---|---|---|---|
+| `Frame` | class |  | `reference/stdlib/term` | ✓ |
+| `Frame.bg` | method | `pub fn bg(color: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.bg_rgb` | method | `pub fn bg_rgb(r: int, g: int, b: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.bold` | method | `pub fn bold()` | `reference/stdlib/term` | ✓ |
+| `Frame.byte` | method | `pub fn byte(b: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.clear` | method | `pub fn clear()` | `reference/stdlib/term` | ✓ |
+| `Frame.clear_line` | method | `pub fn clear_line()` | `reference/stdlib/term` | ✓ |
+| `Frame.enter_alt_screen` | method | `pub fn enter_alt_screen()` | `reference/stdlib/term` | ✓ |
+| `Frame.fg` | method | `pub fn fg(color: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.fg_rgb` | method | `pub fn fg_rgb(r: int, g: int, b: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.flush` | method | `pub fn flush(fd: int) -> Result<int>` | `reference/stdlib/term` | ✓ |
+| `Frame.hide_cursor` | method | `pub fn hide_cursor()` | `reference/stdlib/term` | ✓ |
+| `Frame.home` | method | `pub fn home()` | `reference/stdlib/term` | ✓ |
+| `Frame.leave_alt_screen` | method | `pub fn leave_alt_screen()` | `reference/stdlib/term` | ✓ |
+| `Frame.len` | method | `pub fn len() -> int` | `reference/stdlib/term` | ✓ |
+| `Frame.move_to` | method | `pub fn move_to(row: int, col: int)` | `reference/stdlib/term` | ✓ |
+| `Frame.reset` | method | `pub fn reset()` | `reference/stdlib/term` | ✓ |
+| `Frame.reset_style` | method | `pub fn reset_style()` | `reference/stdlib/term` | ✓ |
+| `Frame.show_cursor` | method | `pub fn show_cursor()` | `reference/stdlib/term` | ✓ |
+| `Frame.text` | method | `pub fn text(s: string)` | `reference/stdlib/term` | ✓ |
+| `has_alt` | function | `pub fn has_alt(mods: int) -> bool` | `reference/stdlib/term` | ✓ |
+| `has_ctrl` | function | `pub fn has_ctrl(mods: int) -> bool` | `reference/stdlib/term` | ✓ |
+| `has_shift` | function | `pub fn has_shift(mods: int) -> bool` | `reference/stdlib/term` | ✓ |
+| `is_tty` | function | `pub fn is_tty(fd: int) -> bool` | `reference/stdlib/term` | ✓ |
+| `Key` | enum |  | `reference/stdlib/term` | ✓ |
+| `Key.alt` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.backspace` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.char` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.ctrl` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.delete` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.down` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.end` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.enter` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.escape` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.function` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.home` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.insert` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.left` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.page_down` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.page_up` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.right` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.tab` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.unknown` | variant |  | `reference/stdlib/term` | ✓ |
+| `Key.up` | variant |  | `reference/stdlib/term` | ✓ |
+| `KeyDecoder` | class |  | `reference/stdlib/term` | ✓ |
+| `KeyDecoder.feed` | method | `pub fn feed(data: Bytes)` | `reference/stdlib/term` | ✓ |
+| `KeyDecoder.flush` | method | `pub fn flush() -> Option<Key>` | `reference/stdlib/term` | ✓ |
+| `KeyDecoder.next` | method | `pub fn next() -> Option<Key>` | `reference/stdlib/term` | ✓ |
+| `KeyDecoder.pending` | method | `pub fn pending() -> int` | `reference/stdlib/term` | ✓ |
+| `mod_alt` | function | `pub fn mod_alt() -> int` | `reference/stdlib/term` | ✓ |
+| `mod_ctrl` | function | `pub fn mod_ctrl() -> int` | `reference/stdlib/term` | ✓ |
+| `mod_shift` | function | `pub fn mod_shift() -> int` | `reference/stdlib/term` | ✓ |
+| `new Frame` | constructor | `new Frame()` | `reference/stdlib/term` | ✓ |
+| `new KeyDecoder` | constructor | `new KeyDecoder()` | `reference/stdlib/term` | ✓ |
+| `new Size` | constructor | `new Size(rows: int, cols: int)` | `reference/stdlib/term` | ✓ |
+| `RawMode` | class |  | `reference/stdlib/term` | ✓ |
+| `RawMode.descriptor` | method | `pub fn descriptor() -> int` | `reference/stdlib/term` | ✓ |
+| `RawMode.enter` | static | `pub static fn enter(fd: int) -> Result<RawMode>` | `reference/stdlib/term` | ✓ |
+| `RawMode.restore` | method | `pub fn restore() -> Result<bool>` | `reference/stdlib/term` | ✓ |
+| `size` | function | `pub fn size(fd: int) -> Result<Size>` | `reference/stdlib/term` | ✓ |
+| `Size` | class |  | `reference/stdlib/term` | ✓ |
+| `Size.cols` | field |  | `reference/stdlib/term` | ✓ |
+| `Size.rows` | field |  | `reference/stdlib/term` | ✓ |
+| `write_all` | function | `pub fn write_all(fd: int, data: Bytes) -> Result<int>` | `reference/stdlib/term` | ✓ |
 
 ## std.thread function
 

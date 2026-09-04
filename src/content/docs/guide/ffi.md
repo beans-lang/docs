@@ -31,6 +31,47 @@ nested C-layout records and fixed arrays.
 
 `as "native_name"` gives an import a different C symbol name.
 
+## Variadic C functions
+
+A C function with a `...` tail — `ioctl`, `fcntl`, three-argument `open`,
+`printf` — declares its fixed head and then `...`:
+
+```beans
+extern "C" fn ioctl(fd: i32, request: u64, ...) -> i32
+extern "C" fn open(path: RawPtr<u8>, flags: i32, ...) -> i32
+```
+
+At least one fixed parameter is required, the same rule C has. There is no
+`va_list` in Beans, so a variadic declaration never has a body, and a
+`pub extern "C" fn` export is never variadic.
+
+**The tail belongs to the call, not to the declaration.** Each call site is
+classified by the target's own variadic rules, which is the point of the form:
+on Apple arm64 the fixed head stays in registers while the tail goes on the
+stack, so the same arguments passed through a fixed signature would land in the
+wrong places. Declaring `ioctl` with three fixed parameters is not the same
+function, and on that target it does not work.
+
+```beans
+import std.io
+
+// one declaration, as many signatures as it has call sites
+extern "C" fn printf(format: RawPtr<u8>, ...) -> i32
+
+fn main() {
+    var format: Bytes = Bytes.from("tail %d and %d\n")
+    format.push(0)   // C wants the NUL
+    unsafe {
+        // an empty tail would be a legal call too
+        let written: i32 = printf(format.as_ptr(), 42, 7)
+        io.println("printf wrote {written}")
+    }
+}
+```
+
+Arguments in the tail are promoted the way C promotes them: every integer
+narrower than `int` arrives as an `int`, and an `f32` arrives as an `f64`.
+
 ## Exporting a C function
 
 A `pub extern "C" fn` with a body exports its name for C callers. Only C-safe

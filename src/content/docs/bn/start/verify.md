@@ -13,11 +13,11 @@ beansc --version
 ```
 
 ```text
-beansc 0.1.36 (language 1.0, runtime ABI 14)
+beansc 0.1.37 (language 1.0, runtime ABI 15)
 ```
 
-এটা তিনটা জিনিস বলে: compiler-এর version (`0.1.36`), সে যে ভাষার contract মেনে চলে
-সেটা (`1.0`), আর runtime ABI (`14`)।
+এটা তিনটা জিনিস বলে: compiler-এর version (`0.1.37`), সে যে ভাষার contract মেনে চলে
+সেটা (`1.0`), আর runtime ABI (`15`)।
 
 ## ২. doctor চালানো
 

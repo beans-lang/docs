@@ -53,6 +53,7 @@ const STDLIB_PAGES = {
   'std.poll': S('poll'),
   'std.signal': S('signal'),
   'std.dylib': S('dylib'),
+  'std.term': S('term'),
   'std.calendar': S('calendar'),
   'std.http_tls': S('http'),
   'std.websocket_tls': S('websocket'),
