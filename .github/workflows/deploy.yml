@@ -103,6 +103,11 @@ jobs:
           BEANS_REPO: ${{ github.workspace }}/beans-src
         run: npm run coverage
 
+      - name: Spec section check
+        env:
+          BEANS_REPO: ${{ github.workspace }}/beans-src
+        run: npm run spec:sections
+
       - name: Link check
         run: npm run links
 

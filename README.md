@@ -27,10 +27,11 @@ npm run test:signatures  # unit-test the signature extractors and API counts
 npm run version:check    # release and runtime ABI facts match Beans VERSION
 npm run coverage         # every public symbol is documented with its exact signature
 npm run coverage:write   # regenerate the on-page API summary blocks from source
+npm run spec:sections    # every section of the language spec is described here
 npm run links            # every internal link resolves
 npm run examples         # compile the repo examples and marked doc blocks
-npm run check            # test:signatures + coverage + links + examples
-npm run verify           # test:signatures + coverage + links + build + examples (the full gate)
+npm run check            # test:signatures + coverage + spec:sections + links + examples
+npm run verify           # check + build (the full gate)
 ```
 
 The coverage and example checks read the Beans compiler as their source of
@@ -79,6 +80,30 @@ including every enforced signature, is written to
 [`docs-coverage.md`](docs-coverage.md) at the repository root. That report is a
 maintenance artifact and is deliberately kept out of the published site.
 
+## Language surface (maintenance)
+
+Coverage watches *symbols*. It does not watch *syntax*, and that is a real blind
+spot: `enum(u8)` shipped in v0.1.30 with a section of its own in
+`beans/spec/SYNTAX.md` and went five releases without a single mention on this
+site, while `npm run coverage` reported no gaps the whole time.
+
+`npm run spec:sections` closes it. The spec is the language's source of truth, so
+every `##`/`###` section of `spec/SYNTAX.md` must map to a page in
+`SPEC_SECTION_PAGE` (`scripts/check-spec-sections.mjs`), and two things are then
+checked:
+
+- **The mapping exists.** A new spec section fails the build naming itself. `null`
+  is a legitimate answer — it records that no page describes the section, and the
+  comment beside it says why.
+- **The page says something about it.** Every backticked name in the heading must
+  appear on the mapped page, and at least one backticked name from the section
+  body as well. A table alone would not have caught `enum(u8)`: it would have been
+  mapped to `guide/enums.md` on day one, pointing at a page that never mentioned
+  it.
+
+A row for a heading the spec no longer has is refused too, so the table cannot
+rot into fake coverage.
+
 ## Beans syntax highlighting
 
 Code blocks use the maintained Beans TextMate grammars copied from the
@@ -89,7 +114,8 @@ Code blocks use the maintained Beans TextMate grammars copied from the
 ## Deploy to GitHub Pages
 
 Deployment is automated by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
-it builds the site, runs the signature, coverage, link, and example checks, and
+it builds the site, runs the signature, coverage, spec-section, link, and example
+checks, and
 publishes `dist/` with the official GitHub Pages actions.
 
 ### One-time repository setting

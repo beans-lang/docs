@@ -6,6 +6,11 @@ description: Single class inheritance, multiple interfaces, abstract methods, ov
 A class has **one** base class and may implement **many** interfaces.
 Interfaces may extend other interfaces.
 
+**Only a class does either.** An interface value is dispatched by reading a
+descriptor out of the object's first word, and only a class has one, so a
+[struct](/guide/structs/) or an [enum](/guide/enums/) naming `extends` or
+`implements` is refused at the declaration.
+
 ```beans
 interface Shape {
     fn area() -> f64

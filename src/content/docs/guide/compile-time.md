@@ -26,12 +26,14 @@ let at: int    = offset_of(Packet, count)
   `beansc build --target X` reports X's layout, not the host's.
 - Supported types: integers, floats, `bool`, `decimal`, `string`, `RawPtr<T>`,
   `Slice<T>`, SIMD values, fixed arrays (nested included), `struct` and
-  `extern "C"` struct/union, and class or interface references (a reference is
-  one pointer).
+  `extern "C"` struct/union, class or interface references (a reference is
+  one pointer), and [`enum(u8)`](/guide/enums/) declarations (one byte,
+  byte-aligned).
 - Rejected, with a specific message: a type parameter (`size_of(T)` inside a
-  generic body), and `Option`/`Result`/user enums. Those pick between a null
-  niche, an inline aggregate, and a boxed form depending on payload, so there is
-  no single number to report.
+  generic body), and `Option`/`Result`/user enums without a declared
+  representation. Those pick between a null niche, an inline aggregate, and a
+  boxed form depending on payload, so there is no single number to report. A
+  payload-free enum opts out of that rejection by declaring `enum(u8)`.
 - `offset_of` needs a `struct`/`union` and a real field name.
 
 For `extern "C"` records these numbers match C's `sizeof`/`alignof`/`offsetof`,
