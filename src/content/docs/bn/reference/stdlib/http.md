@@ -248,8 +248,12 @@ pub class ServedRequest {
 
 client পরিষ্কারভাবে শেষ করলে — অর্থাৎ দুই message-এর মাঝে connection বন্ধ করলে — `read_request` `ok(none)` দেয়। pipeline করা request সারিতে রেখে একটা একটা করে দেওয়া হয়। concurrency আপনার সিদ্ধান্ত: এক thread-এ accept করে connection-প্রতি spawn করুন, বা test-এ single-threaded চালান।
 
-`bind_reuse_port` shared port-এ independent accept loop বানায়। macOS আর Linux
-নতুন connection ভাগ করে দেয়; Windows `unsupported` ফেরত দেয়।
+`bind_reuse_port` shared port-এ independent accept loop বানায়। worker-প্রতি একটা
+listener Linux-এ কাজ ভাগ করে, কারণ kernel প্রতিটা connection listening socket-গুলোর
+মধ্যে hash করে। macOS-এ করে না — সবার শেষে যে socket bind করে সে-ই সব connection
+পায়, বাকিরা বসে থাকে; সেখানে একটা listener-এ accept করে connection-গুলো worker-দের
+দিন। Windows `unsupported` ফেরত দেয়। পুরো নিয়মটা
+`net.TcpListener.bind_reuse_port`-এ আছে।
 
 ```beans
 let server: http.Server = http.Server.bind("127.0.0.1", 0)?

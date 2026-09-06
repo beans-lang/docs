@@ -124,9 +124,12 @@ let second: net.TcpListener =
     net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
 ```
 
-macOS and Linux distribute new connections between the listeners. Windows
-returns kind `unsupported`. `http.Server.bind_reuse_port` exposes the same
-shape for HTTP/1.1 servers.
+Linux distributes new connections between the listeners, hashing each one's
+four-tuple across the listening sockets. macOS does not: the last listener to
+bind receives every connection and the others sit idle, so this is not a way to
+use more than one core there — accept on a single listener and deal the streams
+out to workers instead. Windows returns kind `unsupported`.
+`http.Server.bind_reuse_port` exposes the same shape for HTTP/1.1 servers.
 
 ## UDP datagrams
 

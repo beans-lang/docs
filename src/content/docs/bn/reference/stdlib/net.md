@@ -169,8 +169,14 @@ pub fn poll_handle() -> int
 ```
 
 - `bind` 128-এর backlog ব্যবহার করে; `bind_with_backlog` দিয়ে accept-queue-র depth নিজে ঠিক করা যায়।
-- `bind_reuse_port` দিয়ে আলাদা listener একই port share করে; macOS আর Linux নতুন
-  connection ভাগ করে দেয়। Windows `unsupported` ফেরত দেয়।
+- `bind_reuse_port` দিয়ে আলাদা listener একই port share করে। ভাগ হবে কি না সেটা
+  kernel-এর সিদ্ধান্ত, এই call-এর নয়। Linux প্রতিটা connection-এর four-tuple hash
+  করে listening socket-গুলোর মধ্যে ছড়ায়, তাই N-টা listener সত্যিই N ভাগ কাজ পায়।
+  macOS একদমই ভাগ করে না — সবার শেষে যে socket bind করে সে-ই সব connection পায়,
+  বাকিরা বসে থাকে; এটা BSD-র আচরণ, আর FreeBSD-র `SO_REUSEPORT_LB`-এর কোনো সমতুল্য
+  Darwin-এ নেই। তাই Linux-এ এটা বেশি core ব্যবহারের উপায়, আর সব জায়গাতেই
+  connection না ফেলে port হাতবদলের উপায়; macOS-এ একটা listener-এ accept করে
+  stream-গুলো worker-দের মধ্যে বিলি করুন। Windows `unsupported` ফেরত দেয়।
 - port `0` দিলে system একটা খালি port দিয়ে দেয়। `port()` দিয়ে সেটা পড়ে নেওয়া যায় — একটা test এভাবেই কোনো নম্বর আন্দাজ না করে bind করে।
 - `accept` connection আসা পর্যন্ত block করে। `accept_timeout(0)` হলো একটা non-blocking check; positive timeout শেষ হয়ে গেলে `timeout` kind।
 - `try_accept` অপেক্ষা না করে একটা connection নেয়: `ok(none)` মানে accept queue

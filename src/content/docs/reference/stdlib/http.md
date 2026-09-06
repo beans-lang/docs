@@ -290,9 +290,12 @@ connection closed between messages. Pipelined requests are queued and handed out
 one at a time. Concurrency is your decision: accept on one thread and spawn per
 connection, or run single-threaded in a test.
 
-`bind_reuse_port` creates an independent accept loop on a shared port. Start one
-listener per worker and let macOS or Linux distribute new connections. Windows
-returns kind `unsupported`.
+`bind_reuse_port` creates an independent accept loop on a shared port. One
+listener per worker spreads load on Linux, where the kernel hashes each
+connection across the listening sockets. It does not on macOS, where the last
+socket to bind receives every connection and the rest stay idle — there, accept
+on one listener and hand the connections to workers. Windows returns kind
+`unsupported`. `net.TcpListener.bind_reuse_port` has the full rule.
 
 ```beans
 let server: http.Server = http.Server.bind("127.0.0.1", 0)?

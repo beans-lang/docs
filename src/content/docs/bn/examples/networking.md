@@ -123,9 +123,11 @@ let second: net.TcpListener =
     net.TcpListener.bind_reuse_port("127.0.0.1", 8080)?
 ```
 
-macOS আর Linux নতুন connection listener-গুলোর মধ্যে ভাগ করে। Windows
-`unsupported` দেয়। HTTP server-এর জন্য একই shape হলো
-`http.Server.bind_reuse_port`।
+Linux নতুন connection listener-গুলোর মধ্যে ভাগ করে, প্রতিটার four-tuple hash করে।
+macOS করে না: সবার শেষে যে listener bind করে সে-ই সব connection পায়, বাকিরা বসে
+থাকে — তাই ওখানে এটা একাধিক core ব্যবহারের উপায় নয়; একটা listener-এ accept করে
+stream-গুলো worker-দের মধ্যে বিলি করুন। Windows `unsupported` দেয়। HTTP server-এর
+জন্য একই shape হলো `http.Server.bind_reuse_port`।
 
 ## UDP datagram
 

@@ -195,9 +195,16 @@ pub fn poll_handle() -> int
 ```
 
 - `bind` uses a backlog of 128; `bind_with_backlog` sets the accept-queue depth.
-- `bind_reuse_port` lets independent listeners share one port, and the OS spreads
-  new connections between them. It works on macOS and Linux. Windows returns
-  kind `unsupported`. The `_with_backlog` form also sets the queue depth.
+- `bind_reuse_port` lets independent listeners share one port. Whether that
+  spreads load is the kernel's decision, not the call's. Linux hashes each
+  connection's four-tuple across the listening sockets, so N listeners serve N
+  shares. macOS does not balance at all — the last socket to bind receives every
+  connection and the rest stay idle, which is BSD behaviour, and Darwin has no
+  equivalent of FreeBSD's `SO_REUSEPORT_LB`. Use it for more cores on Linux, and
+  for handing a port over without dropping connections anywhere; on macOS spread
+  work by accepting on one listener and dealing the streams out to workers.
+  Windows returns kind `unsupported`. The `_with_backlog` form also sets the
+  queue depth.
 - Port `0` asks the system for a free port. Read it back with `port()`, which is
   how a test binds without guessing a number.
 - `accept` blocks until a connection arrives. `accept_timeout(0)` is a
