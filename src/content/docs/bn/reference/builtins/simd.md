@@ -83,6 +83,11 @@ true/false)। mask দিয়ে যা করা যায়:
 `[T; N]` হলো `T` type-এর `N`টা item-এর একটা fixed inline array, যেখানে
 `1 <= N <= 4096`। `List`-এর মতো এটা কোনো handle না: এটা value ধরে copy হয়।
 
+`N` একটা integer literal — decimal, hex, binary, digit separator সবই চলে —
+কিংবা এমন একটা module constant যেটা ওই সীমার ভেতরের integer-এ fold হয়, তাই
+`const LIMIT: int = 128` লিখলে `[int; LIMIT]` লেখা যায়। তবে `const` কোনো
+parameter default হতে পারে না; ওটা আলাদা stage-এ পড়া হয়।
+
 - Indexing checked (সীমার বাইরে হলে panic করে)।
 - binding `var` হলে একটা element assign করা যায়।
 - `array.len() -> int` `N` দেয়।

@@ -63,7 +63,10 @@ allocation-টা জীবিত রাখতে হবে, আর `free`-এ�
 ## Fixed array
 
 `[T; N]` হলো একটা fixed-size inline array (`1 <= N <= 4096`), যার element
-হয় inline scalar, `RawPtr`, nested-array বা struct। raw pointer-এর উল্টো,
+হয় inline scalar, `RawPtr`, nested-array বা struct। `N` একটা integer literal —
+decimal, hex, binary, digit separator সবই চলে — কিংবা এমন একটা module constant
+যেটা ওই সীমার ভেতরের integer-এ fold হয়, তাই `const LIMIT: int = 128` লিখলে
+`[int; LIMIT]` লেখা যায়। raw pointer-এর উল্টো,
 fixed array **safe**: index check করা, `var` local-এ element assign করা,
 `len()`, equality আর `for` iteration — সবই কোনো `unsafe` ছাড়া। list-আকৃতির
 কোনো literal তার ঘোষিত জায়গা থেকেই fixed-array হিসেবে ধরা হয়:

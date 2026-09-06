@@ -203,6 +203,24 @@ class Conn {
 - An object that dies inside a reference cycle does not get its `deinit`.
   Declare the back edge as a `weak` field and there is no cycle to leak (see
   [Memory and ownership](/guide/memory/)).
+- **An object whose `init` has not returned does not run its `deinit`.** If the
+  initializer panics partway, the fields it did assign are still released, in
+  the ordinary order, but the body is skipped — so it is never handed a `self`
+  whose fields the initializer never reached. This covers a panic in the `init`
+  body, in a field's default expression, and in a base `init` reached through
+  `super.init`, and it applies to a `deinit` a class inherits as much as one it
+  declares.
+
+That last rule is about the one object under construction. Everything it had
+already built and stored dies normally, and a reference the initializer handed
+out — possible only once every field is assigned — keeps the object alive, so
+its eventual death is an ordinary one that does run `deinit`.
+
+If you relied on `deinit` running after a failed construction, to close a handle
+or unregister something the initializer had already taken, move that work out of
+the destructor. Acquire the resource through a named static returning
+`Result<T>` that validates before it calls `new`, so a failure never builds the
+object at all.
 
 ## Partial classes
 

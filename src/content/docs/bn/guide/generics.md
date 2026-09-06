@@ -106,6 +106,55 @@ Monomorphization `Tagged<int>` আর `Tagged<string>`-কে আলাদা in
 compiled method copy দেয়। static field শুধু non-generic class-এরই। একটা struct তবুও
 static method declare করতে পারে।
 
+## Inheritance
+
+একটা generic class অন্য যেকোনো class-এর মতোই inherit করে। সে একটা plain class
+extend করতে পারে, নিজের parameter-এ থাকা generic base extend করতে পারে, কিংবা
+concrete argument-এ pin করা base — আর একই সাথে extend আর implement দুটোই করতে
+পারে।
+
+```beans
+class Base<T> {
+    v: T
+    fn init(v: T) { self.v = v }
+    fn weight() -> int { return 1 }
+}
+
+class Sub<T> extends Base<T> {
+    fn init(v: T) { super.init(v) }
+    override fn weight() -> int { return 2 }
+}
+
+class Leaf extends Sub<int> {
+    fn init() { super.init(9) }
+}
+```
+
+প্রতিটা instantiation নিজেই একটা আলাদা class। `Sub<int>` আর `Sub<string>` আলাদা
+field offset আর আলাদা method table পায়, তাই parameter-এ type করা field এক
+instantiation-এ traced reference আর অন্যটায় সাধারণ word। generic class যে
+override declare করে সেটা প্রতিটা receiver-এর জন্যই জেতে — base-এ লেখা receiver
+সহ। `Base<int>`-এ রাখা `Sub<int>` `2` দেয়, `Leaf`-ও `2` দেয়।
+
+chain-এর সীমা শুধু program কতগুলো class declare করেছে তাই। inheritance cycle
+declaration-এই refuse হয়; আর কিছু গভীরতা আটকায় না।
+
+### `as?` class-এর নাম নেয়, instantiation-এর নয়
+
+downcast run time-এ object-এর নিজের class দেখে ঠিক হয়, আর object তার type
+argument বয়ে নেয় না — তাই `as?` `Sub<int>` নাম নিতে পারে না। বদলে একটা
+non-generic class-এ downcast করুন; target-টাই runtime identity বয়, আর source
+generic type হতে পারে:
+
+```beans
+fn describe(b: Base<int>) -> string {
+    match b as? Leaf {
+        some(_) => { return "leaf" }
+        none => { return "not a leaf" }
+    }
+}
+```
+
 ## একটা পুরো উদাহরণ
 
 ```beans
