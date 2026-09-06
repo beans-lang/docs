@@ -82,6 +82,11 @@ A SIMD value cannot be a `Map` key: it has no `Hash`.
 `[T; N]` is a fixed inline array of `N` items of type `T`, where `1 <= N <= 4096`.
 Unlike a `List`, it is not a handle: it copies by value.
 
+`N` is an integer literal — decimal, hex, binary, digit separators and all — or a
+module constant that folds to an integer in that range, so `const LIMIT: int = 128`
+lets you write `[int; LIMIT]`. A `const` cannot be a parameter default, which is
+read at a different stage.
+
 - Indexing is checked (panics if out of range).
 - You can assign an element when the binding is `var`.
 - `array.len() -> int` gives `N`.

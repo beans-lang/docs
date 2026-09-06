@@ -91,7 +91,7 @@ compiler build করে।
 ইনস্টলারকে অপশন দিতে হলে `-s --`-এর পরে দিন:
 
 ```bash
-curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.37 --prefix /opt/beans
+curl -fsSL https://github.com/beans-lang/beans/releases/latest/download/beans-install.sh | sh -s -- --version 0.1.39 --prefix /opt/beans
 ```
 
 কোন build target হবে সেটা `BEANS_TARGET` environment variable দিয়ে ঠিক করুন:

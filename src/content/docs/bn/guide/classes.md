@@ -204,6 +204,22 @@ class Conn {
 - একটা reference cycle-এর ভেতর যে object মরে, তার `deinit` চলে না। back
   edge-টা `weak` field করে declare করুন — leak করার মতো cycle-ই থাকবে না
   (দেখুন [Memory and ownership](/bn/guide/memory/))।
+- **যে object-এর `init` return করেনি, তার `deinit` চলে না।** initializer মাঝপথে
+  panic করলে যে field গুলো assign হয়েছিল সেগুলো স্বাভাবিক ক্রমেই release হয়,
+  কিন্তু body টা skip হয় — তাই user code কখনো এমন `self` পায় না যার field-এ
+  initializer পৌঁছায়ইনি। এটা `init` body-র panic, field-এর default
+  expression-এর panic, আর `super.init`-এ পৌঁছানো base `init`-এর panic — তিনটাই
+  ঢাকে, আর class যে `deinit` inherit করে সেটাতেও একইভাবে খাটে।
+
+শেষ নিয়মটা শুধু construction-এ থাকা ওই একটা object নিয়ে। সে যা আগেই বানিয়ে
+রেখেছিল সব স্বাভাবিকভাবেই মরে, আর initializer যদি কোনো reference বাইরে দিয়ে
+থাকে — যা সব field assign হওয়ার পরেই সম্ভব — সেটা object-টাকে বাঁচিয়ে রাখে, তাই
+তার পরের মৃত্যুটা সাধারণ মৃত্যু, সেখানে `deinit` চলে।
+
+failed construction-এর পরে `deinit` চলবে ধরে নিয়ে যদি কোনো handle বন্ধ করা বা
+initializer-এর নেওয়া কিছু unregister করা হতো, সেই কাজটা destructor থেকে সরান।
+resource-টা এমন একটা named static দিয়ে নিন যেটা `Result<T>` ফেরত দেয় আর `new`
+ডাকার আগেই validate করে — তাহলে failure-এ object তৈরিই হয় না।
 
 ## Partial class
 

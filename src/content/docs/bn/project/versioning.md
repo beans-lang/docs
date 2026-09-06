@@ -12,14 +12,14 @@ Beans-এর version কত সেটা বলার একটাই জায�
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)।
 
 ```text
-compiler=0.1.37
+compiler=0.1.39
 language=1.0
-runtime_abi=15
+runtime_abi=16
 ```
 
-- **compiler**: compiler-এর version (`0.1.37`)।
+- **compiler**: compiler-এর version (`0.1.39`)।
 - **language**: language-এর version (`1.0`)।
-- **runtime_abi**: runtime ABI number (`15`)।
+- **runtime_abi**: runtime ABI number (`16`)।
 
 ওই file থেকেই `src/version.b` generate হয়। একটা test
 (`test/version.sh`) পুরানো একটা copy মানতে চায় না, তাই generate হওয়া Beans ফাইল
