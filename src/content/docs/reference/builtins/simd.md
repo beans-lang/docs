@@ -83,8 +83,8 @@ A SIMD value cannot be a `Map` key: it has no `Hash`.
 Unlike a `List`, it is not a handle: it copies by value.
 
 `N` is an integer literal — decimal, hex, binary, digit separators and all — or a
-module constant that folds to an integer in that range, so `const LIMIT: int = 128`
-lets you write `[int; LIMIT]`. A `const` cannot be a parameter default, which is
+[module constant](/guide/variables/#constants) that folds to an integer in that
+range, so `const LIMIT: int = 128` lets you write `[int; LIMIT]`. A `const` cannot be a parameter default, which is
 read at a different stage.
 
 - Indexing is checked (panics if out of range).

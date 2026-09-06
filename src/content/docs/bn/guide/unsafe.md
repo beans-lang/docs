@@ -64,7 +64,7 @@ allocation-টা জীবিত রাখতে হবে, আর `free`-এ�
 
 `[T; N]` হলো একটা fixed-size inline array (`1 <= N <= 4096`), যার element
 হয় inline scalar, `RawPtr`, nested-array বা struct। `N` একটা integer literal —
-decimal, hex, binary, digit separator সবই চলে — কিংবা এমন একটা module constant
+decimal, hex, binary, digit separator সবই চলে — কিংবা এমন একটা [module constant](/bn/guide/variables/#constant)
 যেটা ওই সীমার ভেতরের integer-এ fold হয়, তাই `const LIMIT: int = 128` লিখলে
 `[int; LIMIT]` লেখা যায়। raw pointer-এর উল্টো,
 fixed array **safe**: index check করা, `var` local-এ element assign করা,

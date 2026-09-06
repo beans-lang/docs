@@ -62,8 +62,9 @@ use the view after `free`.
 
 `[T; N]` is a fixed-size inline array (`1 <= N <= 4096`) of inline scalar,
 `RawPtr`, nested-array, or struct elements. `N` is an integer literal — decimal,
-hex, binary, digit separators and all — or a module constant that folds to an
-integer in that range, so `const LIMIT: int = 128` lets you write `[int; LIMIT]`.
+hex, binary, digit separators and all — or a [module constant](/guide/variables/#constants) that
+folds to an integer in that range, so `const LIMIT: int = 128` lets you write
+`[int; LIMIT]`.
 Unlike raw pointers, fixed arrays
 are **safe**: checked indexing, element assignment on `var` locals, `len()`,
 equality, and `for` iteration, all without `unsafe`. A list-shaped literal takes

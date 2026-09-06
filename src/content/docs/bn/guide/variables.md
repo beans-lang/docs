@@ -35,6 +35,98 @@ let counts: Map<string, int> = {"beans": 2}
 class কখনও field literal ব্যবহার করে না। এগুলো `new Class(...)` দিয়ে তৈরি করা হয়, যাতে
 প্রতিটা construction `init`-এর ভেতর দিয়ে যায়। দেখুন [Classes](/bn/guide/classes/)।
 
+## Constant
+
+`let` আর `var` statement — এরা function-এর ভেতরে থাকে। যে named value module-এর
+নিজের, সেটা একটা `const`।
+
+```beans
+const TERMIOS_BYTES: int = 128
+const O_NONBLOCK: i32 = 1 << 11
+const GREETING: string = "hello"
+pub const MAX_FRAME: int = 1 << 20      // pub, library package-এর জন্য
+```
+
+`const`-এর **কোনো storage নেই, কোনো address নেই**। checker initializer-টা একবার
+fold করে আর প্রতিটা use-এর জায়গায় ওই value-টাই বসায়, তাই একটা constant-এর খরচ
+ঠিক ততটুকুই যতটুকু ওখানে literal-টা লিখলে হতো — interpreter আর native build
+দুটোতেই। এতে assign করা যায় না।
+
+type লিখে দিতে হয়, আর সেটা number, `bool` বা `string`। composite constant নেই:
+storage না থাকলে list বা object-এর থাকার জায়গাই নেই।
+
+### initializer-এ কী আসতে পারে
+
+একটা constant expression: literal; অন্য constant — file-এর নিচে declare করা বা
+অন্য package-এর হলেও চলবে; unary `-`, `!`, `~`; আর binary operator
+`+ - * / % & | ^ << >> && || == != < <= > >=`।
+
+এর বাইরে কিছু হলে refuse হয়, আর message-এ বলা থাকে কোনটা constant ছিল না — একটা
+call, একটা local, একটা field read, একটা `as` cast, string-এর ভেতরের `{}` piece।
+`size_of`, `align_of` আর `offset_of`-ও constant expression **না**: এগুলোর উত্তর
+layout-এর পরে আসে, যা fold-এর চেয়ে পরে চলে। যে constant নিজের নাম নেয় — সরাসরি
+বা অন্য constant হয়ে — সেটাও refuse হয়।
+
+integer fold ঠিক সেটাই উত্তর দেয় যা run time-এ ওই expression দিত। প্রতিটা result
+নিজের type-এ narrow হয়, তাই `const X: i32 = 1 << 31` error না — ওটা `i32`-এর
+সবচেয়ে ছোট value। শূন্য দিয়ে division বা modulo, `0..bits-1`-এর বাইরের shift
+count, আর signed minimum-কে `-1` দিয়ে ভাগ — সবই refuse হয়।
+
+`u64` একমাত্র type যেটা fold পুরোটা বইতে পারে না। `2^63` বা তার বেশি একটা `u64`
+value declare করা আর অন্য constant-এর মতো ব্যবহার করা যায়, কিন্তু কোনো operator
+সেটা নিয়ে fold করতে পারে না — arithmetic, shift, comparison সবই refuse হয়, কারণ
+fold signed 64 bit-এ হিসাব করে আর নাহলে এমন একটা সংখ্যার জন্য signed order-এ
+উত্তর দিত যেটা program কখনো ধরেই না।
+
+float আর decimal শুধু literal আর unary minus fold করে, কোনো arithmetic না।
+source যে value লেখেনি, compiler সেটা নতুন করে round করবে না।
+
+### constant কোথায় দাঁড়াতে পারে
+
+যেখানে literal দাঁড়াতে পারে সেখানেই — match arm আর annotation argument সহ:
+
+```beans
+const LIMIT: int = 128
+
+match n {
+    LIMIT => { io.println("at the limit") }
+    _ => { io.println("under it") }
+}
+```
+
+এটা একটা **fixed array-এর মাপও** দিতে পারে, type লেখা হয় এমন প্রতিটা জায়গায় —
+local, field, parameter, result, আর অন্য fixed array-এর ভেতরে nested:
+
+```beans
+const SLOTS: int = 4
+
+struct Row { cells: [int; SLOTS] }
+
+fn widen(row: [int; SLOTS]) -> [[int; SLOTS]; 2] { return [row, row] }
+```
+
+`const` কোনো **parameter default হতে পারে না** — `fn f(n: int = 128)` লিখুন,
+`= LIMIT` না। default পড়া হয় যখন তাকে ধরে রাখা signature lower হচ্ছে, আর fold
+চলে ওই stage-এর শেষে, তাই জায়গা দুটো আলাদা। যেখানে লেখা হয়েছে সেখানেই refusal-টা
+এটা বলে দেয়।
+
+### অন্য package থেকে একটা constant নেওয়া
+
+`pub` করুন, তারপর অন্য যেকোনো নামের মতোই নিন: package দিয়ে qualified, কিংবা
+import-এ select করে।
+
+```beans
+import std.io
+import limits
+import {SLOTS} from limits
+
+let a: [int; limits.SLOTS] = [0, 0, 0, 0]
+let b: [int; SLOTS] = [0, 0, 0, 0]
+```
+
+`const` contextual। module-level declaration-এর শুরুতে `const <NAME>`-এ এটা
+declaration keyword, আর বাকি সব জায়গায় সাধারণ identifier।
+
 ## Move
 
 `move name` একটা local binding থেকে value-টা বের করে নেয়। পুরনো binding-টা আর পড়া
