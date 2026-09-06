@@ -35,6 +35,101 @@ let counts: Map<string, int> = {"beans": 2}
 Classes never use field literals. Build them with `new Class(...)` so every
 construction goes through `init`. See [Classes](/guide/classes/).
 
+## Constants
+
+`let` and `var` are statements: they live inside a function. A named value that
+belongs to the module is a `const`.
+
+```beans
+const TERMIOS_BYTES: int = 128
+const O_NONBLOCK: i32 = 1 << 11
+const GREETING: string = "hello"
+pub const MAX_FRAME: int = 1 << 20      // pub, for a library package
+```
+
+A `const` has **no storage and no address**. The checker folds the initializer
+once and writes that value at every use, so a constant costs exactly what typing
+the literal there would cost — in the interpreter and in a native build alike.
+It cannot be assigned to.
+
+The type is written out, and it is a number, a `bool` or a `string`. There is no
+composite constant: with no storage, there is nothing for a list or an object to
+live in.
+
+### What may appear in the initializer
+
+A constant expression: literals; other constants, including ones declared
+further down the file or in another package; unary `-`, `!`, `~`; and the binary
+operators `+ - * / % & | ^ << >> && || == != < <= > >=`.
+
+Anything else is refused with a message naming what was not constant — a call, a
+local, a field read, an `as` cast, a `{}` piece in a string. `size_of`,
+`align_of` and `offset_of` are **not** constant expressions either: they are
+answered after layout, which runs later than the fold. A constant that names
+itself, directly or through another constant, is refused.
+
+Integer folding answers exactly what the same expression answers at run time.
+Every result is narrowed to its own type, so `const X: i32 = 1 << 31` is `i32`'s
+smallest value rather than an error. Division or modulo by zero, a shift count
+outside `0..bits-1`, and dividing a signed minimum by `-1` are all refused.
+
+`u64` is the one type the fold cannot carry whole. A `u64` value at or above
+`2^63` may be declared and used like any other constant, but no operator may
+fold with one — arithmetic, shifts and comparisons alike are refused, because
+the fold computes in signed 64 bits and would otherwise answer with signed order
+for a number the program never holds.
+
+Floats and decimals fold a literal and a unary minus, and no arithmetic. The
+compiler will not re-round a value the source did not write.
+
+### Where a constant may stand
+
+Anywhere a literal may stand, which includes match arms and annotation
+arguments:
+
+```beans
+const LIMIT: int = 128
+
+match n {
+    LIMIT => { io.println("at the limit") }
+    _ => { io.println("under it") }
+}
+```
+
+It may also **size a fixed array**, in every position a type is written — a
+local, a field, a parameter, a result, and nested inside another fixed array:
+
+```beans
+const SLOTS: int = 4
+
+struct Row { cells: [int; SLOTS] }
+
+fn widen(row: [int; SLOTS]) -> [[int; SLOTS]; 2] { return [row, row] }
+```
+
+A `const` **cannot** be a parameter default — write `fn f(n: int = 128)`, not
+`= LIMIT`. A default is read while the signature holding it is lowered, and the
+fold runs at the end of that stage, so the two positions differ. The refusal
+says so where it is written.
+
+### Reaching one from another package
+
+Mark it `pub`, then reach it the way any name is reached: qualified through the
+package, or selected on the import.
+
+```beans
+import std.io
+import limits
+import {SLOTS} from limits
+
+let a: [int; limits.SLOTS] = [0, 0, 0, 0]
+let b: [int; SLOTS] = [0, 0, 0, 0]
+```
+
+`const` is contextual. It is a declaration keyword only in `const <NAME>` at the
+start of a module-level declaration, and stays an ordinary identifier everywhere
+else.
+
 ## Move
 
 `move name` moves the value out of a local binding. The old binding cannot be

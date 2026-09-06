@@ -84,7 +84,7 @@ true/false)। mask দিয়ে যা করা যায়:
 `1 <= N <= 4096`। `List`-এর মতো এটা কোনো handle না: এটা value ধরে copy হয়।
 
 `N` একটা integer literal — decimal, hex, binary, digit separator সবই চলে —
-কিংবা এমন একটা module constant যেটা ওই সীমার ভেতরের integer-এ fold হয়, তাই
+কিংবা এমন একটা [module constant](/bn/guide/variables/#constant) যেটা ওই সীমার ভেতরের integer-এ fold হয়, তাই
 `const LIMIT: int = 128` লিখলে `[int; LIMIT]` লেখা যায়। তবে `const` কোনো
 parameter default হতে পারে না; ওটা আলাদা stage-এ পড়া হয়।
 
