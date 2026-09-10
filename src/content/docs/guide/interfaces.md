@@ -143,6 +143,50 @@ match s as? Circle {
 }
 ```
 
+The target can be a **class or an interface**, and has to be narrower than
+what you are holding — a downcast goes from a parent to a child, not sideways
+between two unrelated types and not up. Asking for an interface asks whether
+the object's own class reaches it: through its own `implements`, through a
+base class that implements it, or through an interface that `extends` it.
+
+```beans
+package main
+
+import std.io
+
+interface Shape { fn area() -> int }
+interface Named extends Shape { fn label() -> string }
+
+class Tile implements Named {
+    fn init() {}
+    fn area() -> int { return 7 }
+    fn label() -> string { return "tile" }
+}
+
+class Blank implements Shape {
+    fn init() {}
+    fn area() -> int { return 0 }
+}
+
+fn describe(s: Shape) -> string {
+    match s as? Named {
+        some(n) => { return n.label() },
+        none    => { return "unnamed, area {s.area()}" },
+    }
+}
+
+fn main() {
+    io.println(describe(new Tile()))
+    io.println(describe(new Blank()))
+}
+```
+
+A downcast to an **instantiated** generic is refused, class or interface:
+`x as? Crate<int>` and `x as? Producer<int>` both are. The test reads the
+object's own class at run time and an object does not carry its type
+arguments, so `Crate<int>` and `Crate<string>` cannot be told apart there.
+Name a non-generic class that extends or implements it instead.
+
 Plain `as` is for explicit numeric casts and upcasts only.
 
 ## A complete example
