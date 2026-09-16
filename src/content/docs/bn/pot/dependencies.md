@@ -38,6 +38,29 @@ ref শুধু tag নয়; branch আর commit hash-ও চলে। lock 
 import path দিয়ে, যেমন `import github.com/acme/http`। import path কীভাবে resolve
 হয় সেটা দেখুন [Local package আর import](/bn/pot/local-packages/)-এ।
 
+## এক repository-তে একাধিক module থাকতে পারে
+
+একটা dependency-র ভেতরের যে subdirectory-র নিজের `beans.pot` আছে, সেটা নিজেই
+একটা module — উপরেরটার package নয়। একটা `require` row দুটোতেই পৌঁছায়:
+
+```beans-pot
+require github.com/acme/http v1.2
+```
+
+```beans
+import github.com/acme/http          // bind হয় `http`
+import github.com/acme/http/app      // bind হয় app/beans.pot যা declare করে
+```
+
+binding সবসময় ওই directory-র manifest যে নাম declare করে সেটাই, path-এর শেষ
+অংশ নয় — ওই directory-তে তাক করা একটা `require path` row যা দিত, হুবহু তাই।
+nested module-এর নিজের `require` row গুলোও পড়া হয়, তাই তার dependency-ও সাথে
+আসে।
+
+ওই row গুলো পুরো build-এর জন্য একবারে resolve হয়, module-প্রতি নয় — তাই graph-এর
+কোথাও একটা dependency দুই রকম ref-এ require করা থাকলে সেটা error। আপনার
+dependency যেটা আগে থেকেই নাম করেছে, সেটা নাম করলে একই ref-এ pin করুন।
+
 ## beans.lock ফাইলটা
 
 `beans.lock` বসে থাকে module রুটে, `beans.pot`-এর পাশেই। প্রতিটা dependency ঠিক
@@ -69,7 +92,9 @@ atomic ভাবে rename করে জায়গায় বসিয়ে
 
 ## lock কখন লেখা হয়
 
-- সাধারণ একটা build নিজে থেকেই `beans.lock` লিখে দেয়।
+build কখনো এটা লেখে না। একটা dependency পড়া মানে কোন version ব্যবহার হবে সেই
+সিদ্ধান্ত নয়, তাই যে command গুলো ওই সিদ্ধান্ত নেয় কেবল সেগুলোই ফাইলটা ছোঁয়:
+
 - [`beansc pot add`](/bn/pot/commands/) একটা dependency যোগ করে আর resolve করে।
 - [`beansc pot remove`](/bn/pot/commands/) একটা dependency মুছে lock tidy করে।
 - [`beansc pot tidy`](/bn/pot/commands/) কোড যে dependency গুলো সত্যিই ব্যবহার করে

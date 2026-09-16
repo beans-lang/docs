@@ -51,7 +51,7 @@ fn main() {
 | --- | --- |
 | `std.*` | ship করা standard library। |
 | `<module_name>` বা `<module_name>.<...>` | module রুটের নিচের একটা local package। |
-| `host/owner/repo[/sub...]` (প্রথম অংশে একটা `.` আছে, তিন বা তার বেশি অংশ) | cache-এ clone করা একটা [Git dependency](/bn/pot/dependencies/)। |
+| `host/owner/repo[/sub...]` (প্রথম অংশে একটা `.` আছে, তিন বা তার বেশি অংশ) | cache-এ clone করা একটা [Git dependency](/bn/pot/dependencies/)। যে `sub`-এর নিজের `beans.pot` আছে সেটা নিজেই একটা module, ওই manifest যে নাম দেয় সেই নামে। |
 | এর বাইরে যা কিছু | error। |
 
 কোনো import যদি এই গড়নগুলোর একটার সাথেও না মেলে, Beans সেটাকে unknown package

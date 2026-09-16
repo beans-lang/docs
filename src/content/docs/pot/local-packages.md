@@ -51,7 +51,7 @@ When you write `import X`, Beans decides what `X` is by its shape:
 | --- | --- |
 | `std.*` | The shipped standard library. |
 | `<module_name>` or `<module_name>.<...>` | A local package under your module root. |
-| `host/owner/repo[/sub...]` (first segment has a `.`, three or more segments) | A [Git dependency](/pot/dependencies/) cloned to the cache. |
+| `host/owner/repo[/sub...]` (first segment has a `.`, three or more segments) | A [Git dependency](/pot/dependencies/) cloned to the cache. A `sub` holding its own `beans.pot` is a module of its own, named by that manifest. |
 | anything else | An error. |
 
 When an import matches none of these shapes, Beans reports it as an unknown

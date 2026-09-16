@@ -4,7 +4,7 @@ description: Sendable TCP and UDP sockets, reusable read buffers, and address re
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 37 instance methods · 4 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 6 types · 1 constructor · 8 static methods · 39 instance methods · 4 public fields.
 <!-- coverage:summary:end -->
 
 `std.net` provides TCP and UDP sockets and name resolution. It is the readable
@@ -99,6 +99,8 @@ pub fn write_all(data: Bytes) -> Result<int>
 pub fn write_text(text: string) -> Result<int>
 pub fn write_from(data: Bytes, offset: int) -> Result<int>
 pub fn try_write_from(data: Bytes, offset: int) -> Result<Option<int>>
+pub fn write_vectored(head: Bytes, body: Bytes, offset: int) -> Result<int>
+pub fn write_vectored_text(head: Bytes, body: string, offset: int) -> Result<int>
 pub fn read(max: int) -> Result<Bytes>
 pub fn read_into(buffer: Bytes) -> Result<int>
 pub fn read_into_waiting(buffer: Bytes) -> Result<int>
@@ -119,6 +121,17 @@ pub fn poll_handle() -> int
 
 - `connect` waits as long as the OS does; `connect_timeout` gives up after `ms`
   milliseconds with kind `timeout`.
+- `write_vectored` sends two buffers as one write, without joining them first.
+  A response is a head you just framed and a body you already hold, and joining
+  them copies the body — on a one-megabyte response that copy costs more than
+  everything else the send does. `write_vectored_text` is the same for a body
+  you hold as a string.
+
+  `offset` counts into the **concatenation** of the two buffers, so a short
+  write resumes correctly whether it stopped inside the head or inside the body
+  and you never have to work out which. Pass `0` first, add what came back, and
+  call again until `offset` reaches `head.len() + body.len()`; at that point it
+  answers `ok(0)`.
 - `write` may send less than all of `data` and returns the count. `write_all`
   loops until everything is sent. `read` returns up to `max` bytes; an empty
   result means the peer closed. `read_exact` fails with kind `eof` if the peer

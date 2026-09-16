@@ -84,18 +84,31 @@ Use `--system` for a C library that is already installed and has a
 beansc pot add --system sqlite3
 ```
 
-Beans asks `pkg-config` for the library search paths and names, then writes a
-marked block like this:
+Beans asks `pkg-config` for the compile flags, library search paths and names,
+then writes a marked block like this:
 
 ```beans-pot
 # beansc:system sqlite3 begin
+cflags all "-I/opt/homebrew/opt/sqlite/include"
 link all library "sqlite3"
 # beansc:system sqlite3 end
 ```
 
+The `cflags` row carries `pkg-config --cflags`, one quoted word per flag, so an
+include path with a space in it survives. A library whose headers are off the
+default include path needs it: without one the library links and will not
+compile.
+
 Search rows are added too when the library is outside the default linker
 paths. The operating system package manager still owns the library. It is not
 downloaded by Beans and does not enter `beans.lock`.
+
+A platform selector scopes the block to the platform that needs it, instead of
+writing `all` and reaching every target:
+
+```bash
+beansc pot add --system gtk4 linux
+```
 
 ## `beansc pot tidy`
 
@@ -147,7 +160,12 @@ metadata with:
 
 ```bash
 beansc pot update --system sqlite3
+beansc pot update --system gtk4 linux
 ```
+
+This is how a manifest names a library whose include paths differ on every
+machine: they are generated on the machine that builds, between the markers,
+rather than written by hand — a hand-written list names one computer.
 
 ## `--locked` and `--offline`
 

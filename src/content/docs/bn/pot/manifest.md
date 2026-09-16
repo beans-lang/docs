@@ -62,9 +62,39 @@ branch, বা commit-এর মতো কোনো reference।
 require github.com/acme/http v1.2
 ```
 
-একই path দুইটা আলাদা ref-এ pin করলে সেটা error। এর পুরো বিস্তারিত, আর এটা
-`beans.lock`-এ কীভাবে যায় — সব আছে [Dependencies আর lock
-file](/bn/pot/dependencies/)-এ।
+একই path দুইটা আলাদা ref-এ pin করলে সেটা error — graph-এর যেকোনো জায়গায়, আপনার
+dependency যে ref pin করেছে সেটাসহ। এর পুরো বিস্তারিত, আর এটা `beans.lock`-এ
+কীভাবে যায় — সব আছে [Dependencies আর lock file](/bn/pot/dependencies/)-এ।
+
+### `require path "<directory>"` (যতবার খুশি)
+
+এই machine-এর আরেকটা module-এর নাম বলে, এই `beans.pot`-এর সাপেক্ষে। কিছু fetch
+হয় না, `beans.lock`-এও কিছু যায় না।
+
+```beans-pot
+require path "../shared"
+```
+
+এটা সেই module-গুলোর জন্য যারা একসাথে চলাফেরা করে — এক repository-র নিজের sibling
+module, বা আপনি যে checkout-টা এখন edit করছেন। প্রকাশিত package তার dependency
+Git থেকে require করে: কেউ fetch করা package-এর ভেতরে `require path` row মানে
+এমন একটা directory যেটা তার tree-তে নেই, আর ব্যর্থতাটা manifest error হিসেবে নয়,
+অচেনা package হিসেবে আসে।
+
+### `cflags <selector> "<flag>"` (যতবার খুশি)
+
+এই module-এর `csrc` row যে C source গুলো declare করে, তাদের compile flag দেয়।
+
+```beans-pot
+cflags linux "-I/usr/include/gtk-4.0"
+```
+
+- selector `link`-এর মতোই: `all`, একটা OS-এর নাম, বা একটা exact triple।
+- প্রতি flag-এ একটা quote করা word, যাতে space থাকা path-ও টিকে যায়।
+
+`beansc pot add --system <pkg> [<selector>]` এই row গুলো `pkg-config --cflags`
+থেকে নিজের marker-এর মাঝে লিখে দেয় — প্রতিটা machine-এ আলাদা হওয়া include path
+নাম করার একমাত্র সৎ উপায় এটাই।
 
 ### `link <selector> <search|library|framework> "<value>"` (যতবার খুশি)
 
@@ -100,7 +130,8 @@ package-এর নিজের একটা C source file declare করে। t
   দিয়েই resolve করে। Host target-এর `link ... search`, `library`, আর
   `framework` row-ও এই link-এ যায়, তাই run mode আর native build একই dependency
   resolve করে। selected link row cache key-এর অংশ।
-- quote করা `#include "..."` header প্রতিটা source-এর পাশেই resolve হয়।
+- quote করা `#include "..."` আর `#import "..."` header প্রতিটা source-এর পাশেই
+  resolve হয়, আর দুটোই object-এর cache key-তে গোনা হয়।
 - row গুলো local আর Git dependency থেকে ঠিক `link` row-এর মতোই propagate করে।
 
 ## একটু বড় একটা উদাহরণ

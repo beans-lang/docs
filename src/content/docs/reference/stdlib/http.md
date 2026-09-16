@@ -4,7 +4,7 @@ description: HTTP/1.1 and HTTP/2 — a strict push-based parser, a client, a ser
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 8 package functions · 18 types · 5 constructors · 8 static methods · 54 instance methods · 44 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 10 package functions · 19 types · 6 constructors · 8 static methods · 68 instance methods · 44 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.http` provides HTTP/1.1 parsing and exchanges over llhttp, and HTTP/2 over
@@ -269,6 +269,11 @@ pub fn accept_timeout(ms: int) -> Result<ServerConn>
 pub unique class ServerConn implements Send
 pub fn read_request() -> Result<Option<ServedRequest>>
 pub fn respond(status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>
+pub fn begin_chunked(status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>
+pub fn write_chunk(data: Bytes) -> Result<bool>
+pub fn finish_chunked() -> Result<bool>
+pub fn finish_chunked_trailers(trailers: Headers) -> Result<bool>
+pub fn is_streaming() -> bool
 pub fn set_max_body(limit: int)
 pub fn is_alive() -> bool
 pub fn close() -> Result<bool>
@@ -309,6 +314,40 @@ match conn.read_request()? {
 }
 ```
 
+### Streaming a response
+
+`respond` needs the whole body in hand, because the head carries its length.
+When you do not know that length yet — a file being generated, a query still
+running — begin a chunked response instead:
+
+```beans
+conn.begin_chunked(200, "OK", new http.Headers(), request.keep_alive)?
+for row: string in rows {
+    conn.write_chunk(Bytes.from(row))?
+}
+conn.finish_chunked()?
+```
+
+- `begin_chunked` sends a head framed `Transfer-Encoding: chunked`. The
+  connection then **belongs to that response** until it is finished: `respond`
+  and a second `begin_chunked` are refused, because a second response written
+  into the middle of a chunked body is read by the peer as that body's content.
+  A status that forbids a body (`1xx`, `204`, `304`) is refused outright.
+- `write_chunk` refuses an empty `data`. A zero-length chunk is not an empty
+  write — it *is* the terminator, so writing one mid-body would end the
+  response there and everything after it would be read as a trailer section,
+  silently, with a `200` already on the wire.
+- `finish_chunked` writes the terminator. `finish_chunked_trailers` carries
+  trailer fields with it, held to the head's CR/LF/NUL rule.
+- `is_streaming` answers whether a chunked response is open.
+- Closing without finishing leaves the body unterminated. That is the honest
+  report of a handler that failed after its status was already sent: the peer
+  sees a truncated message rather than a complete one that lost content.
+
+A response to a HEAD request is answered with `respond`, not begun here — a
+streamed HEAD response would either never be finished, or be finished with a
+terminating chunk, which is a body.
+
 ### Framing responses yourself
 
 A server that owns its sockets — nonblocking writes, an output queue per
@@ -326,6 +365,71 @@ holds — the form for a server that frames each response straight into its
 connection's output queue instead of staging it in a side buffer. Both apply
 the same header-safety validation as `respond`, and a validation failure
 leaves `target` untouched.
+
+```beans
+pub fn encode_response_head_append(target: Bytes, status: int, reason: string, headers: Headers, body_len: int, keep_alive: bool) -> Result<bool>
+pub fn encode_chunked_head_append(target: Bytes, status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>
+```
+
+`encode_response_head_append` writes the head alone, for `body_len` bytes you
+send yourself. That is what lets a head and a body go out as one vectored
+write ([`TcpStream.write_vectored`](/reference/stdlib/net/)) instead of being
+joined into one buffer first. It answers whether the status forbids a body, so
+a caller knows not to send one.
+
+`encode_chunked_head_append` is the same for a body whose length is not known
+yet. It writes the head and nothing else — for a relay forwarding an upstream's
+already-framed chunks. A caller framing its own chunks wants the writer below.
+
+### ChunkedResponseWriter
+
+Chunked framing is a *sequence*, and the mistakes that corrupt a streamed
+response are sequencing mistakes no single function can see. This class refuses
+each one at the call that makes it.
+
+```beans
+pub class ChunkedResponseWriter
+new ChunkedResponseWriter()
+pub fn head_append(target: Bytes, status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>
+pub fn chunk_prefix_append(target: Bytes, length: int) -> Result<bool>
+pub fn chunk_append(target: Bytes, data: Bytes) -> Result<bool>
+pub fn finish_append(target: Bytes) -> Result<bool>
+pub fn finish_trailers_append(target: Bytes, trailers: Headers) -> Result<bool>
+pub fn is_started() -> bool
+pub fn is_finished() -> bool
+pub fn chunk_count() -> int
+pub fn byte_count() -> int
+```
+
+Nothing here owns storage or a socket. Every method appends to a caller-owned
+`Bytes`, so one writer serves a buffer, an output queue or a vectored send, and
+a validation failure leaves `target` untouched. `ServerConn.begin_chunked` is
+this class over a connection.
+
+- `head_append` writes the head once; a second call is refused.
+- `chunk_append` frames a chunk and appends its payload — the copying form, for
+  a caller staging a whole response in one buffer.
+- `chunk_prefix_append` frames a chunk of `length` bytes **without taking the
+  bytes**: you send exactly `length` payload bytes immediately after what it
+  appended. That is the vectored form, so a megabyte chunk is read straight out
+  of your own buffer and never copied. The bytes on the wire are identical:
+  `chunk_append` is `chunk_prefix_append` followed by the payload.
+- A chunk before the head, a chunk after the terminator, and a zero-length
+  chunk are all refused.
+- `finish_append` answers `ok(true)` when it wrote the terminator and
+  `ok(false)` when the response was already finished — so a connection layer
+  can cover a handler that returned without finishing. Writing a *chunk* after
+  the terminator is still an error.
+- `chunk_count` and `byte_count` are what has been framed so far; `is_started`
+  and `is_finished` are where in the sequence the writer stands.
+
+The CRLF that closes a chunk is written at the **front** of the next size line
+rather than after the payload. That is what lets `chunk_prefix_append` frame a
+chunk whose payload never enters `target` at all.
+
+A HEAD response is the head alone: write it and stop, with no chunk and no
+terminator. Nothing here forces a terminator, because a HEAD response that
+carried one would carry a body.
 
 ## HTTP/2
 

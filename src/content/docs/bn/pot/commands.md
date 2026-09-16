@@ -75,18 +75,30 @@ git config --global url."git@github.com:".insteadOf "https://github.com/"
 beansc pot add --system sqlite3
 ```
 
-Beans `pkg-config` থেকে library search path আর library name নিয়ে `beans.pot`-এ
-চিহ্ন দেওয়া `link` block লেখে:
+Beans `pkg-config` থেকে compile flag, library search path আর library name নিয়ে
+`beans.pot`-এ চিহ্ন দেওয়া block লেখে:
 
 ```beans-pot
 # beansc:system sqlite3 begin
+cflags all "-I/opt/homebrew/opt/sqlite/include"
 link all library "sqlite3"
 # beansc:system sqlite3 end
 ```
 
+`cflags` row-এ `pkg-config --cflags` যায়, প্রতি flag-এ একটা quote করা word — যাতে
+space থাকা include path-ও টিকে যায়। যে library-র header default include path-এ
+নেই তার এটা লাগবেই: এই row ছাড়া library link হয় কিন্তু compile হয় না।
+
 Library default linker path-এর বাইরে থাকলে `search` row-ও যোগ হয়। Library-টা
 system package manager-এরই দায়িত্বে থাকে। Beans সেটা download করে না, আর
 `beans.lock`-এও যোগ করে না।
+
+platform selector দিলে block-টা কেবল যে platform-এর দরকার তার মধ্যেই থাকে,
+`all` লিখে সব target-এ পৌঁছে যায় না:
+
+```bash
+beansc pot add --system gtk4 linux
+```
 
 ## `beansc pot tidy`
 

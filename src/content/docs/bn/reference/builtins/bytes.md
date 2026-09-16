@@ -83,6 +83,9 @@ Bytes.get_uvarint(int) -> int
 Bytes.crc32(int, int) -> int
 ```
 
+`bytes[i]` এদের একটা নয়, আর কোনো backend emit করতে গিয়ে নয় — আপনি লেখামাত্রই
+সেটা refuse হয়: এক byte পড়তে `get(index)`, লিখতে `set(index, value)`।
+
 ### Size আর আকার
 
 - `len()` হলো byte-এর সংখ্যা।

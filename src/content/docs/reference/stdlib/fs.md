@@ -4,7 +4,7 @@ description: Read and write whole files in one call, as bytes or as text.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 7 package functions.
+**API summary** (generated from the Beans source by `npm run coverage`): 12 package functions.
 <!-- coverage:summary:end -->
 
 `std.fs` gives you one-call helpers to read or write a whole file. Under the hood
@@ -60,6 +60,49 @@ fn main() {
     fs.append("greeting.txt", "again\n").expect("append")
     let text: string = fs.read("greeting.txt").expect("read")
     io.print(text)                          // hello / again
+}
+```
+
+## Asking about a path
+
+```beans
+pub fn exists(path: string) -> bool
+pub fn size(path: string) -> Result<int>
+```
+
+- `exists` answers yes or no and never fails: a path you cannot reach is a path
+  that is not there, as far as this call is concerned.
+- `size` is the file's length in bytes without reading it.
+
+## Moving and removing
+
+```beans
+pub fn rename(from: string, to: string) -> Result<bool>
+pub fn remove(path: string) -> Result<bool>
+pub fn temp_dir() -> string
+```
+
+- `rename` moves a file, replacing `to` if it is there. Across filesystems the
+  platform may refuse it rather than copying, which is the honest answer: a
+  rename is atomic and a copy is not.
+- `remove` answers `ok(true)` when it deleted the file and **`ok(false)` when
+  there was nothing to delete**. Only a real failure — a permission, a directory
+  in the way — comes back as `err`, so "make sure this is gone" needs no
+  `exists` check first.
+- `temp_dir` is the directory the platform hands out for scratch files. It is a
+  path, not a file: create your own name under it, and clean up after yourself.
+
+```beans
+import std.io
+import std.fs
+import std.path
+
+fn main() {
+    let scratch: string = path.join(fs.temp_dir(), "notes.txt")
+    fs.write(scratch, "draft\n").expect("write")
+    io.println(fs.size(scratch).expect("size"))   // 6
+    fs.remove(scratch).expect("remove")
+    io.println(fs.exists(scratch))                // false
 }
 ```
 

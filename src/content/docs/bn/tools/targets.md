@@ -13,7 +13,7 @@ runtime option দিয়ে build-টাকে প্রয়োজনমত
 beansc build app.b --target x86_64-unknown-linux-gnu -o app
 ```
 
-মোট ৩০টা triple registered আছে। চেনা কিছু বিকল্প বানানও এদের কোনো একটার সাথে মিলে
+মোট ৩৪টা triple registered আছে। চেনা কিছু বিকল্প বানানও এদের কোনো একটার সাথে মিলে
 যায়, যেমন `aarch64-apple-darwin` আর `riscv64gc-unknown-linux-musl`।
 
 কোনো একটা target-এর তথ্য দেখতে চাইলে:
@@ -64,9 +64,18 @@ beansc build blink.b --target thumbv7em-none-eabi --runtime freestanding -o blin
 
 ## যেসব target সাপোর্ট করে
 
-registered ৩০টা triple-এর মধ্যে আছে:
+registered ৩৪টা triple-এর মধ্যে আছে:
 
 - **macOS:** `arm64-apple-darwin`।
+- **iOS:** `arm64-apple-ios` আর `arm64-apple-ios-sim`। একটা flag নয়, দুটো target —
+  কারণ এরা দুটো আলাদা SDK: device-এর binary simulator-এ load হয় না, আর ব্যর্থতাটা
+  build থেকে নয়, dyld থেকে আসে। SDK path আসে `xcrun --show-sdk-path` থেকে।
+- **Android:** `aarch64-linux-android` আর `x86_64-linux-android`। C driver-টা NDK-র
+  clang হতেই হবে — Android-এর compiler-rt builtins আর libunwind NDK-র সাথে আসে,
+  তাই host clang link-এ গিয়ে এমন একটা `libclang_rt.builtins.a` খোঁজে যেটা ওই
+  machine-এ কখনো ছিল না। `BEANS_ANDROID_CC`, নয়তো `ANDROID_NDK_HOME` /
+  `ANDROID_NDK_ROOT` সেট করুন। bionic-এ `shm_open` নেই, তাই ওখানে `std.fs`-এর
+  shared memory `unsupported` বলে।
 - **Linux GNU:** `x86_64`, `aarch64`, `riscv64`, `i686`, `armv7`, `arm`,
   `loongarch64`, `powerpc64le`, `powerpc`, `powerpc64`, `s390x`।
 - **Linux musl:** `x86_64`, `aarch64`, `riscv64`, `loongarch64`, `powerpc64le`,

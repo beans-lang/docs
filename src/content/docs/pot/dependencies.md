@@ -41,6 +41,29 @@ Once required, you import packages from it by their full import path, for
 example `import github.com/acme/http`. See [Local packages and
 imports](/pot/local-packages/) for how import paths resolve.
 
+## A repository may hold more than one module
+
+A subdirectory of a dependency that has its own `beans.pot` is its own module,
+not a package of the one above it. One `require` row reaches both:
+
+```beans-pot
+require github.com/acme/http v1.2
+```
+
+```beans
+import github.com/acme/http          // binds `http`
+import github.com/acme/http/app      // binds whatever app/beans.pot declares
+```
+
+The binding is always the name the manifest at that directory declares, never
+the last path segment — the same answer a `require path` row pointing at that
+directory would give. A nested module's own `require` rows are read too, so its
+dependencies come along.
+
+Those rows are resolved for the whole build, not per module, so a dependency
+required at two different refs anywhere in the graph is an error. When you name
+a dependency your dependency already names, pin it at the same ref.
+
 ## The beans.lock file
 
 `beans.lock` sits next to `beans.pot` at the module root. It records the exact
@@ -71,7 +94,9 @@ renames it into place, so you never see a half-written lock.
 
 ## When the lock is written
 
-- A normal build writes `beans.lock` automatically.
+A build never writes it. Reading a dependency is not a decision about which
+version to use, so only the commands that make that decision touch the file:
+
 - [`beansc pot add`](/pot/commands/) adds and resolves one dependency.
 - [`beansc pot remove`](/pot/commands/) removes one dependency and tidies the
   lock.

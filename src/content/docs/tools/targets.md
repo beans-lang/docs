@@ -13,7 +13,7 @@ the CPU, sysroot, and runtime options below.
 beansc build app.b --target x86_64-unknown-linux-gnu -o app
 ```
 
-Thirty triples are registered. Common alternate spellings normalize to a
+Thirty-four triples are registered. Common alternate spellings normalize to a
 supported one, for example `aarch64-apple-darwin` and
 `riscv64gc-unknown-linux-musl`.
 
@@ -65,9 +65,19 @@ beansc build blink.b --target thumbv7em-none-eabi --runtime freestanding -o blin
 
 ## Supported targets
 
-The 30 registered triples include:
+The 34 registered triples include:
 
 - **macOS:** `arm64-apple-darwin`.
+- **iOS:** `arm64-apple-ios` and `arm64-apple-ios-sim`. Two targets and not one
+  flag, because they are two SDKs: a device binary does not load in the
+  simulator, and the failure arrives from dyld rather than from the build. The
+  SDK path comes from `xcrun --show-sdk-path`.
+- **Android:** `aarch64-linux-android` and `x86_64-linux-android`. The C driver
+  must be the NDK's clang — Android's compiler-rt builtins and libunwind ship
+  with the NDK, so a host clang fails at link looking for a
+  `libclang_rt.builtins.a` that was never on the machine. Set
+  `BEANS_ANDROID_CC`, or `ANDROID_NDK_HOME` / `ANDROID_NDK_ROOT`. bionic has no
+  `shm_open`, so `std.fs`'s shared memory answers `unsupported` there.
 - **Linux GNU:** `x86_64`, `aarch64`, `riscv64`, `i686`, `armv7`, `arm`,
   `loongarch64`, `powerpc64le`, `powerpc`, `powerpc64`, `s390x`.
 - **Linux musl:** `x86_64`, `aarch64`, `riscv64`, `loongarch64`, `powerpc64le`,

@@ -81,6 +81,10 @@ Bytes.get_uvarint(int) -> int
 Bytes.crc32(int, int) -> int
 ```
 
+`bytes[i]` is not one of them, and is refused when you write it rather than
+when a backend tries to emit it: read one byte with `get(index)`, write one
+with `set(index, value)`.
+
 ### Size and shape
 
 - `len()` is the number of bytes.

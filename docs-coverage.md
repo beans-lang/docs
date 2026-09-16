@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1501**
-- Symbols with an enforced signature: **1045**
+- Total public symbols: **1538**
+- Symbols with an enforced signature: **1076**
 - Builtin reference symbols: **332**
-- Standard-library symbols: **1155**
+- Standard-library symbols: **1192**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -906,6 +906,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `DecodeOptions.max_depth` | field |  | `reference/stdlib/json` | ✓ |
 | `DecodeOptions.parse` | field |  | `reference/stdlib/json` | ✓ |
 | `encode` | function | `pub fn encode<T>(value: T) -> Result<string>` | `reference/stdlib/json` | ✓ |
+| `encode_into` | function | `pub fn encode_into<T>(value: T, target: Bytes) -> Result<int>` | `reference/stdlib/json` | ✓ |
 | `encode_pretty` | function | `pub fn encode_pretty<T>(value: T, indent: string) -> Result<string>` | `reference/stdlib/json` | ✓ |
 | `Entry` | struct |  | `reference/stdlib/json` | ✓ |
 | `Entry.key` | field |  | `reference/stdlib/json` | ✓ |
@@ -1049,8 +1050,13 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `append` | function | `pub fn append(path: string, data: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 | `append_bytes` | function | `pub fn append_bytes(path: string, data: Bytes) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 | `copy` | function | `pub fn copy(from: string, to: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
+| `exists` | function | `pub fn exists(path: string) -> bool` | `reference/stdlib/fs` | ✓ |
 | `read` | function | `pub fn read(path: string) -> Result<string>` | `reference/stdlib/fs` | ✓ |
 | `read_bytes` | function | `pub fn read_bytes(path: string) -> Result<Bytes>` | `reference/stdlib/fs` | ✓ |
+| `remove` | function | `pub fn remove(path: string) -> Result<bool>` | `reference/stdlib/fs` | ✓ |
+| `rename` | function | `pub fn rename(from: string, to: string) -> Result<bool>` | `reference/stdlib/fs` | ✓ |
+| `size` | function | `pub fn size(path: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
+| `temp_dir` | function | `pub fn temp_dir() -> string` | `reference/stdlib/fs` | ✓ |
 | `write` | function | `pub fn write(path: string, data: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 | `write_bytes` | function | `pub fn write_bytes(path: string, data: Bytes) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 
@@ -1059,6 +1065,16 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `adopt_http2` | function | `pub fn adopt_http2<T implements net.ByteStream>(move stream: T, server: bool) -> Result<Http2Transport<T>>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter` | class |  | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.byte_count` | method | `pub fn byte_count() -> int` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.chunk_append` | method | `pub fn chunk_append(target: Bytes, data: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.chunk_count` | method | `pub fn chunk_count() -> int` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.chunk_prefix_append` | method | `pub fn chunk_prefix_append(target: Bytes, length: int) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.finish_append` | method | `pub fn finish_append(target: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.finish_trailers_append` | method | `pub fn finish_trailers_append(target: Bytes, trailers: Headers) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.head_append` | method | `pub fn head_append(target: Bytes, status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.is_finished` | method | `pub fn is_finished() -> bool` | `reference/stdlib/http` | ✓ |
+| `ChunkedResponseWriter.is_started` | method | `pub fn is_started() -> bool` | `reference/stdlib/http` | ✓ |
 | `Client` | class |  | `reference/stdlib/http` | ✓ |
 | `Client.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Client.connect` | static | `pub static fn connect(host: string, port: int) -> Result<Client>` | `reference/stdlib/http` | ✓ |
@@ -1073,7 +1089,9 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `ClientResponse.keep_alive` | field |  | `reference/stdlib/http` | ✓ |
 | `ClientResponse.reason` | field |  | `reference/stdlib/http` | ✓ |
 | `ClientResponse.status` | field |  | `reference/stdlib/http` | ✓ |
+| `encode_chunked_head_append` | function | `pub fn encode_chunked_head_append(target: Bytes, status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `encode_response_append` | function | `pub fn encode_response_append(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `encode_response_head_append` | function | `pub fn encode_response_head_append(target: Bytes, status: int, reason: string, headers: Headers, body_len: int, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `encode_response_into` | function | `pub fn encode_response_into(target: Bytes, status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Field` | class |  | `reference/stdlib/http` | ✓ |
 | `field_is_safe` | function | `pub fn field_is_safe(text: string) -> bool` | `reference/stdlib/http` | ✓ |
@@ -1128,6 +1146,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Limits.max_header_bytes` | field |  | `reference/stdlib/http` | ✓ |
 | `Limits.max_header_count` | field |  | `reference/stdlib/http` | ✓ |
 | `Limits.max_target_bytes` | field |  | `reference/stdlib/http` | ✓ |
+| `new ChunkedResponseWriter` | constructor | `new ChunkedResponseWriter()` | `reference/stdlib/http` | ✓ |
 | `new Field` | constructor | `new Field(name: string, value: string)` | `reference/stdlib/http` | ✓ |
 | `new Headers` | constructor | `new Headers()` | `reference/stdlib/http` | ✓ |
 | `new Limits` | constructor | `new Limits()` | `reference/stdlib/http` | ✓ |
@@ -1191,11 +1210,16 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Server.port` | method | `pub fn port() -> Result<int>` | `reference/stdlib/http` | ✓ |
 | `Server.set_read_timeout` | method | `pub fn set_read_timeout(ms: int)` | `reference/stdlib/http` | ✓ |
 | `ServerConn` | class |  | `reference/stdlib/http` | ✓ |
+| `ServerConn.begin_chunked` | method | `pub fn begin_chunked(status: int, reason: string, headers: Headers, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `ServerConn.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ServerConn.finish_chunked` | method | `pub fn finish_chunked() -> Result<bool>` | `reference/stdlib/http` | ✓ |
+| `ServerConn.finish_chunked_trailers` | method | `pub fn finish_chunked_trailers(trailers: Headers) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `ServerConn.is_alive` | method | `pub fn is_alive() -> bool` | `reference/stdlib/http` | ✓ |
+| `ServerConn.is_streaming` | method | `pub fn is_streaming() -> bool` | `reference/stdlib/http` | ✓ |
 | `ServerConn.read_request` | method | `pub fn read_request() -> Result<Option<ServedRequest>>` | `reference/stdlib/http` | ✓ |
 | `ServerConn.respond` | method | `pub fn respond(status: int, reason: string, headers: Headers, body: Bytes, keep_alive: bool) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `ServerConn.set_max_body` | method | `pub fn set_max_body(limit: int)` | `reference/stdlib/http` | ✓ |
+| `ServerConn.write_chunk` | method | `pub fn write_chunk(data: Bytes) -> Result<bool>` | `reference/stdlib/http` | ✓ |
 | `Stream` | class |  | `reference/stdlib/http` | ✓ |
 | `Stream.body` | field |  | `reference/stdlib/http` | ✓ |
 | `Stream.complete` | field |  | `reference/stdlib/http` | ✓ |
@@ -1413,6 +1437,8 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `TcpStream.write` | method | `pub fn write(data: Bytes) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write_from` | method | `pub fn write_from(data: Bytes, offset: int) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `TcpStream.write_text` | method | `pub fn write_text(text: string) -> Result<int>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.write_vectored` | method | `pub fn write_vectored(head: Bytes, body: Bytes, offset: int) -> Result<int>` | `reference/stdlib/net` | ✓ |
+| `TcpStream.write_vectored_text` | method | `pub fn write_vectored_text(head: Bytes, body: string, offset: int) -> Result<int>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket` | class |  | `reference/stdlib/net` | ✓ |
 | `UdpSocket.bind` | static | `pub static fn bind(host: string, port: int) -> Result<UdpSocket>` | `reference/stdlib/net` | ✓ |
 | `UdpSocket.close` | method | `pub fn close() -> Result<bool>` | `reference/stdlib/net` | ✓ |
@@ -1857,14 +1883,16 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `accept_deflate_response` | function | `pub fn accept_deflate_response(value: string) -> Result<Deflate>` | `reference/stdlib/websocket` | ✓ |
 | `accept_for_key` | function | `pub fn accept_for_key(key: string) -> Result<string>` | `reference/stdlib/websocket` | ✓ |
-| `accept_websocket` | function | `pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `accept_websocket` | function | `pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 | `available` | function | `pub fn available() -> bool` | `reference/stdlib/websocket` | ✓ |
 | `Connection` | class |  | `reference/stdlib/websocket` | ✓ |
-| `Connection.accept` | static | `pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.accept` | static | `pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.close` | method | `pub fn close(code: int, reason: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
-| `Connection.connect` | static | `pub static fn connect(host: string, port: int, target: string) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
-| `Connection.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, target: string, ms: int) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.connect` | static | `pub static fn connect(host: string, port: int, target: string, compress: bool = false) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.connect_timeout` | static | `pub static fn connect_timeout(host: string, port: int, target: string, ms: int, compress: bool = false) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.deflate` | method | `pub fn deflate() -> Option<Deflate>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/websocket` | ✓ |
 | `Connection.peer_close_code` | method | `pub fn peer_close_code() -> int` | `reference/stdlib/websocket` | ✓ |
 | `Connection.ping` | method | `pub fn ping(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
@@ -1873,17 +1901,26 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Connection.receive` | method | `pub fn receive() -> Result<Option<Message>>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.send_binary` | method | `pub fn send_binary(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
 | `Connection.send_text` | method | `pub fn send_text(body: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
-| `Connection.wrap` | static | `pub static fn wrap(move stream: net.TcpStream, server: bool, max_message: int = 8388608) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Connection.wrap` | static | `pub static fn wrap(move stream: net.TcpStream, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<Connection>` | `reference/stdlib/websocket` | ✓ |
+| `Deflate` | struct |  | `reference/stdlib/websocket` | ✓ |
+| `deflate_agreement` | function | `pub fn deflate_agreement(agreed: Deflate) -> string` | `reference/stdlib/websocket` | ✓ |
+| `deflate_offer` | function | `pub fn deflate_offer() -> string` | `reference/stdlib/websocket` | ✓ |
+| `Deflate.client_max_window_bits` | field |  | `reference/stdlib/websocket` | ✓ |
+| `Deflate.client_no_context_takeover` | field |  | `reference/stdlib/websocket` | ✓ |
+| `Deflate.server_max_window_bits` | field |  | `reference/stdlib/websocket` | ✓ |
+| `Deflate.server_no_context_takeover` | field |  | `reference/stdlib/websocket` | ✓ |
 | `Message` | enum |  | `reference/stdlib/websocket` | ✓ |
 | `Message.binary` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.closed` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.ping` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.pong` | variant |  | `reference/stdlib/websocket` | ✓ |
 | `Message.text` | variant |  | `reference/stdlib/websocket` | ✓ |
-| `upgrade_websocket` | function | `pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `negotiate_deflate` | function | `pub fn negotiate_deflate(headers: http.Headers, prefer: Option<Deflate> = none) -> Option<Deflate>` | `reference/stdlib/websocket` | ✓ |
+| `upgrade_websocket` | function | `pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string, compress: bool = false) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport` | class |  | `reference/stdlib/websocket` | ✓ |
-| `WebSocketTransport.accept` | static | `pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.accept` | static | `pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.close` | method | `pub fn close(code: int, reason: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.deflate` | method | `pub fn deflate() -> Option<Deflate>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.is_open` | method | `pub fn is_open() -> bool` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.peer_close_code` | method | `pub fn peer_close_code() -> int` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.ping` | method | `pub fn ping(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
@@ -1892,15 +1929,15 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `WebSocketTransport.receive` | method | `pub fn receive() -> Result<Option<Message>>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.send_binary` | method | `pub fn send_binary(body: Bytes) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
 | `WebSocketTransport.send_text` | method | `pub fn send_text(body: string) -> Result<bool>` | `reference/stdlib/websocket` | ✓ |
-| `WebSocketTransport.upgrade` | static | `pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
-| `WebSocketTransport.wrap` | static | `pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
-| `wrap_websocket` | function | `pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.upgrade` | static | `pub static fn upgrade(move socket: T, host: string, port: int, target: string, compress: bool = false) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `WebSocketTransport.wrap` | static | `pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
+| `wrap_websocket` | function | `pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<WebSocketTransport<T>>` | `reference/stdlib/websocket` | ✓ |
 
 ## std.websocket_tls
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
-| `accept` | function | `pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
-| `connect` | function | `pub fn connect(host: string, port: int, target: string, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
-| `connect_with_roots` | function | `pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
-| `wrap` | function | `pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `accept` | function | `pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<websocket.Deflate> = none) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `connect` | function | `pub fn connect(host: string, port: int, target: string, ms: int = 30000, compress: bool = false) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `connect_with_roots` | function | `pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000, compress: bool = false) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |
+| `wrap` | function | `pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608, agreed: Option<websocket.Deflate> = none) -> Result<websocket.WebSocketTransport<tls.TlsStream>>` | `reference/stdlib/websocket` | ✓ |

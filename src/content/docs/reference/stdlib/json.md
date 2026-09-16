@@ -4,7 +4,7 @@ description: Parse JSON as a DOM, decode it into structs, or encode structs as J
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 12 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 13 package functions · 7 types · 8 static methods · 15 instance methods · 7 public fields · 13 enum variants.
 <!-- coverage:summary:end -->
 
 `std.encoding.json` reads and writes JSON. Use `parse` for a DOM-style `Value`,
@@ -58,6 +58,7 @@ pub fn decode_bytes_in_place<T>(move data: Bytes) -> Result<T>
 pub fn decode_with_options<T>(text: string, options: DecodeOptions) -> Result<T>
 pub fn encode<T>(value: T) -> Result<string>
 pub fn encode_pretty<T>(value: T, indent: string) -> Result<string>
+pub fn encode_into<T>(value: T, target: Bytes) -> Result<int>
 ```
 
 Both directions accept a struct root or `List<Struct>`. Fields may contain
@@ -123,7 +124,16 @@ The defaults are strict parsing and a maximum depth of 128.
 
 `encode` writes compact JSON. `encode_pretty` accepts exactly two or four
 spaces for `indent`. `Option.none` becomes JSON `null`; NaN and infinity are
-errors. Printing stays explicit:
+errors.
+
+`encode_into` appends the same compact JSON to the end of a `Bytes` you already
+own and answers how many bytes it added. It is there for the case `encode`
+cannot serve without a copy: a response body being assembled in a buffer, where
+`encode` would allocate a string only for you to append it and drop it. The
+target keeps whatever was in it. Native builds only — under `beansc run` it
+answers `err` of kind `unsupported` rather than a different set of bytes.
+
+Printing stays explicit:
 
 <!-- beans:compile -->
 ```beans

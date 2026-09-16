@@ -62,9 +62,39 @@ or commit-like reference.
 require github.com/acme/http v1.2
 ```
 
-Requiring the same path at two different refs is an error. Full detail, and how
-this feeds `beans.lock`, is on [Dependencies and the lock
-file](/pot/dependencies/).
+Requiring the same path at two different refs is an error — anywhere in the
+graph, including a ref your dependency pinned. Full detail, and how this feeds
+`beans.lock`, is on [Dependencies and the lock file](/pot/dependencies/).
+
+### `require path "<directory>"` (repeatable)
+
+Names another module on this machine, relative to this `beans.pot`. Nothing is
+fetched and nothing enters `beans.lock`.
+
+```beans-pot
+require path "../shared"
+```
+
+It is for modules that travel together — a repository's own sibling modules, or
+a checkout you are editing. A published package requires its dependencies from
+Git instead: a `require path` row in a package someone fetches names a
+directory that is not in their tree, and the failure arrives as an unknown
+package rather than as a manifest error.
+
+### `cflags <selector> "<flag>"` (repeatable)
+
+Passes a compile flag to the C sources this module's `csrc` rows declare.
+
+```beans-pot
+cflags linux "-I/usr/include/gtk-4.0"
+```
+
+- Selectors are the same as `link`: `all`, an OS name, or an exact triple.
+- One quoted word per flag, so a path with a space in it survives.
+
+`beansc pot add --system <pkg> [<selector>]` generates these rows from
+`pkg-config --cflags` between markers it manages, which is the only honest way
+to name include paths that differ on every machine.
 
 ### `link <selector> <search|library|framework> "<value>"` (repeatable)
 
@@ -99,7 +129,8 @@ step onto consumers — `import github.com/owner/lib` just works.
   through it. The host-target `link ... search`, `library`, and `framework`
   rows are passed to this link too, so run mode and native builds resolve the
   same dependencies. Those selected link rows are part of the cache key.
-- Quoted `#include "..."` headers resolve beside each source file.
+- Quoted `#include "..."` and `#import "..."` headers resolve beside each
+  source file, and both count toward the object's cache key.
 - Rows propagate from local and Git dependencies exactly like `link` rows.
 
 ## A fuller example

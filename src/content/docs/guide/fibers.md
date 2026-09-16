@@ -176,6 +176,54 @@ holding a `Mutex` **poisons** the lock, and every later `with_lock` on it panics
 with kind `poisoned`. The blast radius is exactly the fibers that touch the
 poisoned data.
 
+## contained
+
+Catching a panic used to need a fiber: the only boundary a failure could stop
+at was a brewed fiber's entry, so a server that wanted a panicking handler to
+become a 500 paid a spawn, two context switches and a join on every request —
+whether or not anything ever panicked.
+
+`contained` makes the boundary a **call**. It runs the call on the current
+fiber, in place, under a catch frame, and answers `Result<T>` where `T` is the
+function's declared result type. No fiber is spawned, nothing switches, nothing
+is joined.
+
+<!-- beans:compile -->
+```beans
+import std.io
+
+fn handle(request: int) -> string {
+    if request < 0 { panic("bad request {request}") }
+    return "ok {request}"
+}
+
+fn main() {
+    match contained handle(-1) {          // runs right here
+        ok(body) => { io.println(body) }
+        err(problem) => { io.println("{problem.kind}: {problem.msg}") }
+    }
+    io.println("still running")
+}
+```
+
+A panic raised anywhere under that call unwinds the frames between it and the
+boundary — defers newest-first, owned values dropped — and arrives as an `err`
+of kind `panic` carrying the message and position.
+
+- `contained` is **contextual**, like `brew`, `unique` and `packed`: it opens a
+  catch frame only before a call to a function or method. A local named
+  `contained` stays an ordinary name.
+- Unlike `brew` it is an ordinary expression, legal wherever one is — inside a
+  loop, an `if`, a match arm, a `let` initializer, a match scrutinee.
+- The **arguments are evaluated outside** the frame. A panic while evaluating
+  one is not this call's to catch.
+- The **innermost** `contained` between a panic and the top of the stack is the
+  one that answers, and the caller's own frame is not unwound.
+- A **cancel is not caught** — cancellation does not unwind — and a panic
+  raised while the fiber is already unwinding is still the fatal double panic.
+- Method calls contain through a **reference** receiver, a class or an
+  interface, only; `inout` arguments cannot ride through it.
+
 ## TaskGroup&lt;T&gt;
 
 When the number of children is a runtime value, use a `TaskGroup<T>`.

@@ -4,7 +4,7 @@ description: RFC 6455 WebSocket over std.http's upgrade, yielding whole messages
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 9 package functions · 3 types · 7 static methods · 18 instance methods · 5 enum variants.
+**API summary** (generated from the Beans source by `npm run coverage`): 13 package functions · 4 types · 7 static methods · 20 instance methods · 4 public fields · 5 enum variants.
 <!-- coverage:summary:end -->
 
 `std.websocket` speaks RFC 6455 on top of [`std.http`](/reference/stdlib/http/)'s
@@ -44,9 +44,9 @@ match), `eof` (the connection ended without a close frame), `closed`.
 ```beans
 pub fn available() -> bool
 pub fn accept_for_key(key: string) -> Result<string>
-pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
-pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
-pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub fn upgrade_websocket<T implements net.ByteStream>(move stream: T, host: string, port: int, target: string, compress: bool = false) -> Result<WebSocketTransport<T>>
+pub fn wrap_websocket<T implements net.ByteStream>(move stream: T, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<WebSocketTransport<T>>
+pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<WebSocketTransport<T>>
 ```
 
 `available` reports whether the native framing bridge is present.
@@ -57,6 +57,53 @@ by every browser, which makes it the most-tested line in the protocol.
 
 The three generic helpers upgrade, wrap, or accept any owned `net.ByteStream`.
 Use them for TLS. The static methods below expose the same operations.
+
+## Compression
+
+`permessage-deflate` (RFC 7692) is negotiated in the handshake, not configured
+afterwards. Pass `compress: true` and the client offers it; a server that is
+given `compress: true` accepts an offer it can honour.
+
+```beans
+pub struct Deflate {
+    pub server_no_context_takeover: bool
+    pub client_no_context_takeover: bool
+    pub server_max_window_bits: int
+    pub client_max_window_bits: int
+}
+```
+
+**`server` always names the server-to-client direction and `client` the
+client-to-server one, whichever end you are** — the names come from the wire,
+not from your role. A `no_context_takeover` flag means that direction starts a
+fresh DEFLATE context for every message, which costs ratio and bounds memory. A
+`max_window_bits` is that direction's LZ77 window, always 9 to 15.
+
+The same struct also spells a server's *preference*, which is what `accept` and
+`negotiate_deflate` take as `prefer`. Read that way a `true` flag **asks** for a
+parameter and a `false` one has no opinion, and a `max_window_bits` is a
+**ceiling** where 15 means no opinion — because a preference may only ever
+narrow an offer, never widen one.
+
+```beans
+pub fn negotiate_deflate(headers: http.Headers, prefer: Option<Deflate> = none) -> Option<Deflate>
+pub fn deflate_offer() -> string
+pub fn deflate_agreement(agreed: Deflate) -> string
+pub fn accept_deflate_response(value: string) -> Result<Deflate>
+```
+
+These four are the handshake itself, for a server or client that writes its own
+rather than using `accept` and `upgrade`:
+
+- `negotiate_deflate` reads a request's `Sec-WebSocket-Extensions` offers and
+  answers the first one it can agree to, narrowed by `prefer`. `none` means no
+  compression — which is always a valid outcome, never an error.
+- `deflate_offer` is the header value a client sends.
+- `deflate_agreement` is the header value a server sends back for what it
+  agreed to. Parameters at their defaults are left out.
+- `accept_deflate_response` reads a server's answer on the client side. It
+  refuses an answer naming more than one extension, or one the client did not
+  offer.
 
 ## Message
 
@@ -81,9 +128,9 @@ A move-only WebSocket over any owned byte stream:
 ```beans
 pub unique class WebSocketTransport<T implements net.ByteStream> implements Send
 
-pub static fn upgrade(move socket: T, host: string, port: int, target: string) -> Result<WebSocketTransport<T>>
-pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
-pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608) -> Result<WebSocketTransport<T>>
+pub static fn upgrade(move socket: T, host: string, port: int, target: string, compress: bool = false) -> Result<WebSocketTransport<T>>
+pub static fn wrap(move stream: T, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<WebSocketTransport<T>>
+pub static fn accept(move stream: T, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<WebSocketTransport<T>>
 pub fn receive() -> Result<Option<Message>>
 pub fn send_text(body: string) -> Result<bool>
 pub fn send_binary(body: Bytes) -> Result<bool>
@@ -92,12 +139,16 @@ pub fn pong(body: Bytes) -> Result<bool>
 pub fn close(code: int, reason: string) -> Result<bool>
 pub fn peer_close_code() -> int
 pub fn is_open() -> bool
+pub fn deflate() -> Option<Deflate>
 pub fn poll_handle() -> int
 ```
 
 `upgrade` writes and verifies the client-side HTTP handshake over a connected
 stream. `accept` writes the server-side 101 response for a request already
 parsed by `std.http`. `wrap` takes a stream whose handshake is already done.
+
+`deflate` answers the compression in force, or `none` on a connection that
+negotiated none. See [Compression](#compression).
 
 ## Connection
 
@@ -107,10 +158,10 @@ has the same instance methods as `WebSocketTransport`.
 ```beans
 pub unique class Connection implements Send
 
-pub static fn connect(host: string, port: int, target: string) -> Result<Connection>
-pub static fn connect_timeout(host: string, port: int, target: string, ms: int) -> Result<Connection>
-pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608) -> Result<Connection>
-pub static fn wrap(move stream: net.TcpStream, server: bool, max_message: int = 8388608) -> Result<Connection>
+pub static fn connect(host: string, port: int, target: string, compress: bool = false) -> Result<Connection>
+pub static fn connect_timeout(host: string, port: int, target: string, ms: int, compress: bool = false) -> Result<Connection>
+pub static fn accept(move stream: net.TcpStream, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<Deflate> = none) -> Result<Connection>
+pub static fn wrap(move stream: net.TcpStream, server: bool, max_message: int = 8388608, agreed: Option<Deflate> = none) -> Result<Connection>
 pub fn receive() -> Result<Option<Message>>
 pub fn send_text(body: string) -> Result<bool>
 pub fn send_binary(body: Bytes) -> Result<bool>
@@ -119,6 +170,7 @@ pub fn pong(body: Bytes) -> Result<bool>
 pub fn close(code: int, reason: string) -> Result<bool>
 pub fn peer_close_code() -> int
 pub fn is_open() -> bool
+pub fn deflate() -> Option<Deflate>
 pub fn poll_handle() -> int
 ```
 
@@ -176,10 +228,10 @@ TLS backend. Import it for `wss`.
 ```beans
 import std.websocket_tls
 
-pub fn connect(host: string, port: int, target: string, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
-pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
-pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
-pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn connect(host: string, port: int, target: string, ms: int = 30000, compress: bool = false) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn connect_with_roots(address: string, server_name: string, port: int, target: string, extra_roots: Bytes, ms: int = 30000, compress: bool = false) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn wrap(move stream: tls.TlsStream, server: bool, max_message: int = 8388608, agreed: Option<websocket.Deflate> = none) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
+pub fn accept(move stream: tls.TlsStream, request: http.Request, max_message: int = 8388608, compress: bool = false, prefer: Option<websocket.Deflate> = none) -> Result<websocket.WebSocketTransport<tls.TlsStream>>
 ```
 
 - `connect` does the TLS handshake and then the ordinary WebSocket HTTP
