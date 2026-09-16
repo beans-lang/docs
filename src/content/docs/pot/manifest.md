@@ -91,10 +91,26 @@ cflags linux "-I/usr/include/gtk-4.0"
 
 - Selectors are the same as `link`: `all`, an OS name, or an exact triple.
 - One quoted word per flag, so a path with a space in it survives.
+- A flag that names a **directory** — `-I`, `-iquote`, `-isystem`,
+  `-idirafter`, `-F` — resolves a relative value against the package that
+  declared the row, exactly as that package's `csrc` paths do. An absolute
+  value passes through untouched.
 
 `beansc pot add --system <pkg> [<selector>]` generates these rows from
 `pkg-config --cflags` between markers it manages, which is the only honest way
 to name include paths that differ on every machine.
+
+The package-relative rule is what lets a package vendor a C library that has
+its own include tree, without naming a path that exists on one machine:
+
+```beans-pot
+cflags all "-Ivendor/postgresql/src/include"
+```
+
+`-include` and `-imacros` are **not** rewritten. They name a file the include
+search looks up, exactly as `#include "name"` in the source would, so a package
+that wants its own prelude writes the directory as `-I` and the file as
+`-include name.h`.
 
 ### `link <selector> <search|library|framework> "<value>"` (repeatable)
 

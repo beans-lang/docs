@@ -91,10 +91,26 @@ cflags linux "-I/usr/include/gtk-4.0"
 
 - selector `link`-এর মতোই: `all`, একটা OS-এর নাম, বা একটা exact triple।
 - প্রতি flag-এ একটা quote করা word, যাতে space থাকা path-ও টিকে যায়।
+- যে flag একটা **directory** নাম করে — `-I`, `-iquote`, `-isystem`,
+  `-idirafter`, `-F` — তার relative value যে package row-টা declare করেছে তার
+  সাপেক্ষে resolve হয়, ঠিক যেভাবে সেই package-এর `csrc` path হয়। absolute
+  value অপরিবর্তিত যায়।
 
 `beansc pot add --system <pkg> [<selector>]` এই row গুলো `pkg-config --cflags`
 থেকে নিজের marker-এর মাঝে লিখে দেয় — প্রতিটা machine-এ আলাদা হওয়া include path
 নাম করার একমাত্র সৎ উপায় এটাই।
+
+package-সাপেক্ষ নিয়মটাই একটা package-কে নিজের include tree সহ C library vendor
+করতে দেয়, এক machine-এই থাকা path নাম না করে:
+
+```beans-pot
+cflags all "-Ivendor/postgresql/src/include"
+```
+
+`-include` আর `-imacros` rewrite হয় **না**। এগুলো এমন file নাম করে যেটা include
+search খুঁজে বের করে, ঠিক যেমন source-এ `#include "name"` লিখলে হয় — তাই নিজের
+prelude চাইলে package directory-টা `-I` দিয়ে আর file-টা `-include name.h` দিয়ে
+লেখে।
 
 ### `link <selector> <search|library|framework> "<value>"` (যতবার খুশি)
 
