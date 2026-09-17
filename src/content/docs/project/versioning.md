@@ -12,12 +12,12 @@ All version numbers come from one file:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION).
 
 ```text
-compiler=0.1.45
+compiler=0.1.46
 language=1.0
 runtime_abi=20
 ```
 
-- **compiler**: the compiler version (`0.1.45`).
+- **compiler**: the compiler version (`0.1.46`).
 - **language**: the language version (`1.0`).
 - **runtime_abi**: the runtime ABI number (`20`).
 
