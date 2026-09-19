@@ -17,6 +17,13 @@ beansc upgrade
 - তার SHA-256 checksum যাচাই করে, আর
 - install-এর জায়গাটা একই রাখে।
 
+সবশেষ release-টা আগে থেকেই থাকলে এটা সেটা বলে থেমে যায়। নষ্ট হয়ে যাওয়া একটা
+install-এর উপরে আবার বসাতে হলে `--force` দিন:
+
+```bash
+beansc upgrade --force
+```
+
 ## Windows
 
 Windows-এ upgrade-টা install করা `beansc.cmd` launcher দিয়ে চালান:

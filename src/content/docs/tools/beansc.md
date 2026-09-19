@@ -22,7 +22,7 @@ usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc pot remove --system <pkg-config-name>
        beansc pot update --system <pkg-config-name>
        beansc pot <tidy|update [dependency]>
-       beansc upgrade
+       beansc upgrade [--force]
        beansc doctor
        beansc lsp-probe <file.b>:<line>:<col>
        beansc lsp   (language server on stdio)
@@ -70,7 +70,7 @@ build options:
 | `beansc pot remove --system <name>` | Remove generated linker rows for a C library. |
 | `beansc pot update [dependency]` | Refresh all locked dependencies, or one named. |
 | `beansc pot update --system <name>` | Refresh a C-library link block from pkg-config. |
-| `beansc upgrade` | Upgrade this Beans installation to the latest release. |
+| `beansc upgrade [--force]` | Upgrade this Beans installation to the latest release. `--force` reinstalls even when that release is the one already installed. |
 | `beansc lsp` | Language server on stdio. |
 | `beansc debug-adapter` | Debug adapter (DAP) on stdio. |
 

@@ -17,6 +17,13 @@ This upgrades your installed release in place. It:
 - verifies its SHA-256 checksum, and
 - keeps the same install location.
 
+If you already have the latest release, it says so and stops. To install it
+again over a damaged installation, add `--force`:
+
+```bash
+beansc upgrade --force
+```
+
 ## Windows
 
 On Windows, run the upgrade through the installed `beansc.cmd` launcher:

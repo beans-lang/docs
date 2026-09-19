@@ -23,7 +23,7 @@ usage: beansc <lex|parse|check|mir|run> <file.b>...
        beansc pot remove --system <pkg-config-name>
        beansc pot update --system <pkg-config-name>
        beansc pot <tidy|update [dependency]>
-       beansc upgrade
+       beansc upgrade [--force]
        beansc doctor
        beansc lsp-probe <file.b>:<line>:<col>
        beansc lsp   (language server on stdio)
@@ -71,7 +71,7 @@ build options:
 | `beansc pot remove --system <name>` | C library-র generated linker row মুছে দেয়। |
 | `beansc pot update [dependency]` | lock-করা সব dependency নতুন করে আনে, নাম দিলে শুধু ওই একটা। |
 | `beansc pot update --system <name>` | pkg-config থেকে C library-র link block refresh করে। |
-| `beansc upgrade` | এই Beans install-টাকে সবশেষ release-এ তুলে দেয়। |
+| `beansc upgrade [--force]` | এই Beans install-টাকে সবশেষ release-এ তুলে দেয়। যে release-টা আগে থেকেই install করা আছে, `--force` সেটাও আবার install করে। |
 | `beansc lsp` | stdio-তে language server চালায়। |
 | `beansc debug-adapter` | stdio-তে debug adapter (DAP) চালায়। |
 

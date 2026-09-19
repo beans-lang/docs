@@ -46,11 +46,16 @@ beansc doctor
 
 ```bash
 beansc upgrade
+beansc upgrade --force
 ```
 
 `upgrade` এই install-টাকে সবশেষ release-এ নিয়ে যায়। এর জন্য একটা **install-করা
 release** দরকার: এটা `BEANS_HOME` পড়ে, আর শুধু source checkout-এ কোনো install থাকে
 না, তাই সেখানে এটা error দেয়।
+
+সবশেষ release-টাই যদি আগে থেকে install করা থাকে, `upgrade` সেটা বলে থেমে যায়।
+`--force` দিলে সেটা আবার install হয় — install-টা পুরনো নয়, নষ্ট হয়ে গেছে, তখন
+এটাই দরকার।
 
 এটা যা করে:
 
