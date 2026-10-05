@@ -10,16 +10,19 @@ currently on a preview line leading up to 1.0.
 
 All version numbers come from one file:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION).
+The values below describe the unreleased checkout, rather than the latest
+published installer. Released contracts are preserved in dated
+[`CHANGELOG.md`](https://github.com/beans-lang/beans/blob/main/CHANGELOG.md) entries.
 
 ```text
-compiler=0.1.46
+compiler=0.1.51
 language=1.0
-runtime_abi=20
+runtime_abi=22
 ```
 
-- **compiler**: the compiler version (`0.1.46`).
+- **compiler**: the compiler version (`0.1.51`).
 - **language**: the language version (`1.0`).
-- **runtime_abi**: the runtime ABI number (`20`).
+- **runtime_abi**: the runtime ABI number (`22`).
 
 From that file, `src/version.b` is generated. A test
 (`test/version.sh`) refuses a stale copy, so the generated Beans file can never
@@ -42,8 +45,9 @@ runtime stop being compatible with each other.
 
 ## The 0.1.x preview line
 
-The `0.1.x` line is a **production preview on the 1.0 stabilization line**. It is
-solid enough to build on, but it is not 1.0 and you should not call it 1.0.0.
+The `0.1.x` line is a **preview on the 1.0 stabilization line**. Pilot work needs
+pinned versions and workload-specific checks. It is not yet a production 1.0
+release.
 
 Reaching 1.0 requires every release gate in the roadmap to pass:
 

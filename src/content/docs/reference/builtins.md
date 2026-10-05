@@ -25,8 +25,9 @@ you write code, but it helps to know it once.
   `size_of`. You can see the checker at
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
-The runtime ABI version for this compiler is `20`. The compiler reports version
-`0.1.46` and the language contract is frozen at `1.0`.
+The unreleased checkout reports runtime ABI `22`, compiler `0.1.51`, and the
+candidate language contract `1.0`. Installed release output is shown under
+[Verify the install](/start/verify/).
 
 ## Error handling is builtin
 

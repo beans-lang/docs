@@ -43,3 +43,9 @@ Beans-এর নিজের কোড language design-এর নিয়মগ
   নিতে হয়।
 
 change গুলো কীভাবে ship হয় সেটা দেখুন [release process](/bn/project/release/)-এ।
+
+CLI/SQLite pilot, সম্ভাব্য ব্যবহারকারীর interview-এর প্রশ্ন, আর independent build ও
+release rehearsal-এর জন্য
+[`CONTRIBUTING.md`](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#dependability-pilot)-এর
+সংশ্লিষ্ট section দেখুন। এগুলো checklist; interview বা নিয়মিত ব্যবহারকারী পাওয়া
+শেষ হয়েছে এমন দাবি না।

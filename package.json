@@ -15,7 +15,7 @@
     "links": "node scripts/check-links.mjs",
     "examples": "node scripts/check-examples.mjs",
     "test:signatures": "node scripts/test-signatures.mjs",
-    "version:check": "node scripts/check-version.mjs",
+    "version:check": "node scripts/test-version.mjs && node scripts/check-version.mjs",
     "check": "npm run test:signatures && npm run version:check && npm run coverage && npm run spec:sections && npm run links && npm run examples",
     "verify": "npm run test:signatures && npm run version:check && npm run coverage && npm run spec:sections && npm run links && npm run build && npm run examples",
     "spec:sections": "node scripts/check-spec-sections.mjs"

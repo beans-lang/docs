@@ -42,3 +42,8 @@ Beans' own code follows the language design rules. A few basics:
 - There is no formatter yet, so match the style of the file you are editing.
 
 See the [release process](/project/release/) for how changes ship.
+
+For the bounded CLI/SQLite workload, prospective-user interview questions, and
+independent build and release rehearsal, use the corresponding sections of
+[`CONTRIBUTING.md`](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#dependability-pilot).
+These are checklists; they do not claim completed interviews or retained users.

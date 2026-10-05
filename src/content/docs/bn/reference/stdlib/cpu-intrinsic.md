@@ -4,10 +4,10 @@ description: চলন্ত CPU-কে জিজ্ঞেস করা তা�
 ---
 
 <!-- coverage:summary -->
-**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 17টা package function · 1টা type।
+**API সারমর্ম** (Beans source থেকে `npm run coverage` দিয়ে বানানো): 18টা package function · 1টা type।
 <!-- coverage:summary:end -->
 
-এই দুটো native module low-level CPU access দেয়। `std.cpu` machine-কে জিজ্ঞেস করে তার কী কী instruction-set feature আছে আর তার উপর কোড gate করে। `std.intrinsic` অল্প কয়েকটা নির্দিষ্ট hardware operation খুলে দেয়। দুটোই checker-এ typed, তাই এদের function-গুলো positional আর কোনো parameter name বহন করে না।
+এই দুটো native module low-level CPU access দেয়। `std.cpu` machine-কে জিজ্ঞেস করে তার কী কী instruction-set feature আছে আর তার উপর কোড gate করে। `std.intrinsic` নির্দিষ্ট hardware আর collector-control operation খুলে দেয়। দুটোই checker-এ typed, তাই এদের function-গুলো positional আর কোনো parameter name বহন করে না।
 
 ## std.cpu
 
@@ -72,7 +72,7 @@ fn main() {
 import std.intrinsic
 ```
 
-এগুলো একেকটা single hardware operation-এ map করে। এদের সবগুলোর জন্য [`unsafe`](/bn/guide/unsafe/) লাগে, আর সেটটা একটা বন্ধ allowlist, এতে নতুন কিছু যোগ করা যায় না।
+Hardware entry-গুলো একেকটা single operation-এ map করে। সব entry-র জন্য [`unsafe`](/bn/guide/unsafe/) লাগে, আর সেটটা একটা বন্ধ allowlist, এতে নতুন কিছু যোগ করা যায় না।
 
 ```beans
 popcount(int) -> int
@@ -90,6 +90,7 @@ fma(float, float, float) -> float
 fma32(f32, f32, f32) -> f32
 prefetch(RawPtr<u8>)
 spin_hint()
+with_collection_deferred(fn() -> unit)
 ```
 
 - `popcount` set করা bit গোনে। `leading_zeros` আর `trailing_zeros` শুরুর আর শেষের zero bit গোনে; input শূন্য হলে 64 দেয়।
@@ -114,6 +115,35 @@ fn main() {
         block.free()
         intrinsic.spin_hint()
         io.println("hints are safe to ignore")
+    }
+}
+```
+
+### অল্প সময় collection পিছিয়ে রাখা
+
+`intrinsic.with_collection_deferred(body)` দুই backend-এই একটা ছোট, non-parking
+closure চলার সময় cycle collection পিছিয়ে রাখে। Nested region থাকলে বাইরেরটা শেষ
+না হওয়া পর্যন্ত deferral থাকে। Normal return আর contained panic দুটোতেই gate ঠিক
+হয়। Pending collection পরের allocation-এ হতে পারে, region শেষ হওয়ার সঙ্গে সঙ্গে
+হতেই হবে এমন না।
+
+এটা unsafe দায়িত্ব; checker প্রমাণ করে না। Body-তে yield, park, অন্য fiber বা thread-এর
+জন্য block, বা সীমাহীন কাজ করা যাবে না। এটা lock বা rollback না: concurrent reader-এর
+জন্য synchronization লাগে, panic হলে আগের write থেকে যায়, আর synchronous ARC
+destruction বা explicit call user code চালাতে পারে। Invariant ঠিক না হওয়া পর্যন্ত
+বদলে দেওয়া value alive রাখুন। অন্য worker-এর local collection বদলায় না; global
+collection নিজের existing exclusion gate ব্যবহার করে। Closure ছাড়া region নিজে
+কোনো allocation বা scheduling operation যোগ করে না।
+
+<!-- beans:compile -->
+```beans
+import std.intrinsic
+
+fn main() {
+    unsafe {
+        intrinsic.with_collection_deferred(fn() {
+            // Settle a short multi-write invariant without parking here.
+        })
     }
 }
 ```

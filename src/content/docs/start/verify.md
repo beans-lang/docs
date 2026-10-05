@@ -13,11 +13,11 @@ beansc --version
 ```
 
 ```text
-beansc 0.1.46 (language 1.0, runtime ABI 20)
+beansc 0.1.50 (language 1.0, runtime ABI 21)
 ```
 
-This tells you three things: the compiler version (`0.1.46`), the language
-contract it implements (`1.0`), and the runtime ABI (`20`).
+This tells you three things: the compiler version (`0.1.50`), the language
+contract it implements (`1.0`), and the runtime ABI (`21`).
 
 ## 2. Run the doctor
 

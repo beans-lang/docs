@@ -8,14 +8,14 @@ description: Beans এখন কতটা তৈরি, কী কী বান�
 
 ## Beans এখন কোথায়
 
-Beans এখন 1.0 stabilization লাইনে একটা production preview। এই কথাটার প্রতিটা অংশের
+Beans এখন 1.0 stabilization লাইনে একটা preview। এই কথাটার প্রতিটা অংশের
 আলাদা মানে আছে:
 
-- **ভাষার contract `1.0`-এ আটকানো।** যে syntax আর semantics-এর উপর কোড লেখা হয়, সেটা
-  পাকা হয়ে গেছে। এখন যে কোড লেখা হবে সেটা পরেও চলবে, এটাই লক্ষ্য।
-- **সর্বশেষ compiler release `0.1.46`।** ভাষা `1.0`, কিন্তু যে tool সেটা বানায় সেটা এখনো
-  মিলে যাওয়া release number-এর দিকে যাচ্ছে।
-- **Runtime ABI `20`।**
+- **ভাষার contract `1.0` candidate।** Compatibility লক্ষ্য, কিন্তু 1.0-এর আগে
+  পরিবর্তন হতে পারে। Compiler আর dependency pin করে রাখুন।
+- **এই reference compiler `0.1.51`-এর source ধরে লেখা; এটা unreleased।** Source-এ
+  fix থাকলেই package প্রকাশ বা কোনো ব্যবহারকারীর কাজ শেষ হওয়া প্রমাণ হয় না।
+- **Runtime ABI `22`।**
 
 এটা একটা preview, পুরো 1.0 না। ব্যবহার করা যায়, কিন্তু পুরো 1.0 release-এর আগে এখনো কিছু
 কাজ বাকি — নিচে দেওয়া আছে।
@@ -31,7 +31,8 @@ Beans এখন 1.0 stabilization লাইনে একটা production previe
   high-level IR (HIR), আর ownership যাচাই করা একটা checked mid-level IR (MIR)।
 - **একটা native backend।** MIR থেকে LLVM-এ compile হয় debug, release আর LTO build-এর জন্য,
   সাথে automatic reference counting আর একটা cycle collector।
-- **একটা reference interpreter** — যার আচরণ native backend-এর সাথে হুবহু এক।
+- **একটা reference interpreter** — behavioral suite-এ native execution-এর সাথে
+  তুলনা করা হয়। Backend-এর সীমা আর বাদ পড়া platform check আলাদাভাবে দেখতে হবে।
 - **Concurrency।** `brew` দিয়ে fiber, OS thread, typed atomic, mutex, channel,
   আর readiness wait।
 - **Package management।** Canonical package identity, hash করা একটা `beans.lock`, locked আর
@@ -45,7 +46,26 @@ Beans এখন 1.0 stabilization লাইনে একটা production previe
 - **Typed encoding।** Generated JSON আর XML decoder সরাসরি nested struct, list আর option
   লেখে — compile-time-এ mapping check হয়, আর XML namespace URI মিলিয়ে দেখা হয়।
 
-ত্রিশটা target register করা আছে, আর বেশিরভাগই prebuilt release package হিসেবে আসে।
+ত্রিশটা target register করা আছে। শেষ প্রকাশিত release-এর ২৬টা host package/install
+gate pass করেছে; এতে প্রতিটা library বা application-এর platform support প্রমাণ হয় না।
+Compiler-এর [issue আর release audit](https://github.com/beans-lang/beans/blob/main/docs/BUGFIX_TODO.md)-এ
+প্রকাশিত release-এর evidence আছে।
+
+## প্রথম dependability pilot
+
+macOS ARM64 আর Linux x86_64 (GNU)-তে ছোট command-line data tool দিয়ে শুরু করুন।
+এই দুই platform-এ SQLite-এর local check interpreter আর native দুটোতেই পাস করেছে।
+সম্ভাব্য ব্যবহারকারীর কাজের সঙ্গে platform মেলে কি না যাচাই করুন; এই check হলো
+local evidence, ব্যবহারকারীর acceptance নয়।
+Standard library আর existing SQLite package দিয়ে record পড়ুন, validate আর
+transform করুন, persist করুন, তারপর interpreter আর native report মিলিয়ে দেখুন।
+প্রতিটা dependency-র নিজস্ব platform আর failure check দরকার।
+
+[Contributor pilot checklist](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#dependability-pilot)-এ
+setup, malformed input, duplicate, write failure, locked/offline build আর আবার চালানোর
+check আছে। পাঁচজন সম্ভাব্য ব্যবহারকারীর interview-এর প্রশ্নও আছে। Interview, নিয়মিত
+ব্যবহারকারী, দুটো সফল upgrade আর দীর্ঘ সময় service চালানোর evidence compiler gate
+দেয় না। স্বাধীন project থেকে সেই evidence পাওয়ার পর scope বাড়ান।
 
 ## 1.0-এর আগে এখনো যা যা বাকি
 
@@ -71,7 +91,8 @@ test করা:
 
 ### Preview target
 
-এগুলো build হয় আর ship-ও করা হয়, কিন্তু পুরো প্রমাণিত না বলে preview হিসেবে চিহ্নিত:
+এগুলোর preview build বা execution gate আছে। এগুলো ২৬টা host installer archive-এর
+অংশ না, আর production support দাবি করা হচ্ছে না:
 
 - WebAssembly
 - Bare-metal Cortex-M4 (`thumbv7em-none-eabi`)

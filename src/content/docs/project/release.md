@@ -41,3 +41,19 @@ platforms](/intro/maturity/) for what production-tier means, and
 
 See [Compatibility](/project/compatibility/) and [Install Beans](/start/install/)
 for related detail.
+
+## Rehearsal before publishing
+
+The executable [build and release rehearsal](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#independent-build-and-release-rehearsal)
+uses the existing compiler, package, install, release-completeness, and docs
+gates. A second person can record their environment and assistance without
+publishing anything. Maintenance remains concentrated until someone has
+actually completed that rehearsal and agreed to take responsibility.
+
+The release owner can use the existing workflow's manual candidate mode with
+`publish=false` and `skip_autobahn=false` when a full target rehearsal is
+authorized. A candidate build is separate from a published release and from
+performance, long fuzz, beta/RC soak, and application acceptance. `VERSION`
+describes the checkout; the latest dated changelog entry records the installed
+release contract. An unreleased ABI change must not appear as a released
+installer or a completed package gate.

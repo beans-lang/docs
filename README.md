@@ -6,8 +6,10 @@ language](https://github.com/beans-lang/beans). Built with
 directory; the built site is a static bundle that runs on GitHub Pages under the
 `/docs/` base path and needs no backend or network access.
 
-The published reference tracks Beans `0.1.46` (language contract `1.0`, runtime
-ABI `10`), including `std.log`, HTTP, HTTP/2, WebSocket, TLS, polling, and socket APIs,
+The source reference tracks the unreleased Beans checkout `0.1.51` (language
+contract `1.0`, runtime ABI `22`). Install and verification instructions describe
+the latest dated release in the compiler changelog. The reference includes
+`std.log`, HTTP, HTTP/2, WebSocket, TLS, polling, and socket APIs,
 the current `Send` rules, allocation-free read paths, OOP features, and runtime
 reflection.
 
@@ -30,7 +32,7 @@ npm run coverage:write   # regenerate the on-page API summary blocks from source
 npm run spec:sections    # every section of the language spec is described here
 npm run links            # every internal link resolves
 npm run examples         # compile the repo examples and marked doc blocks
-npm run check            # test:signatures + coverage + spec:sections + links + examples
+npm run check            # test:signatures + version:check + coverage + spec:sections + links + examples
 npm run verify           # check + build (the full gate)
 ```
 
@@ -43,6 +45,12 @@ BEANS_REPO=/path/to/beans npm run coverage
 BEANS_REPO=/path/to/beans \
 BEANS_STDLIB=/path/to/beans/stdlib/std npm run examples
 ```
+
+`version:check` holds reference facts to the checkout's `VERSION` and release
+install instructions to the latest dated `CHANGELOG.md` entry's release
+contract. It also checks the compiler README's release and checkout claims.
+Unreleased fixes are not evidence that a new archive has been published. The
+negative controls run inside temporary fixtures as part of this existing gate.
 
 The example check compiles programs with `beansc`. It uses the in-tree build
 (`$BEANS_REPO/build/beansc`), then `BEANSC`, then `beansc` on your `PATH`; if it

@@ -10,16 +10,19 @@ Beans-এর version কত সেটা বলার একটাই জায�
 
 সব version number আসে একটা ফাইল থেকে:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)।
+নিচের number-গুলো unreleased checkout-এর; সর্বশেষ প্রকাশিত installer-এর না।
+Release-এর contract date দেওয়া
+[`CHANGELOG.md`](https://github.com/beans-lang/beans/blob/main/CHANGELOG.md) entry-তে থাকে।
 
 ```text
-compiler=0.1.46
+compiler=0.1.51
 language=1.0
-runtime_abi=20
+runtime_abi=22
 ```
 
-- **compiler**: compiler-এর version (`0.1.46`)।
+- **compiler**: compiler-এর version (`0.1.51`)।
 - **language**: language-এর version (`1.0`)।
-- **runtime_abi**: runtime ABI number (`20`)।
+- **runtime_abi**: runtime ABI number (`22`)।
 
 ওই file থেকেই `src/version.b` generate হয়। একটা test
 (`test/version.sh`) পুরানো একটা copy মানতে চায় না, তাই generate হওয়া Beans ফাইল
@@ -42,9 +45,8 @@ Beans [Semantic Versioning](https://semver.org/) মেনে চলে।
 
 ## 0.1.x preview line
 
-`0.1.x` line হলো **1.0 stabilization line-এর উপর একটা production preview**। এটা
-এর উপর দাঁড়িয়ে কাজ করার মতো যথেষ্ট শক্ত, কিন্তু এটা 1.0 নয়, আর এটাকে
-1.0.0 বলাও ঠিক নয়।
+`0.1.x` line হলো **1.0 stabilization line-এর উপর একটা preview**। Pilot-এর জন্য
+version pin করে workload-specific check করুন। এটা এখনো production 1.0 release না।
 
 1.0-এ পৌঁছাতে হলে roadmap-এর প্রতিটা release gate পাস করতে হবে:
 

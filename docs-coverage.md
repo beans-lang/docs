@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1538**
-- Symbols with an enforced signature: **1076**
+- Total public symbols: **1539**
+- Symbols with an enforced signature: **1077**
 - Builtin reference symbols: **332**
-- Standard-library symbols: **1192**
+- Standard-library symbols: **1193**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1257,6 +1257,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `std.intrinsic.sqrt` | function | `sqrt(float) -> float` | `reference/stdlib/cpu-intrinsic` | ✓ |
 | `std.intrinsic.sqrt32` | function | `sqrt32(f32) -> f32` | `reference/stdlib/cpu-intrinsic` | ✓ |
 | `std.intrinsic.trailing_zeros` | function | `trailing_zeros(int) -> int` | `reference/stdlib/cpu-intrinsic` | ✓ |
+| `std.intrinsic.with_collection_deferred` | function | `with_collection_deferred(fn() -> unit)` | `reference/stdlib/cpu-intrinsic` | ✓ |
 
 ## std.io
 
