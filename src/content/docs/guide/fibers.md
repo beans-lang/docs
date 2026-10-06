@@ -136,10 +136,18 @@ match spinner.join() {
 }
 ```
 
+The cleanup behavior below is available from **v0.1.51**.
+Release **v0.1.50** abandons cancelled frames, including on these targets.
+
 A cancelled park does not return a value to the code that parked. The fiber
-unwinds instead — armed defers run newest-first exactly once, owned values
-drop, and its own children cancel in cascade. The join then reports kind
-`cancelled`. Code that must not be cancelled mid-protocol does not park
+unwinds on targets with controlled cleanup: ELF and Mach-O on x86_64 and
+arm64. On those targets, both executors run armed defers newest-first exactly
+once, drop owned values, and request cancellation of every child owned by the
+exiting scope before joining any. Cleanup may park; later cancellation requests
+cannot interrupt an unwind already running. Other targets retain frame
+abandonment in both executors, so cancellation does not guarantee resource or
+child cleanup there. The join reports kind `cancelled`.
+Code that must not be cancelled mid-protocol does not park
 mid-protocol, the same discipline synchronous code already has.
 
 ## A panic stops one fiber
@@ -219,7 +227,8 @@ of kind `panic` carrying the message and position.
   one is not this call's to catch.
 - The **innermost** `contained` between a panic and the top of the stack is the
   one that answers, and the caller's own frame is not unwound.
-- A **cancel is not caught** — cancellation does not unwind — and a panic
+- A **cancel is not caught**. It passes through `contained`, runs the enclosing
+  frames' cleanup, and reaches the fiber entry as kind `cancelled`. A panic
   raised while the fiber is already unwinding is still the fatal double panic.
 - Method calls contain through a **reference** receiver, a class or an
   interface, only; `inout` arguments cannot ride through it.

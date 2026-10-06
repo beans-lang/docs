@@ -4,12 +4,12 @@ description: Ask the running CPU which features it has, gate code on them, and r
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 17 package functions · 1 type.
+**API summary** (generated from the Beans source by `npm run coverage`): 18 package functions · 1 type.
 <!-- coverage:summary:end -->
 
 These two native modules give you low-level CPU access. `std.cpu` asks the machine
 which instruction-set features it has and gates code on them. `std.intrinsic`
-exposes a small, fixed set of hardware operations. Both are typed in the checker,
+exposes a small, fixed set of hardware and collector-control operations. Both are typed in the checker,
 so their functions are positional and carry no parameter names.
 
 ## std.cpu
@@ -82,7 +82,7 @@ See the [attributes guide](/guide/attributes/) for `feature`.
 import std.intrinsic
 ```
 
-These map to single hardware operations. All of them require
+The hardware entries map to single operations. All entries require
 [`unsafe`](/guide/unsafe/), and the set is a closed allowlist, you cannot add to
 it.
 
@@ -102,6 +102,7 @@ fma(float, float, float) -> float
 fma32(f32, f32, f32) -> f32
 prefetch(RawPtr<u8>)
 spin_hint()
+with_collection_deferred(fn() -> unit)
 ```
 
 - `popcount` counts set bits. `leading_zeros` and `trailing_zeros` count leading
@@ -132,6 +133,36 @@ fn main() {
         block.free()
         intrinsic.spin_hint()
         io.println("hints are safe to ignore")
+    }
+}
+```
+
+### Scoped collection deferral
+
+`intrinsic.with_collection_deferred(body)` runs a short, non-parking closure with
+cycle collection deferred on both backends. Nested regions remain deferred until
+the outermost one leaves, and both normal return and contained panic restore the
+gate. Pending collection resumes at a later allocation rather than necessarily
+on exit.
+
+This is an unsafe obligation the checker does not prove. The body must not yield,
+park, block on another fiber or thread, or perform unbounded work. It is not a
+lock or rollback: concurrent readers still need synchronization, earlier writes
+survive panic, and synchronous ARC destruction or explicit calls can still run
+user code. Keep replaced values alive until the invariant is settled. Other
+workers' local collection is unaffected; global collection uses its existing
+exclusion gate. The region adds no allocation or scheduling operation beyond
+the closure.
+
+<!-- beans:compile -->
+```beans
+import std.intrinsic
+
+fn main() {
+    unsafe {
+        intrinsic.with_collection_deferred(fn() {
+            // Settle a short multi-write invariant without parking here.
+        })
     }
 }
 ```

@@ -31,6 +31,12 @@ file-টা check করে, তারপর reference interpreter-এ চাল
 beansc run app.b
 ```
 
+Compiler `0.1.51` অস্থায়ী allocation কমায়, decode করা literal value cache-এ রাখে,
+আর integer range-এর মান একবারে একটা করে নেয়। তাই শুরুতেই `break` করলে আগে পুরো
+range-এর list বানাতে হয় না। `run` এখনো reference interpreter। দ্রুত execution-এর
+জন্য `beansc build --release app.b` দিয়ে [native release build](/bn/tools/build/)
+করুন।
+
 program-এ argument পাঠাতে হলে সেগুলো `--`-এর পরে দিন:
 
 ```bash

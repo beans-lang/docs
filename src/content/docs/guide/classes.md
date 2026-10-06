@@ -200,8 +200,9 @@ class Conn {
 - A subclass `deinit` runs first, then its parent's, automatically, with no
   `override`.
 - `self` must not escape a `deinit`.
-- An object that dies inside a reference cycle does not get its `deinit`.
-  Declare the back edge as a `weak` field and there is no cycle to leak (see
+- Unreachable reference cycles run their `deinit` methods during collection.
+  Collection timing is not scope-exit cleanup. Declare the back edge as a
+  `weak` field for release at the last strong reference (see
   [Memory and ownership](/guide/memory/)).
 - **An object whose `init` has not returned does not run its `deinit`.** If the
   initializer panics partway, the fields it did assign are still released, in

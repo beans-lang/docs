@@ -201,8 +201,9 @@ class Conn {
 - একটা subclass-এর `deinit` আগে চলে, তারপর তার parent-এরটা, নিজে থেকেই, কোনো
   `override` ছাড়া।
 - `self` কোনো `deinit` থেকে বেরিয়ে যেতে পারবে না।
-- একটা reference cycle-এর ভেতর যে object মরে, তার `deinit` চলে না। back
-  edge-টা `weak` field করে declare করুন — leak করার মতো cycle-ই থাকবে না
+- Unreachable reference cycle collect হলে তার `deinit` চলে। Collection-এর সময়
+  scope শেষ হওয়ার সময়ের মতো নির্দিষ্ট না। শেষ strong reference ছাড়া হলেই release
+  করতে back edge-টা `weak` field রাখুন
   (দেখুন [Memory and ownership](/bn/guide/memory/))।
 - **যে object-এর `init` return করেনি, তার `deinit` চলে না।** initializer মাঝপথে
   panic করলে যে field গুলো assign হয়েছিল সেগুলো স্বাভাবিক ক্রমেই release হয়,

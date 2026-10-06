@@ -30,20 +30,22 @@ object as a possible cycle root; when enough roots pile up, the collector
 trial-deletes each root's subgraph, restores anything still referenced from
 outside, and frees the rest.
 
-- It runs only between statements, when no worker threads are live, and once
-  more at exit.
-- Worker threads batch possible-cycle roots before publishing them. A normal
-  release on a worker does not take one global collector lock.
+- Each worker collects its own unshared candidate graphs at allocation
+  boundaries. It does not stop or poll another worker.
+- Graphs published across threads or synchronization owners use the global
+  fallback, which waits for the workers to drain. A write barrier preserves
+  that shared mark for values published later.
 - All walks are iterative, so even a very large dropped structure will not
   overflow the stack.
-- An object that dies **inside a cycle** does not run its `deinit`. A cycle
-  never drops to zero on its own, so if the object owns a resource (a file, a
-  socket), that resource is not released. The declarative fix is a `weak`
-  field, described next; `Shared<T>` cycles use `Weak<T>` instead.
+- Unreachable cycles are collected and their `deinit` methods run during
+  collection. Collection timing is not scope-exit cleanup. Use a `weak` back
+  edge when resource release must follow the last strong reference;
+  `Shared<T>` cycles use `Weak<T>` instead.
 
 :::note[Known limit]
-Collection is deferred while worker threads run. A program that churns cycles
-forever beside a long-lived worker can grow until that worker exits.
+An unreachable cycle that crosses a shared synchronization boundary waits for
+global thread quiescence. Use weak ownership for long-lived shared cycles;
+worker-local unshared graphs do not share that delay.
 :::
 
 ## weak fields

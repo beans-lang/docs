@@ -133,10 +133,19 @@ match spinner.join() {
 }
 ```
 
+নিচের cleanup আচরণ **v0.1.51** থেকে পাওয়া যায়। **v0.1.50** এই target-গুলোতেও
+cancel হওয়া frame ফেলে যায়।
+
 cancel হওয়া park যে code park করেছিল তাকে কোনো value ফেরত দেয় না। fiber-টা
-বরং unwind করে — সাজানো defer নতুন থেকে পুরোনো দিকে ঠিক একবার চলে, owned
-value drop হয়, আর তার নিজের child-রাও পরপর cancel হয়। এরপর join `cancelled`
-kind জানায়। যে code protocol-এর মাঝপথে cancel হতে পারে না, সে protocol-এর
+controlled cleanup আছে এমন target-এ unwind করে: x86_64 আর arm64-এর ELF ও
+Mach-O। এই target-গুলোতে দুটো executor-ই সাজানো defer নতুন থেকে পুরোনো দিকে
+ঠিক একবার চালায়, owned value drop করে, আর exiting scope-এর সব child-কে
+cancel-এর অনুরোধ জানিয়ে তারপর join করে। Cleanup park করতে পারে; unwind শুরু
+হয়ে গেলে পরের cancel-এর অনুরোধ সেটা থামাতে পারে না। অন্য target-এ দুটো
+executor-ই frame ফেলে যায়, তাই cancel সেখানে resource বা child cleanup-এর
+নিশ্চয়তা দেয় না। Join `cancelled` kind জানায়। `contained` cancel ধরে না;
+cancel enclosing frame-গুলোর cleanup করে fiber entry পর্যন্ত যায়।
+যে code protocol-এর মাঝপথে cancel হতে পারে না, সে protocol-এর
 মাঝপথে park করে না — synchronous code-এর যে নিয়ম, সেই একই নিয়ম।
 
 ## panic শুধু একটা fiber থামায়
