@@ -10,7 +10,7 @@ Beans-এর version কত সেটা বলার একটাই জায�
 
 সব version number আসে একটা ফাইল থেকে:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION)।
-নিচের number-গুলো unreleased checkout-এর; সর্বশেষ প্রকাশিত installer-এর না।
+বর্তমান release `0.1.51`; এর contract নিচে দেওয়া আছে।
 Release-এর contract date দেওয়া
 [`CHANGELOG.md`](https://github.com/beans-lang/beans/blob/main/CHANGELOG.md) entry-তে থাকে।
 

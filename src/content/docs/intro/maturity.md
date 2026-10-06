@@ -13,8 +13,8 @@ phrase means something specific:
 
 - **The language contract is the `1.0` candidate.** Compatibility remains a goal;
   the pre-1.0 line can still change. Pin the compiler and dependencies.
-- **This reference tracks compiler `0.1.51`, unreleased.** A source fix is not a
-  published package or an independent user's successful application.
+- **This reference tracks compiler release `0.1.51`.** Release checks establish
+  compiler evidence; independent applications still need their own validation.
 - **The runtime ABI is `22`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
@@ -49,7 +49,7 @@ The list below is what works today:
   lists, and options directly, with compile-time mapping checks and XML
   namespace URI matching.
 
-Thirty targets are registered. The last published release passed its 26 required
+Thirty targets are registered. Release **v0.1.50** passed its 26 required
 host package/install gates; that does not certify every library or application
 on those targets. Published release evidence is recorded in the compiler's
 [issue and release audit](https://github.com/beans-lang/beans/blob/main/docs/BUGFIX_TODO.md).

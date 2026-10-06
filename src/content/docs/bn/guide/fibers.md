@@ -133,8 +133,8 @@ match spinner.join() {
 }
 ```
 
-নিচের cleanup আচরণের জন্য unreleased **0.1.51 checkout** দরকার। Published
-**v0.1.50** এই target-গুলোতেও cancel হওয়া frame ফেলে যায়।
+নিচের cleanup আচরণ **v0.1.51** থেকে পাওয়া যায়। **v0.1.50** এই target-গুলোতেও
+cancel হওয়া frame ফেলে যায়।
 
 cancel হওয়া park যে code park করেছিল তাকে কোনো value ফেরত দেয় না। fiber-টা
 controlled cleanup আছে এমন target-এ unwind করে: x86_64 আর arm64-এর ELF ও

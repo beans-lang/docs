@@ -13,8 +13,8 @@ Beans এখন 1.0 stabilization লাইনে একটা preview। এই
 
 - **ভাষার contract `1.0` candidate।** Compatibility লক্ষ্য, কিন্তু 1.0-এর আগে
   পরিবর্তন হতে পারে। Compiler আর dependency pin করে রাখুন।
-- **এই reference compiler `0.1.51`-এর source ধরে লেখা; এটা unreleased।** Source-এ
-  fix থাকলেই package প্রকাশ বা কোনো ব্যবহারকারীর কাজ শেষ হওয়া প্রমাণ হয় না।
+- **এই reference compiler release `0.1.51` ধরে লেখা।** Release check compiler-এর
+  কাজের প্রমাণ দেয়; ব্যবহারকারীর application আলাদাভাবে যাচাই করতে হবে।
 - **Runtime ABI `22`।**
 
 এটা একটা preview, পুরো 1.0 না। ব্যবহার করা যায়, কিন্তু পুরো 1.0 release-এর আগে এখনো কিছু
@@ -46,7 +46,7 @@ Beans এখন 1.0 stabilization লাইনে একটা preview। এই
 - **Typed encoding।** Generated JSON আর XML decoder সরাসরি nested struct, list আর option
   লেখে — compile-time-এ mapping check হয়, আর XML namespace URI মিলিয়ে দেখা হয়।
 
-ত্রিশটা target register করা আছে। শেষ প্রকাশিত release-এর ২৬টা host package/install
+ত্রিশটা target register করা আছে। **v0.1.50** release-এর ২৬টা host package/install
 gate pass করেছে; এতে প্রতিটা library বা application-এর platform support প্রমাণ হয় না।
 Compiler-এর [issue আর release audit](https://github.com/beans-lang/beans/blob/main/docs/BUGFIX_TODO.md)-এ
 প্রকাশিত release-এর evidence আছে।

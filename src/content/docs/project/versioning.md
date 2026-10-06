@@ -10,8 +10,8 @@ currently on a preview line leading up to 1.0.
 
 All version numbers come from one file:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION).
-The values below describe the unreleased checkout, rather than the latest
-published installer. Released contracts are preserved in dated
+The current release is `0.1.51`, with the contract below.
+Released contracts are preserved in dated
 [`CHANGELOG.md`](https://github.com/beans-lang/beans/blob/main/CHANGELOG.md) entries.
 
 ```text

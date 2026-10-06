@@ -176,8 +176,8 @@ Brew<T>.cancel()
 - `cancel()` cancel-এর অনুরোধ জানিয়ে সাথে সাথে ফিরে আসে। অনুরোধটা child-এর পরের
   park-এ দেখা হয়।
 
-Cancellation cleanup-এর জন্য unreleased **0.1.51 checkout** দরকার; published
-**v0.1.50** সব target-এ cancel হওয়া frame ফেলে যায়।
+Cancellation cleanup **v0.1.51** থেকে পাওয়া যায়; **v0.1.50** সব target-এ
+cancel হওয়া frame ফেলে যায়।
 
 সাধারণ scope exit যে child-কে আগে join করা হয়নি, তাকে join করে। ELF/Mach-O
 x86_64 আর arm64-এ cancellation cleanup-ও এই ownership রাখে। অন্য target-এ

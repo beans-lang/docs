@@ -25,7 +25,7 @@ you write code, but it helps to know it once.
   `size_of`. You can see the checker at
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b).
 
-The unreleased checkout reports runtime ABI `22`, compiler `0.1.51`, and the
+The current release reports runtime ABI `22`, compiler `0.1.51`, and the
 candidate language contract `1.0`. Installed release output is shown under
 [Verify the install](/start/verify/).
 

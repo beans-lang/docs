@@ -136,8 +136,8 @@ match spinner.join() {
 }
 ```
 
-The cleanup behavior below requires the unreleased **0.1.51 checkout**.
-Published **v0.1.50** abandons cancelled frames, including on these targets.
+The cleanup behavior below is available from **v0.1.51**.
+Release **v0.1.50** abandons cancelled frames, including on these targets.
 
 A cancelled park does not return a value to the code that parked. The fiber
 unwinds on targets with controlled cleanup: ELF and Mach-O on x86_64 and

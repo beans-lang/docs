@@ -26,7 +26,7 @@ Beans তার builtin গুলো দুই ভাবে তৈরি কর�
   `size_of`। checker দেখা যাবে
   [`src/expression.b`](https://github.com/beans-lang/beans/blob/main/src/expression.b)-তে।
 
-Unreleased checkout-এর runtime ABI `22`, compiler `0.1.51`, আর language contract
+বর্তমান release-এর runtime ABI `22`, compiler `0.1.51`, আর language contract
 `1.0` candidate। প্রকাশিত installer-এর output দেখুন [install যাচাই](/bn/start/verify/)-এ।
 
 ## Error handling নিজেই builtin
