@@ -17,8 +17,7 @@ macOS a private `kqueue` `EVFILT_SIGNAL`. Read the source at
 import std.signal
 ```
 
-On Windows every operation is a stub that refuses, because Windows cannot express
-this model.
+This package is not implemented on Windows; its operations return errors there.
 
 You cannot watch every signal. `kill` and `stop` are unblockable, and the fault
 signals `segv`, `bus`, `fpe`, and `ill` are excluded too. Asking for the number of

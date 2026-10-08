@@ -55,8 +55,7 @@ pub fn decode_forgiving(text: string) -> Result<Bytes>
 
 Decode fills its result `Bytes` directly and shrinks that same allocation to the
 decoded length. Strict no-padding forms validate the final group without making
-a padded copy of the input. These are implementation gains; the API and owned
-result behavior do not change.
+a padded copy of the input.
 
 ```beans
 import std.io

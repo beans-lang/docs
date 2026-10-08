@@ -9,10 +9,8 @@ it names your module and lists the Git dependencies you pull in.
 
 ## Where the name comes from
 
-POT does not stand for anything. There is no hidden expansion in the source,
-the README, the spec, or these docs. The name is a joke on the project's own
-name: Beans keeps its packages in a **pot of beans**. The manifest file is
-`beans.pot`, and the command that works on it is `beansc pot`.
+POT is not an acronym. The name is a joke about a **pot of beans**. The manifest
+file is `beans.pot`, and the package command is `beansc pot`.
 
 Type a command Beans does not have, like `mod`, and it says so plainly:
 
@@ -22,9 +20,8 @@ error: 'mod' is not a Beans command; use 'beansc pot tidy' or 'beansc pot update
 
 ## Four ideas to keep apart
 
-Package talk gets confusing because people use one word for four different
-things. Beans keeps them separate. Learn these four and the rest of POT reads
-easily.
+The table below distinguishes module paths, import paths, package names, and
+import bindings.
 
 | Idea | Example | What it is |
 | --- | --- | --- |

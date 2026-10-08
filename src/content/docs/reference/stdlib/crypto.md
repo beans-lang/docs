@@ -18,19 +18,14 @@ import std.crypto
 
 ## Rules that shape the package
 
-- **The platform owns the cryptography.** A hash is exactly the kind of thing to
-  take from the OS rather than carry, so this package is a thin, honest wrapper.
-  `available()` reports whether a provider is present — always true on macOS and
-  Windows, dependent on a libcrypto being installed elsewhere.
-- **Minimal by design.** SHA-1 exists because the WebSocket handshake needs it;
-  SHA-256 because the protocols above it do. This is not a general cryptography
-  toolkit and is not meant to become one. Anything more belongs in a library that
-  makes cryptography its whole job.
+- **Hashes use the platform provider.** `available()` reports whether a provider
+  is present. It is always true on macOS and Windows; elsewhere it depends on
+  libcrypto being installed.
+- **The package provides SHA-1, SHA-256, and HMAC.** SHA-1 is used by the
+  WebSocket handshake. This package is not a general cryptography toolkit.
 - **HMAC is built here**, on the platform digest, using the standard ipad/opad
-  construction from RFC 2104 — so nothing extra rides in the C bridge.
-- **A `Hasher` is spent by `finish`.** Using one afterwards is an `err` with kind
-  `closed`, because a digest that could be read twice would be a digest whose
-  state you cannot reason about.
+  construction from RFC 2104.
+- **`finish` consumes a `Hasher`.** Later calls return an `err` with kind `closed`.
 
 Error kinds you may see: `unsupported` (no provider on this platform), `closed`
 (a spent hasher), `io` (the provider failed).

@@ -74,10 +74,8 @@ fn main() {
 
 ## Set
 
-A membership-only collection, with O(1) add, membership and removal. A
-`Map<T, bool>` does the same job with a value nobody reads; this says what it
-means, and answers the set-algebra questions by walking the storage rather than
-copying keys into lists first.
+A collection of unique values, with O(1) add, membership, and removal.
+Set operations walk the storage without first copying keys into lists.
 
 ```beans
 pub class Set<T implements Eq & Hash & Clone>
@@ -131,12 +129,9 @@ fn main() {
 
 ## SortedMap
 
-The ordered half of the map story. `Map` answers "is this key here" and
-`OrderedMap` answers "what went in first"; neither answers "what is the next key
-after this one", "how many keys are below it", or "give me every key in this
-range" — the questions a leaderboard, a time-series index or an expiry scan is
-made of. Sorting a list answers them once and is wrong the moment the collection
-changes again.
+`SortedMap` keeps keys sorted and supports neighbor, rank, and range queries:
+find the next key, count keys below a value, or get all keys in a range.
+Updates preserve the key order.
 
 ```beans
 pub class SortedMap<K implements Order & Clone, V implements Clone>
@@ -202,10 +197,10 @@ fn main() {
 
 ## PriorityQueue
 
-"What happens next" — an expiry wheel, a scheduler, a Dijkstra frontier. A
-binary min-heap keyed on a priority kept separate from the value: the smallest
-priority comes out first. A sorted list gives the same answer and pays O(n) per
-insert; this pays O(log n) and never sorts what it is not asked about.
+A binary min-heap with a priority stored separately from each value. The value
+with the smallest priority comes out first. Insertion takes O(log n), compared
+with O(n) for a sorted list. Use it for scheduling, expiry queues, or a
+Dijkstra frontier.
 
 ```beans
 pub class PriorityQueue<P implements Order & Clone, V implements Clone>

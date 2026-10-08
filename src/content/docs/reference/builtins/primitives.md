@@ -8,8 +8,7 @@ description: The basic built-in types in Beans, from unit and bool to integers, 
 <!-- coverage:summary:end -->
 
 A **primitive type** is the smallest kind of value Beans has. It is not made of
-other values. Every primitive is stored directly (unboxed) in the generated code,
-so it is cheap to use.
+other values. Every primitive is stored directly (unboxed) in the generated code.
 
 Every binding states its type. For example:
 
@@ -68,7 +67,7 @@ error would be wrong, such as money. It takes 32 bytes and aligns to 16.
 [string](/reference/builtins/string/) for every method. For a growable, changeable
 byte buffer, see [Bytes](/reference/builtins/bytes/).
 
-## Everything has methods
+## Primitive values have methods
 
 Even a literal number or string has methods. You can call a method right on a
 literal:

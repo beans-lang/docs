@@ -31,8 +31,8 @@ import std.net
 - **Reads and writes are partial by contract.** `read` returns what has arrived
   and `write` reports what went out. An empty `Bytes` from `read` means the peer
   closed. `write_all` and `read_exact` loop for you.
-- **Blocking calls retry on EINTR.** A timeout returns an `err` with kind
-  `timeout`, never a hang.
+- **Blocking calls retry on EINTR.** When a configured timeout expires, the call
+  returns an `err` with kind `timeout`.
 
 Error kinds you may see: `refused`, `in_use`, `timeout`, `reset`, `unreachable`,
 `not_found`, `closed`, `eof`, `invalid`, `permission`, `io`.
@@ -122,10 +122,8 @@ pub fn poll_handle() -> int
 - `connect` waits as long as the OS does; `connect_timeout` gives up after `ms`
   milliseconds with kind `timeout`.
 - `write_vectored` sends two buffers as one write, without joining them first.
-  A response is a head you just framed and a body you already hold, and joining
-  them copies the body — on a one-megabyte response that copy costs more than
-  everything else the send does. `write_vectored_text` is the same for a body
-  you hold as a string.
+  For an HTTP response, this avoids copying the body into a buffer with the
+  head. `write_vectored_text` does the same for a body held as a string.
 
   `offset` counts into the **concatenation** of the two buffers, so a short
   write resumes correctly whether it stopped inside the head or inside the body
@@ -153,9 +151,8 @@ pub fn poll_handle() -> int
   `try_read_into` return `ok(none)` when the socket would block, instead of an
   error. For `try_read_into`, `ok(some(0))` is EOF, so a quiet socket and a
   closed peer remain different facts.
-- `set_nodelay(true)` disables Nagle's algorithm (and `false` restores it). A
-  request/response server wants it disabled, so a small response is not held
-  back for a coalescing timer.
+- `set_nodelay(true)` disables Nagle's algorithm (and `false` restores it).
+  Disabling it can reduce delays for small request/response messages.
 - `into_raw` transfers the descriptor to a lower-level transport. The stream
   stops owning it; the new owner must close it.
 - `shutdown_write` sends EOF to the peer while keeping the read half open.
@@ -280,12 +277,10 @@ pub fn join_multicast(group: string) -> Result<bool>
 pub fn leave_multicast(group: string) -> Result<bool>
 ```
 
-Joins or leaves a multicast group, so datagrams sent to the group arrive on this
-socket. The group is a **numeric** address — `"239.1.2.3"` or `"ff02::1"` —
-because a name can resolve to anything and membership of the wrong group is
-silent. The socket must be bound to the same address family. Leaving a group this
-socket never joined is an `err` from the OS rather than a silent no-op: it is
-always a bookkeeping mistake in the caller.
+Joins or leaves a multicast group. Joined sockets receive datagrams sent to the
+group. Use a **numeric** address, such as `"239.1.2.3"` or `"ff02::1"`; the socket
+must be bound to the same address family. Leaving a group that this socket has
+not joined returns an `err` from the OS.
 
 ## Readiness
 

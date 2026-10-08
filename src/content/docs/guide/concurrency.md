@@ -45,8 +45,8 @@ value `T` must be `Send`, and so must everything the closure captures.
 
 ## Send and Sync
 
-The type system stops data races before they happen. A `thread.spawn` closure
-may capture only `Send` values and must return a `Send` value.
+A `thread.spawn` closure may capture only `Send` values and must return a
+`Send` value.
 
 - **Local by default:** plain class references and plain `fn` closures.
 - **Conditional:** `List<T>`, `Box<T>`, and `Arena<T>` are `Send` when `T` is.
@@ -93,10 +93,9 @@ Plain `fn` values stay local and cloneable. A `send fn` is move-only.
 
 ## Mutex
 
-`Mutex<T>` holds the value inside it. `with_lock` locks, runs your closure, and
-unlocks on any exit path, so there are no forgotten unlocks. The value is
-reachable only inside the closure, which is what makes the lock impossible to
-skip.
+`Mutex<T>` holds the protected value. `with_lock` acquires the lock, passes the
+value to your closure, and unlocks when the closure exits. The value is
+accessible only inside the closure.
 
 ## Channels
 

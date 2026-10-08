@@ -10,8 +10,8 @@ The source reference and install instructions track Beans `0.1.51` (language
 contract `1.0`, runtime ABI `22`), recorded in the latest dated release in the
 compiler changelog. The reference includes
 `std.log`, HTTP, HTTP/2, WebSocket, TLS, polling, and socket APIs,
-the current `Send` rules, allocation-free read paths, OOP features, and runtime
-reflection.
+the current `Send` rules, allocation-free read paths, classes and interfaces,
+and runtime reflection.
 
 ## Develop
 
@@ -46,11 +46,11 @@ BEANS_REPO=/path/to/beans \
 BEANS_STDLIB=/path/to/beans/stdlib/std npm run examples
 ```
 
-`version:check` holds reference facts to the checkout's `VERSION` and release
-install instructions to the latest dated `CHANGELOG.md` entry's release
-contract. It also checks the compiler README's release and checkout claims.
-Unreleased fixes are not evidence that a new archive has been published. The
-negative controls run inside temporary fixtures as part of this existing gate.
+`version:check` compares reference versions with the checkout's `VERSION` and
+install instructions with the release contract in the latest dated
+`CHANGELOG.md` entry. It also checks the compiler README's release and checkout
+claims. Unreleased fixes do not mean a new archive has been published. The
+check includes regression tests that use temporary fixtures.
 
 The example check compiles programs with `beansc`. It uses the in-tree build
 (`$BEANS_REPO/build/beansc`), then `BEANSC`, then `beansc` on your `PATH`; if it
@@ -60,12 +60,12 @@ is newer than your installed release.
 
 ## Coverage and signatures (maintenance)
 
-The coverage check proves the reference stays complete and correct. It builds an
-inventory of every public builtin and standard-library symbol from the Beans
-source and fails when a symbol is undocumented, when the page does not show the
-symbol's exact signature (a wrong or missing parameter type or return type
-fails), or when a page's API summary count is stale. The inventory is generated,
-so it cannot drift from the compiler:
+The coverage check finds missing public symbols, incorrect signatures, and
+stale API summaries. It builds an inventory of public builtins and
+standard-library symbols from the Beans source. The check fails when a symbol
+is undocumented, when a page has a wrong or missing parameter or return type,
+or when its API summary count is stale. It generates the inventory from the
+Beans source on each run:
 
 - **Standard library** — full signatures (with parameter names, generics, and
   modifiers) parsed from the Beans packages under `stdlib/std/**/*.b`
@@ -109,8 +109,7 @@ checked:
   mapped to `guide/enums.md` on day one, pointing at a page that never mentioned
   it.
 
-A row for a heading the spec no longer has is refused too, so the table cannot
-rot into fake coverage.
+The check also rejects rows for headings that no longer exist in the spec.
 
 ## Beans syntax highlighting
 

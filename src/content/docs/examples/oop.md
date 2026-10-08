@@ -1,9 +1,9 @@
 ---
-title: OOP classes and value types
+title: Classes and value types
 description: A walk through strict private fields and methods, static state, abstract methods, singletons, generic structs, and mutating struct methods.
 ---
 
-Two small programs show the full OOP update:
+Two small programs show classes and inline value types:
 
 - [`oop_classes.b`](https://github.com/beans-lang/beans/blob/main/examples/oop_classes.b)
   covers class contracts and shared state.

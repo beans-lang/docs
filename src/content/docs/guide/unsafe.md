@@ -43,9 +43,10 @@ Integer and bool pointers also provide sequentially-consistent `atomic_load`,
 `atomic_store`, `atomic_compare_exchange`; integer pointers add
 `atomic_fetch_add` (returns the old value).
 
-You own lifetime, bounds, alignment, address validity, and matching each
-`alloc` with one `free`. A null memory operation panics; everything else is on
-you. Raw pointers are copyable, so freeing one alias leaves the others dangling.
+The caller must ensure valid addresses, bounds, alignment, and allocation
+lifetimes, and match each `alloc` with one `free`. A null memory operation
+panics. Raw pointers are copyable, so freeing one alias leaves the others
+dangling.
 
 `RawPtr.with_local(inout value, fn(pointer: RawPtr<T>) { ... })` lends a pointer
 to one stack value for the duration of the closure.

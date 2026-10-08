@@ -1,9 +1,9 @@
 ---
 title: Beans
-description: A small object-oriented systems language with classes and interfaces, exact decimal arithmetic, predictable memory, and direct systems access.
+description: A small, general-purpose programming language with explicit types, exact decimal arithmetic, predictable ownership, and direct systems access.
 template: splash
 hero:
-  tagline: A small object-oriented systems language with predictable memory, no null, no exceptions, and direct systems access.
+  tagline: A small programming language with explicit types, predictable ownership, and direct systems access.
 ---
 
 import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
@@ -18,16 +18,17 @@ export const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 ## What is Beans?
 
-Beans is a small object-oriented systems language built to be both exact and
-low-level — as comfortable with accounting and billing as with databases and
-operating systems. Files end in `.b`.
+Beans is a small, general-purpose programming language with explicit types,
+exact `decimal` arithmetic, and direct systems access. Source files end in `.b`.
 
-It has classes, interfaces, and inheritance with reference semantics; a small
-grammar; exact `decimal` arithmetic; no null and no exceptions, only `Option` and
-`Result`; deterministic object lifetimes with no garbage-collector pauses; and a
-low-level `unsafe` layer for raw memory and C interop. One compiler, `beansc`,
-checks your program and either runs it on a reference interpreter or compiles it
-to a native binary through LLVM.
+You can write standalone functions and closures, define structs and enums, or
+use classes and interfaces. Classes support inheritance and reference semantics;
+structs copy by value. Missing values use `Option` and failures use `Result`,
+with no null or exceptions. Memory uses automatic reference counting with a cycle
+collector, and an `unsafe` layer provides raw memory and C interop.
+
+One compiler, `beansc`, checks your program and either runs it on a reference
+interpreter or compiles it to a native binary through LLVM.
 
 ```beans
 import std.io
@@ -44,9 +45,9 @@ fn main() {
     values are `Option`, failures are `Result`. The grammar is small.
   </Card>
   <Card title="Predictable memory" icon="setting">
-    Automatic reference counting with a cycle collector. There is no tracing
-    garbage collector, so the straight-line path has no pauses, and destructors
-    run deterministically.
+    Automatic reference counting with a cycle collector. Destructors run when
+    the last strong reference is released. The cycle collector handles
+    unreachable reference cycles.
   </Card>
   <Card title="Systems access" icon="laptop">
     Files, sockets, threads, atomics, SIMD, shared memory, dynamic libraries,

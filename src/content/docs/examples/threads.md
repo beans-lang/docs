@@ -58,8 +58,7 @@ defer ch.close()
 
 A `Channel<string>` is a queue between threads. `new Channel(8)` makes one with
 room for 8 buffered messages. `send` puts a value in. `defer ch.close()` closes
-the channel when the current scope ends; `defer` runs its statement on the way
-out, no matter how you leave.
+the channel when the current scope ends.
 
 Run it:
 
@@ -109,8 +108,7 @@ Things to notice:
 - After `close()`, `receive()` returns `none`, so `.is_none()` is `true`. That
   is how a reader learns the channel is done.
 
-The example also sends `int`, `decimal`, and even a `Result<Pair>` through
-channels; any type works:
+The example also sends `int`, `decimal`, and `Result<Pair>` through channels:
 
 ```beans
 let guarded: Channel<Result<Pair>> = new Channel(1)

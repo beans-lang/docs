@@ -70,9 +70,9 @@ pub fn angle_limit() -> float
   or a hue wants this one.
 - `infinity` is positive infinity — negate it for the other one. `is_finite` is
   false for both infinities and for NaN.
-- `angle_limit` is the largest `|radians|` that `sin` and `cos` can still reduce
-  accurately (`1.0e15`). Past it a float carries fewer bits than a full turn
-  needs, so any answer would be invented; they answer NaN there instead.
+- `angle_limit` is the largest `|radians|` that `sin` and `cos` can reduce
+  accurately (`1.0e15`). Both return NaN when the absolute input exceeds this
+  limit.
 
 ```beans
 import std.io

@@ -13,8 +13,8 @@ phrase means something specific:
 
 - **The language contract is the `1.0` candidate.** Compatibility remains a goal;
   the pre-1.0 line can still change. Pin the compiler and dependencies.
-- **This reference tracks compiler release `0.1.51`.** Release checks establish
-  compiler evidence; independent applications still need their own validation.
+- **This reference tracks compiler release `0.1.51`.** Release checks test the
+  compiler. Applications need their own tests.
 - **The runtime ABI is `22`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
@@ -58,10 +58,10 @@ on those targets. Published release evidence is recorded in the compiler's
 
 Start with small command-line data tools on macOS ARM64 and Linux x86_64 (GNU),
 where local SQLite checks passed under both interpreter and native execution.
-Confirm these platforms fit prospective users' tasks; these checks establish
-local evidence, not user acceptance. Use the standard library and the existing
-SQLite package. Read records,
-validate and transform them, persist them, and compare a deterministic report
+Check that these platforms support the work users need to do. Passing local
+tests does not show that users can complete their tasks. Use the standard
+library and the existing SQLite package. Read records, validate and transform
+them, persist them, and compare a deterministic report
 between interpreter and native execution. Each dependency must pass its own
 supported-platform and failure checks.
 

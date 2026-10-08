@@ -1,6 +1,6 @@
 ---
 title: std.compress
-description: DEFLATE, zlib and gzip with mandatory output limits, so a decompression bomb is an error rather than an allocation.
+description: DEFLATE, zlib and gzip with mandatory decompression output limits.
 ---
 
 <!-- coverage:summary -->
@@ -17,15 +17,12 @@ import std.compress
 
 ## Rules that shape the package
 
-- **Decompression limits are mandatory.** Every inflating call names the most
-  bytes it is prepared to receive. Crossing that bound is an `err` with kind
-  `limit` — never an allocation racing a hostile compression ratio. A 200-byte
-  input that claims four gigabytes gets 200 bytes of honest effort and an error.
-  The limit is a parameter, not an option, so the defence cannot be forgotten.
-- **Three formats, spelled out.** `zlib` (RFC 1950), `raw` (RFC 1951) and `gzip`
-  (RFC 1952) are named, not selected by window-bits folklore. gzip decoding
-  reads every member of a multi-member file, the way `gzip -d` reads
-  concatenated archives.
+- **Decompression limits are mandatory.** Every decompression call requires a
+  maximum output size. It returns an `err` with kind `limit` when the output
+  would exceed that size.
+- **Three formats are supported.** `zlib` (RFC 1950), `raw` (RFC 1951), and `gzip`
+  (RFC 1952) are selected by name. gzip decoding reads every member of a
+  multi-member file, like `gzip -d` on concatenated archives.
 - **One-shot for buffers, streams for everything else.** The module functions
   take and return whole `Bytes`. `Deflater` and `Inflater` are move-only handles
   for data arriving in pieces, and an `Inflater`'s limit holds across its whole

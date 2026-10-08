@@ -1,17 +1,15 @@
 ---
 title: Release process
-description: A safe overview of how Beans releases are built, verified, and published.
+description: How Beans releases are built, tested, and published.
 ---
 
-This is an overview of how a Beans release is produced. It describes the shape
-of the process; it does not include any secrets.
+This page describes how the release workflow builds, tests, and publishes
+Beans packages.
 
 ## What a release builds
 
 The release workflow builds and install-tests all **26 required host packages**.
-Each package is built and then smoke-tested by actually installing and running
-it, so a published archive proves the compiler was built and worked for that
-target.
+Each package is installed and smoke-tested on its target before publication.
 
 ## What a release publishes
 
@@ -44,11 +42,11 @@ for related detail.
 
 ## Rehearsal before publishing
 
-The executable [build and release rehearsal](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#independent-build-and-release-rehearsal)
-uses the existing compiler, package, install, release-completeness, and docs
-gates. A second person can record their environment and assistance without
-publishing anything. Maintenance remains concentrated until someone has
-actually completed that rehearsal and agreed to take responsibility.
+The [build and release rehearsal](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#independent-build-and-release-rehearsal)
+lets another contributor run the compiler, package, install, release, and docs
+checks without publishing. They record their environment and any help they
+needed. The project still needs another maintainer who has completed the
+rehearsal and agreed to take responsibility.
 
 The release owner can use the existing workflow's manual candidate mode with
 `publish=false` and `skip_autobahn=false` when a full target rehearsal is

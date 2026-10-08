@@ -36,8 +36,8 @@ producing the branch value. The rule is:
 - **Statement position:** branches hold statements; `return` leaves the
   function as usual.
 - **Value position:** each branch is exactly one expression, and that
-  expression is the value. Need several statements? Use a `var` and the
-  statement form.
+  expression is the value. For several statements, assign to a `var` using
+  the statement form.
 
 `match` works the same way. [Pattern matching](/guide/pattern-matching/) covers
 the pattern shapes:

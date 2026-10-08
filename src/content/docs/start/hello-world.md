@@ -70,8 +70,8 @@ beansc build hello.b -o hello
 hello from beans
 ```
 
-The interpreter (`run`) and the native binary (`build`) produce the same
-output. The two backends behave identically.
+This example produces the same output with the interpreter (`run`) and the
+native binary (`build`).
 
 ## Build an optimized binary
 

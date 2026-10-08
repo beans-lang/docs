@@ -61,16 +61,8 @@ export default defineConfig({
     starlight({
       title: 'Beans',
       description:
-        'The official documentation for Beans, a small object-oriented systems language with classes, interfaces, predictable ownership, and direct systems access.',
-      tagline: 'A small object-oriented systems language.',
-      // Two languages. English is the default and stays at the site root; casual
-      // Bangla is served under /bn/. Pages without a Bangla translation fall back
-      // to the English content, so the site is fully browsable in either language.
-      defaultLocale: 'root',
-      locales: {
-        root: { label: 'English', lang: 'en' },
-        bn: { label: 'বাংলা', lang: 'bn' },
-      },
+        'The official documentation for Beans, a small, general-purpose programming language with explicit types, exact decimal arithmetic, predictable ownership, and direct systems access.',
+      tagline: 'A small programming language with explicit types and direct systems access.',
       social: [
         {
           icon: 'github',
@@ -225,7 +217,7 @@ export default defineConfig({
           items: [
             { label: 'Overview', slug: 'examples' },
             { label: 'Hello and the tour', slug: 'examples/hello-tour' },
-            { label: 'OOP classes and value types', slug: 'examples/oop' },
+            { label: 'Classes and value types', slug: 'examples/oop' },
             { label: 'Threads and channels', slug: 'examples/threads' },
             { label: 'Atomics', slug: 'examples/atomics' },
             { label: 'Files and a KV store', slug: 'examples/files-kv' },

@@ -33,18 +33,18 @@ not run on a plain desktop build. Those are marked below.
 | Example | Shows | Runnable |
 | --- | --- | --- |
 | [hello.b](https://github.com/beans-lang/beans/blob/main/examples/hello.b) | Hello world and string interpolation | yes |
-| [tour.b](https://github.com/beans-lang/beans/blob/main/examples/tour.b) | A one-file tour of every language idea | yes |
+| [tour.b](https://github.com/beans-lang/beans/blob/main/examples/tour.b) | A one-file introduction to core language features | yes |
 
 Walked through in [Hello and the tour](/examples/hello-tour/).
 
-## Object-oriented code and value types
+## Classes and value types
 
 | Example | Shows | Runnable |
 | --- | --- | --- |
 | [oop_classes.b](https://github.com/beans-lang/beans/blob/main/examples/oop_classes.b) | `priv` methods and fields, static fields, abstract methods, interfaces, and a singleton | yes |
 | [generic_structs.b](https://github.com/beans-lang/beans/blob/main/examples/generic_structs.b) | Generic structs, defaults, read methods, `inout fn`, and static factories | yes |
 
-Walked through in [OOP classes and value types](/examples/oop/).
+Walked through in [Classes and value types](/examples/oop/).
 
 ## Concurrency
 

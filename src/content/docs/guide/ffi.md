@@ -96,9 +96,8 @@ incomplete type you only touch behind `RawPtr`.
 ## Callbacks
 
 - A **borrowed callback** is an `fn(...)` parameter on an `extern "C" fn`. It is
-  lent to C for the length of that one call only, so a Beans closure can be
-  passed directly and no lifetime question arises. C must not store it or call
-  it from another thread.
+  valid only during that call. You can pass a Beans closure directly. C must
+  not store it or call it from another thread.
 - A callback C **stores** or calls later needs `StoredCallback<F>`:
   `StoredCallback.create(userdata_index, closure)`. Pass `function()` to a
   borrowed parameter, `function_pointer()` when C stores the address in a

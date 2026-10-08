@@ -82,9 +82,8 @@ pub fn remove(path: string) -> Result<bool>
 pub fn temp_dir() -> string
 ```
 
-- `rename` moves a file, replacing `to` if it is there. Across filesystems the
-  platform may refuse it rather than copying, which is the honest answer: a
-  rename is atomic and a copy is not.
+- `rename` moves a file atomically within a filesystem, replacing `to` if it is
+  there. It can fail across filesystems and does not fall back to copying.
 - `remove` answers `ok(true)` when it deleted the file and **`ok(false)` when
   there was nothing to delete**. Only a real failure — a permission, a directory
   in the way — comes back as `err`, so "make sure this is gone" needs no

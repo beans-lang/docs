@@ -3,8 +3,8 @@ title: Compatibility
 description: The compatibility promise, the runtime ABI, how to pin, and Git as the dependency source.
 ---
 
-This page is about what stays stable, what may move, and how you hold a project
-still while the language is still before 1.0.
+This page explains compatibility before 1.0 and how to pin the compiler and
+dependencies.
 
 ## The promise, before and after 1.0
 
@@ -25,14 +25,14 @@ together. Staying on one installed release keeps them matched.
 
 ## How to pin
 
-For any project you care about, pin two things:
+Pin the compiler and dependencies:
 
 1. **The compiler.** Install one release and keep it. Do not float on
    `upgrade` mid-project.
 2. **`beans.lock`.** Commit it. It records the exact commit and tree of every
    dependency. See [Dependencies and the lock file](/pot/dependencies/).
 
-Then build with the strict flags so nothing drifts under you:
+Build with these flags to enforce the recorded dependencies:
 
 ```bash
 beansc build --locked --offline app.b -o app

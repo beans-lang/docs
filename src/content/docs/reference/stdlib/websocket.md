@@ -17,16 +17,14 @@ import std.websocket
 
 ## Rules that shape the package
 
-- **A message, not a frame.** `receive` yields whole messages; fragmentation,
-  continuation frames and interleaved control frames are handled underneath,
-  because every protocol built on WebSocket cares about messages and none of
-  them care about frames.
+- **`receive` returns complete messages.** The package handles fragmentation,
+  continuation frames, and interleaved control frames.
 - **Text means valid UTF-8**, checked on the assembled message rather than per
   frame, because a code point may straddle a fragment boundary. A text message
   that is not well-formed UTF-8 is a protocol error.
-- **Ping is answered for you.** The pong is on the wire before the `ping` reaches
-  your loop, because a library that makes you remember produces dead
-  connections. Received pings are still reported, for callers who count them.
+- **Pings are answered automatically.** The library sends a pong before
+  reporting the `ping` to your loop. Received pings are still reported, so
+  callers can count them.
 - **Close is a handshake, not a hangup.** `close` sends the close frame and
   waits, bounded, for the peer's. A protocol violation sends the close frame the
   RFC requires and then closes the TCP connection immediately, as section 7.1.1
@@ -51,9 +49,8 @@ pub fn accept_websocket<T implements net.ByteStream>(move stream: T, request: ht
 
 `available` reports whether the native framing bridge is present.
 
-The `Sec-WebSocket-Accept` value for a client's `Sec-WebSocket-Key`: base64 of
-SHA-1 over the key and one fixed UUID. A server that gets this wrong is rejected
-by every browser, which makes it the most-tested line in the protocol.
+`accept_for_key` computes the `Sec-WebSocket-Accept` value from the client's
+`Sec-WebSocket-Key`: base64 of SHA-1 over the key and one fixed UUID.
 
 The three generic helpers upgrade, wrap, or accept any owned `net.ByteStream`.
 Use them for TLS. The static methods below expose the same operations.
@@ -248,7 +245,6 @@ apply unchanged.
 
 ## Conformance
 
-The framing is held to the Autobahn TestSuite, run containerized against both an
-echo server and an echo client, with a hard bar: no failed case and no failed
-close behavior. That suite is the reason this package wraps wslay rather than
-being written in a weekend — it fails implementations that look finished.
+The framing uses wslay and is tested with the Autobahn TestSuite, run in
+containers against both an echo server and an echo client. The test gate
+requires no failed cases and no failed close-behavior checks.

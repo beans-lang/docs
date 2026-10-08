@@ -94,8 +94,7 @@ read at a different stage.
 - You can loop over one with `for`.
 
 A stable `for` loop reads the inline array directly when its item binding cannot
-escape. If the loop can change the array, the compiler keeps the previous safe
-snapshot behavior. This is an optimizer choice, not new array syntax.
+escape. If the loop can change the array, the compiler uses a snapshot.
 
 A list literal takes on fixed-array meaning from the declared type:
 

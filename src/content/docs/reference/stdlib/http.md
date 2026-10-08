@@ -25,10 +25,9 @@ import std.http
 - **The read buffer can be reused.** `feed_range` parses a checked range of an
   existing `Bytes`. Pair it with `TcpStream.read_into` to avoid allocating one
   input buffer per socket read.
-- **Strict mode is the only mode.** The lenient flags that exist for ancient
-  peers and request-smuggling papers are not exposed. What llhttp rejects, this
-  package rejects: a malformed message is kind `protocol`, and the connection it
-  came from is finished. A parse failure does not throw away the events that
+- **The parser uses strict mode.** The package does not expose llhttp's lenient
+  parsing flags. A malformed message returns kind `protocol` and ends the
+  connection. A parse failure does not throw away the events that
   arrived before it, so a pipelined buffer whose third message is malformed still
   yields the first two.
 - **The limits llhttp does not own live here.** `Limits` bounds header count,
@@ -37,7 +36,7 @@ import std.http
 - **Header order and case are preserved.** `Headers` is an ordered list, not a
   map: repeated fields combine in order, and a proxy that reorders them changes
   the message. Lookups are ASCII-case-insensitive and `get` answers the first
-  match, which is what a compliant reader must do.
+  match.
 - **HTTP/2 is a property of the connection, not a different API.** Streams carry
   the same `Headers`, pseudo-headers included in arrival order.
 
@@ -193,10 +192,10 @@ The `_into` pair is the allocation-free form for a server's read loop:
 `feed_range_into` appends events into a caller-owned list, and `finish_into`
 signals end-of-stream the same way. The caller clears the list between feeds;
 events are valid until then. `recycle` hands a delivered request head back for
-reuse — the next message fills that shell instead of allocating one, and reuses
-its target and header strings when the peer repeats them byte-for-byte, the
-shape of every keep-alive connection. Only recycle a request nothing will read
-again: the parser rewrites every field in place.
+reuse. The next message fills that object instead of allocating one, including
+its target and header strings when the peer repeats them byte-for-byte. Recycle
+only a request that no caller will read again: the parser rewrites every field
+in place.
 
 ```beans
 let parser: http.RequestParser = new http.RequestParser()
@@ -215,8 +214,7 @@ for event: http.RequestEvent in parser.feed(arrived)? {
 
 One TCP connection speaking HTTP/1.1, with keep-alive by default. Move-only and
 `Send`.
-There is deliberately no connection pool: a pool is a policy, and this is the
-mechanism it would pool.
+`Client` does not provide a connection pool.
 
 ```beans
 pub unique class Client implements Send
@@ -241,11 +239,10 @@ pub class ClientResponse {
 }
 ```
 
-A `Host` header is added when you did not set one, because HTTP/1.1 requires it
-and forgetting it produces confusing 400s. Responses carrying
-`Content-Encoding: gzip` or `deflate` are decompressed through
-[`std.compress`](/reference/stdlib/compress/) under the same `max_body` bound, so
-a compressed bomb is an error rather than an allocation.
+A `Host` header is added when you did not set one, as required by HTTP/1.1.
+Responses carrying `Content-Encoding: gzip` or `deflate` are decompressed through
+[`std.compress`](/reference/stdlib/compress/) under the same `max_body` output
+limit.
 
 ```beans
 let client: http.Client = http.Client.connect("127.0.0.1", port)?
@@ -340,9 +337,8 @@ conn.finish_chunked()?
 - `finish_chunked` writes the terminator. `finish_chunked_trailers` carries
   trailer fields with it, held to the head's CR/LF/NUL rule.
 - `is_streaming` answers whether a chunked response is open.
-- Closing without finishing leaves the body unterminated. That is the honest
-  report of a handler that failed after its status was already sent: the peer
-  sees a truncated message rather than a complete one that lost content.
+- Closing without finishing leaves the body unterminated, so the peer receives
+  a truncated message.
 
 A response to a HEAD request is answered with `respond`, not begun here — a
 streamed HEAD response would either never be finished, or be finished with a
@@ -383,9 +379,8 @@ already-framed chunks. A caller framing its own chunks wants the writer below.
 
 ### ChunkedResponseWriter
 
-Chunked framing is a *sequence*, and the mistakes that corrupt a streamed
-response are sequencing mistakes no single function can see. This class refuses
-each one at the call that makes it.
+`ChunkedResponseWriter` checks the order of calls. It rejects a second head,
+chunks before the head or after the terminator, and zero-length chunks.
 
 ```beans
 pub class ChunkedResponseWriter

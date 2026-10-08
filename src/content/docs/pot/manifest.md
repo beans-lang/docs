@@ -97,8 +97,8 @@ cflags linux "-I/usr/include/gtk-4.0"
   value passes through untouched.
 
 `beansc pot add --system <pkg> [<selector>]` generates these rows from
-`pkg-config --cflags` between markers it manages, which is the only honest way
-to name include paths that differ on every machine.
+`pkg-config --cflags` on the build machine and writes them between markers it
+manages.
 
 The package-relative rule is what lets a package vendor a C library that has
 its own include tree, without naming a path that exists on one machine:
@@ -129,9 +129,9 @@ Entries pass to the linker in the order you declare them.
 
 ### `csrc <selector> "<file.c>"` (repeatable)
 
-Declares a C source file the package owns. The toolchain compiles it, so a
-C-wrapping library vendors no prebuilt binaries and pushes no external build
-step onto consumers — `import github.com/owner/lib` just works.
+Declares a C source file that ships with the package. The toolchain compiles it
+during the Beans build, without requiring a prebuilt binary or a separate build
+step from the consumer.
 
 - Selectors are the same as `link`: `all`, an OS name, or an exact triple.
 - The path is relative to the `beans.pot` that declares it, and the file must

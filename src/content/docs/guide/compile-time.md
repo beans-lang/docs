@@ -3,10 +3,9 @@ title: Compile-time features
 description: Layout queries (size_of, align_of, offset_of), the selected target, and CPU feature dispatch, all resolved at compile time.
 ---
 
-Beans folds a few things to constants at compile time, always for the **selected
-target** (what `--target` picks, or the host by default). Because both the
-native backend and the interpreter read the same folded numbers, they can never
-disagree.
+Beans folds some values to constants at compile time for the **selected
+target** (what `--target` picks, or the host by default). The native backend and
+interpreter use the same folded constants.
 
 ## Layout queries
 

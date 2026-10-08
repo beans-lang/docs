@@ -163,9 +163,9 @@ beansc pot update --system sqlite3
 beansc pot update --system gtk4 linux
 ```
 
-This is how a manifest names a library whose include paths differ on every
-machine: they are generated on the machine that builds, between the markers,
-rather than written by hand — a hand-written list names one computer.
+Use this command for a library whose include paths depend on the machine.
+It generates the paths from `pkg-config` on the build machine and writes them
+between the markers.
 
 ## `--locked` and `--offline`
 

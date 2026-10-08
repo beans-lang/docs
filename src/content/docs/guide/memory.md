@@ -4,9 +4,8 @@ description: How Beans manages memory with automatic reference counting, a cycle
 ---
 
 Beans manages memory with **automatic reference counting (ARC)** plus a **cycle
-collector**. There is no tracing garbage collector and no pauses on the
-straight-line path. This page explains the model and the tools you use to
-control it.
+collector**. This page explains how references and cycles are released, and
+the tools you use to control their lifetimes.
 
 ## Reference counting
 
@@ -195,8 +194,8 @@ types can also cross.
 `send fn(...) -> T` is a move-only function value for a thread handoff. Every
 capture must be `Send`; mutable, move-only, or non-`Sync` captures must be named
 in `move(...)`.
-`thread.spawn` rejects a closure that captures or returns a non-`Send` value, so
-you cannot silently race shared mutable data. Wrap it in a `Mutex` instead. See
+`thread.spawn` rejects a closure that captures or returns a non-`Send` value.
+Use a `Mutex` to share mutable data between threads. See
 [Concurrency](/guide/concurrency/).
 
 ## A complete program

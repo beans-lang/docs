@@ -34,8 +34,8 @@ beansc run examples/hello.b
 
 ## tour.b
 
-`tour.b` is one file that touches every idea in the language. Below are the
-parts worth reading, quoted from the real file.
+`tour.b` introduces core language features in one file. The sections below
+explain selected parts of it.
 
 ### Interfaces with default methods
 
@@ -137,13 +137,13 @@ class Stack<T> {
 }
 ```
 
-Generics are monomorphized: the compiler makes a specialized copy per type, so
-there is no run-time cost.
+Generics are monomorphized: the compiler makes a specialized copy for each
+concrete type.
 
 ### Highlights from `main`
 
 ```beans
-// everything is an object
+// primitive values have methods
 io.println((-5).abs())           // 5
 io.println("42".to_int().or(0))  // 42
 
@@ -154,7 +154,7 @@ let total: decimal = price * (qty as decimal)
 io.println("total: {total}")     // total: 59.97, exactly
 ```
 
-- Primitives are objects: `(-5).abs()` works.
+- Primitive values have methods: `(-5).abs()` works.
 - `decimal` is exact. `19.99 * 3` is `59.97`, not a float approximation.
 - `qty as decimal` is an explicit conversion; Beans never converts number types
   for you.

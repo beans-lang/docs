@@ -18,10 +18,9 @@ import std.tls
 
 ## Rules that shape the package
 
-- **The platform owns the cryptography and the trust decision.** Certificate
-  chain building and hostname verification always belong to the platform
-  verifier; this package never reimplements either. That is not a convenience —
-  it is the only way to inherit the OS's revocation, policy and root updates.
+- **Verification uses the platform provider.** Certificate-chain building and
+  hostname verification use the platform verifier, including its revocation
+  rules, policy, and root updates.
 - **Extra roots add, they never replace.** `connect_with_roots` widens which
   anchors are acceptable for one connection, for a private CA or a pinned root.
   The system store still applies, so a normal public chain still verifies.

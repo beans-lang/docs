@@ -79,8 +79,7 @@ thread-local storage, functions, and function pointers.
 
 ## What it refuses
 
-bindgen is strict: it refuses to guess. It will not emit a binding for a
-construct it cannot reproduce **exactly**:
+By default, bindgen rejects constructs it cannot represent exactly:
 
 - varargs
 - bitfields

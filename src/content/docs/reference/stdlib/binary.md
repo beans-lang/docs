@@ -97,8 +97,8 @@ pub fn write_f64(data: Bytes, pos: int, value: float, order: ByteOrder) -> Resul
 
 ## Appends
 
-Add a number to the end of the buffer, growing it by the width of the value.
-These return nothing and never fail.
+Append a number to the buffer, growing it by the width of the value. These
+functions return no value.
 
 ```beans
 pub fn append_u8(data: Bytes, value: u8)

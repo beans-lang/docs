@@ -166,8 +166,8 @@ inside a subclass initializer.
 - Until every field is assigned, the `init` body is a straight-line prefix:
   each statement either assigns a field or reads a field already assigned. No
   method calls, no passing `self` on, no `return`, and no string interpolation.
-  The checker proves this, so a half-built object can never escape. After the
-  last field is assigned, anything goes.
+  The checker rejects uses that would expose a partially initialized object.
+  After all fields are assigned, normal statements and method calls are allowed.
 - A plain `fn init` is package-private. Any file in the same package can write
   `new Conn(...)`.
 - Use `pub fn init` only when another package must construct the class. The
@@ -212,10 +212,10 @@ class Conn {
   `super.init`, and it applies to a `deinit` a class inherits as much as one it
   declares.
 
-That last rule is about the one object under construction. Everything it had
-already built and stored dies normally, and a reference the initializer handed
-out — possible only once every field is assigned — keeps the object alive, so
-its eventual death is an ordinary one that does run `deinit`.
+That last rule applies to the object under construction. Previously initialized
+fields are released normally. Once every field is assigned, the initializer may
+pass out a reference that keeps the object alive. In that case, `deinit` runs
+when the object's lifetime ends.
 
 If you relied on `deinit` running after a failed construction, to close a handle
 or unregister something the initializer had already taken, move that work out of

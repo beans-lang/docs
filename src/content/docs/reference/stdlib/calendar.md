@@ -7,10 +7,9 @@ description: The civil calendar — a UTC date and time of day, its conversions 
 **API summary** (generated from the Beans source by `npm run coverage`): 3 package functions · 2 types · 9 static methods · 23 instance methods · 7 public fields · 7 enum variants.
 <!-- coverage:summary:end -->
 
-`std.time` names moments in nanoseconds and knows nothing about years.
-`std.calendar` is the other half: a year-month-day and a time of day, the
-conversions between that and the epoch, and the two wire formats a program
-actually meets. Read the source at
+`std.calendar` represents calendar dates and times, converts between them and
+epoch timestamps, and parses and formats RFC 3339 and HTTP dates. Read the
+source at
 [`stdlib/std/calendar/calendar.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/calendar/calendar.b).
 
 ```beans
@@ -19,11 +18,9 @@ import std.calendar
 
 ## Rules that shape the package
 
-**UTC only.** There is no local time, no zone database and no daylight-saving
-rule here, on purpose: a wrong timezone answer is worse than no timezone
-answer, and the rules change by political decision several times a year. A
-parsed offset is arithmetic, not a zone — `2024-03-05T09:30:00+05:30` is read
-as the instant it names and stored as UTC.
+The package uses **UTC**. It parses numeric offsets but does not provide local
+time, a timezone database, or daylight-saving rules. For example,
+`2024-03-05T09:30:00+05:30` is converted to UTC and stored as that instant.
 
 **Leap seconds are not modelled.** Every minute has exactly 60 seconds and
 every day exactly 86400, which is what the epoch counters in `std.time` already

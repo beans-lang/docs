@@ -38,7 +38,7 @@ const files = [
 const failures = [];
 for (const file of files) {
   const relative = path.relative(WEBSITE_ROOT, file);
-  const releaseFacing = /^(?:src\/content\/docs\/)(?:bn\/)?start\/(?:install|verify)\.md$/.test(relative);
+  const releaseFacing = /^src\/content\/docs\/start\/(?:install|verify)\.md$/.test(relative);
   const expectedCompiler = releaseFacing ? published : compiler;
   const expectedAbi = releaseFacing ? publishedAbi : runtimeAbi;
   const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);

@@ -3,10 +3,8 @@ title: Builtins
 description: What builtin types and functions Beans gives you, and where to read about each one.
 ---
 
-A **builtin** is a type or function that the Beans compiler knows about on its own.
-You do not import it. You do not write it. It is always there, ready to use. The
-`int` type, the `string` type, `List`, `Option`, and the `panic` function are all
-builtins.
+A **builtin** is a type or function provided by the compiler without an import.
+Examples include `int`, `string`, `List`, `Option`, and `panic`.
 
 This page lists every builtin and links to a page that explains it in full.
 
