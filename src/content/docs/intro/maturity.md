@@ -8,14 +8,14 @@ proven, and which platforms are supported.
 
 ## Where Beans stands
 
-Beans is a production preview on the 1.0 stabilization line. Each part of that
+Beans is a preview on the 1.0 stabilization line. Each part of that
 phrase means something specific:
 
-- **The language contract is frozen at `1.0`.** The syntax and semantics you
-  write against are settled. Code you write now is meant to keep working.
-- **The latest compiler release is `0.1.48`.** The language is `1.0`; the tool
-  that implements it is still on its way to a matching release number.
-- **The runtime ABI is `20`.**
+- **The language contract is the `1.0` candidate.** Compatibility remains a goal;
+  the pre-1.0 line can still change. Pin the compiler and dependencies.
+- **This reference tracks compiler release `0.1.51`.** Release checks establish
+  compiler evidence; independent applications still need their own validation.
+- **The runtime ABI is `22`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
 has open work, listed below.
@@ -33,7 +33,8 @@ The list below is what works today:
   with ownership verification.
 - **A native backend.** MIR compiled to LLVM for debug, release, and LTO builds,
   with automatic reference counting plus a cycle collector.
-- **A reference interpreter** with behavior identical to the native backend.
+- **A reference interpreter** checked against native execution by behavioral
+  suites. Backend limitations and skipped platform checks remain relevant.
 - **Concurrency.** Fibers with `brew`, OS threads, typed atomics, mutexes,
   channels, and readiness waits.
 - **Package management.** Canonical package identity, a hashed `beans.lock`,
@@ -48,7 +49,28 @@ The list below is what works today:
   lists, and options directly, with compile-time mapping checks and XML
   namespace URI matching.
 
-Thirty targets are registered, and most ship as prebuilt release packages.
+Thirty targets are registered. Release **v0.1.50** passed its 26 required
+host package/install gates; that does not certify every library or application
+on those targets. Published release evidence is recorded in the compiler's
+[issue and release audit](https://github.com/beans-lang/beans/blob/main/docs/BUGFIX_TODO.md).
+
+## Initial dependability pilot
+
+Start with small command-line data tools on macOS ARM64 and Linux x86_64 (GNU),
+where local SQLite checks passed under both interpreter and native execution.
+Confirm these platforms fit prospective users' tasks; these checks establish
+local evidence, not user acceptance. Use the standard library and the existing
+SQLite package. Read records,
+validate and transform them, persist them, and compare a deterministic report
+between interpreter and native execution. Each dependency must pass its own
+supported-platform and failure checks.
+
+The [contributor pilot checklist](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#dependability-pilot)
+records setup, malformed input, duplicates, failed writes, locked/offline builds,
+and repeat execution. It also supplies five prospective-user interview prompts.
+Those interviews, retained users, two successful upgrades, and sustained service
+operation have not been established by the compiler gates. Widen scope after
+independent projects provide that evidence.
 
 ## What is still open before 1.0
 
@@ -74,7 +96,8 @@ they are the most tested:
 
 ### Preview targets
 
-These build and are shipped, but are marked preview rather than fully proven:
+These have preview build or execution gates. They are not part of the 26 host
+installer archives and do not carry a production-support claim:
 
 - WebAssembly
 - Bare-metal Cortex-M4 (`thumbv7em-none-eabi`)

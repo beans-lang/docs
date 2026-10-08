@@ -42,3 +42,18 @@ production-tier মানে কী সেটা দেখুন [Maturity আ�
 
 সম্পর্কিত আরো কিছু দেখতে যান [Compatibility](/bn/project/compatibility/) আর
 [Install Beans](/bn/start/install/)-এ।
+
+## প্রকাশের আগে rehearsal
+
+[Build আর release rehearsal](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#independent-build-and-release-rehearsal)
+existing compiler, package, install, release-completeness আর docs gate ব্যবহার করে।
+দ্বিতীয় কেউ কিছু publish না করেই নিজের environment আর কতটা সাহায্য লাগল সেটা লিখে
+রাখতে পারেন। কেউ সত্যিই rehearsal শেষ করে দায়িত্ব না নেওয়া পর্যন্ত maintenance
+একজনের উপরই বেশি নির্ভর করে।
+
+পুরো target rehearsal করার অনুমোদন থাকলে release owner existing workflow-এর manual
+candidate mode-এ `publish=false` আর `skip_autobahn=false` ব্যবহার করতে পারেন। Candidate
+build, প্রকাশিত release, performance, long fuzz, beta/RC soak আর application acceptance
+আলাদা evidence। `VERSION` checkout-এর contract বলে; সর্বশেষ date দেওয়া changelog
+entry installed release-এর contract ধরে রাখে। Unreleased ABI change-কে প্রকাশিত
+installer বা pass করা package gate বলা যাবে না।

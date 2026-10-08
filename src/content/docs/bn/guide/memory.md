@@ -32,20 +32,20 @@ object-কে সম্ভাব্য cycle root হিসেবে সরি�
 collector প্রতিটা root-এর subgraph-কে trial-delete করে, বাইরে থেকে এখনও যেসব
 রেফার হচ্ছে সেগুলো ফিরিয়ে আনে, আর বাকিটা মুক্ত করে দেয়।
 
-- এটা চলে শুধু statement-এর মাঝখানে, যখন কোনো worker thread চালু নেই, আর আরও
-  একবার program শেষ হওয়ার সময়।
-- Worker thread possible-cycle root batch করে publish করে। তাই worker-এর সাধারণ
-  release-এ প্রতিবার global collector lock লাগে না।
+- প্রতিটা worker allocation boundary-তে নিজের unshared candidate graph collect
+  করে। অন্য worker-কে থামায় না বা poll করে না।
+- Thread বা synchronization owner-এর মধ্যে publish করা graph global fallback-এ
+  যায়; সব worker শেষ না হওয়া পর্যন্ত সেটা অপেক্ষা করে। পরে publish হওয়া value-তেও
+  write barrier shared mark বজায় রাখে।
 - সব walk iterative, তাই খুব বড় একটা drop হওয়া গড়নও stack overflow ঘটাবে না।
-- কোনো object যদি **cycle-এর ভেতরে** মরে, তার `deinit` চলে না। cycle নিজে
-  থেকে কখনও শূন্যে নামে না, তাই object যদি কোনো resource ধরে থাকে (একটা file,
-  একটা socket), সেই resource ছাড়া হয় না। declarative সমাধান হলো একটা `weak`
-  field, যেটা এর পরেই বলা আছে; `Shared<T>`-এর cycle ভাঙে `Weak<T>` দিয়ে।
+- Unreachable cycle collect হলে তার `deinit` চলে। Collection-এর সময় scope শেষ
+  হওয়ার সময়ের মতো নির্দিষ্ট না। শেষ strong reference ছাড়া হলেই resource release
+  দরকার হলে back edge-টা `weak` রাখুন; `Shared<T>`-এর cycle-এ `Weak<T>` ব্যবহার করুন।
 
 :::note[যেটা এখনও পারে না]
-worker thread চলার সময় collection পিছিয়ে রাখা হয়। কোনো program যদি একটা
-দীর্ঘজীবী worker-এর পাশে বসে অবিরাম cycle বানাতে থাকে, worker-টা শেষ না হওয়া
-পর্যন্ত সেটা বাড়তেই থাকতে পারে।
+Shared synchronization boundary পেরোনো unreachable cycle সব worker শেষ হওয়ার জন্য
+অপেক্ষা করে। দীর্ঘজীবী shared cycle-এ weak ownership ব্যবহার করুন। Worker-এর নিজের
+unshared graph-এ এই একই delay নেই।
 :::
 
 ## weak field

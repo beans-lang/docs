@@ -177,8 +177,12 @@ Brew<T>.cancel()
 - `cancel()` requests cancellation and returns immediately. The request is
   observed at the child's next park.
 
-Any child the scope does not join is joined by the scope exit, so a fiber cannot
-leak.
+Cancellation cleanup is available from **v0.1.51**; release **v0.1.50** abandons
+cancelled frames on all targets.
+
+An ordinary scope exit joins every child not explicitly joined. Cancellation
+cleanup preserves this ownership on ELF/Mach-O x86_64 and arm64; other targets
+still abandon cancelled frames and do not guarantee child cleanup.
 
 ## TaskGroup&lt;T&gt;
 
