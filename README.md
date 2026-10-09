@@ -6,7 +6,7 @@ language](https://github.com/beans-lang/beans). Built with
 directory; the built site is a static bundle that runs on GitHub Pages under the
 `/docs/` base path and needs no backend or network access.
 
-The source reference and install instructions track Beans `0.1.51` (language
+The source reference and install instructions track Beans `0.1.52` (language
 contract `1.0`, runtime ABI `22`), recorded in the latest dated release in the
 compiler changelog. The reference includes
 `std.log`, HTTP, HTTP/2, WebSocket, TLS, polling, and socket APIs,

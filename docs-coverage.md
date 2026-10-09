@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1539**
-- Symbols with an enforced signature: **1077**
+- Total public symbols: **1540**
+- Symbols with an enforced signature: **1078**
 - Builtin reference symbols: **332**
-- Standard-library symbols: **1193**
+- Standard-library symbols: **1194**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1522,6 +1522,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Command.cwd` | method | `pub fn cwd(path: string) -> Command` | `reference/stdlib/process` | ✓ |
 | `Command.env` | method | `pub fn env(name: string, value: string) -> Command` | `reference/stdlib/process` | ✓ |
 | `Command.run` | method | `pub fn run() -> Result<Output>` | `reference/stdlib/process` | ✓ |
+| `Command.run_timeout` | method | `pub fn run_timeout(ms: int) -> Result<Output>` | `reference/stdlib/process` | ✓ |
 | `Command.start` | method | `pub fn start() -> Result<Child>` | `reference/stdlib/process` | ✓ |
 | `Command.stdin_bytes` | method | `pub fn stdin_bytes(move data: Bytes) -> Command` | `reference/stdlib/process` | ✓ |
 | `Command.stdin_text` | method | `pub fn stdin_text(data: string) -> Command` | `reference/stdlib/process` | ✓ |

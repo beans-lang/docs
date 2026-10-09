@@ -32,7 +32,7 @@ happens.
 beansc run app.b
 ```
 
-Compiler `0.1.51` reduces temporary allocations, caches decoded literal values,
+Since v0.1.51, the compiler reduces temporary allocations, caches decoded literal values,
 and visits integer ranges one element at a time. An early `break` no longer
 requires a list containing the whole range before the loop starts. `run` remains
 the reference interpreter; for execution speed, use a

@@ -4,7 +4,7 @@ description: Run other programs directly, with no shell, capture output, feed in
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 4 types · 1 constructor · 28 instance methods · 7 public fields.
+**API summary** (generated from the Beans source by `npm run coverage`): 4 types · 1 constructor · 29 instance methods · 7 public fields.
 <!-- coverage:summary:end -->
 
 `std.process` runs other programs. It passes the program name and each argument
@@ -82,6 +82,7 @@ Run it:
 
 ```beans
 pub fn run() -> Result<Output>
+pub fn run_timeout(ms: int) -> Result<Output>
 pub fn start() -> Result<Child>
 ```
 
@@ -89,6 +90,12 @@ pub fn start() -> Result<Child>
   streams, wait, and reap. Draining both at once is what makes the classic
   deadlock impossible, where a parent reading stdout to EOF hangs while the child
   blocks writing stderr.
+- `run_timeout(ms)` uses one deadline for stdin, both output streams, and exit.
+  On timeout it stops the child process group, reaps the child, and returns an
+  error of kind `timeout`. Negative durations return `invalid`; zero requests
+  an immediate deadline. Output capture limits and ordinary run errors match
+  `run()`. This method is available on current `main` and is not included in the
+  published v0.1.52 archives.
 - `start()` spawns and returns straight away, handing back a live [`Child`](#unique-class-child)
   to watch, talk to, and stop. `stdin_bytes`, `stdin_text`, and `capture_limit`
   do not apply to `start()`, because its streams stay open for you to use;

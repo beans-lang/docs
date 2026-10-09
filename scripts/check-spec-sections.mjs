@@ -73,8 +73,8 @@ const SPEC_SECTION_PAGE = new Map([
   ['if and match as values', 'guide/control-flow.md'],
   ['Generics', 'guide/generics.md'],
   ['Concurrency', 'guide/concurrency.md'],
-  ['brew — child fibers (spec/CONCURRENCY.md)', 'guide/fibers.md'],
-  ['contained — a catch frame at a call (spec/CONCURRENCY.md)', 'guide/fibers.md'],
+  ['brew - child fibers (spec/CONCURRENCY.md)', 'guide/fibers.md'],
+  ['contained - a catch frame at a call (spec/CONCURRENCY.md)', 'guide/fibers.md'],
   // The removal is history, not surface. guide/fibers.md is what replaced it
   // and check-version.mjs already refuses a stale version number there.
   ['async and await (removed)', null],
