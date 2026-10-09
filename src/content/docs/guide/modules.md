@@ -112,7 +112,9 @@ fn round_rule() {}      // package-private helper
 ## Lexical rules
 
 - **No semicolons.** A newline ends a statement (only after a token that can end
-  one). Because of that, `} else {` must sit on one line.
+  one). `else` may follow the branch's `}` on the same line or begin the next
+  line; no statement can start with `else`, so both layouts are unambiguous.
+  `} else {` is the house style.
 - **Method chains span lines.** A chain may break after a trailing `.` (a dot
   can never end a statement) or before a leading `.name` (a newline is not a
   terminator when the next line begins a member access). `..` stays a range
