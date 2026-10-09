@@ -27,9 +27,7 @@ What falls under each:
 
 ## There is no formatter
 
-Beans has **no formatter**. `beansc fmt` does not exist, and there is no
-separate formatter tool. Formatting is not yet implemented. If you are looking
-for a "format on save," there is nothing to wire up yet.
+Beans has no formatter or format-on-save support. `beansc fmt` is not a command.
 
 ## There is no `beansc test`
 

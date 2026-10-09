@@ -26,7 +26,7 @@ Two rules from the file's header explain the whole API:
   `TcpStream.connect`, `UdpSocket.bind`, and `Address.resolve`, the same shape as
   `File.open`. There are no module-level functions in `std.net`.
 - **Sockets are move-only `Send` owners:** closed by `deinit`, and transferable
-  to one worker with an explicit move capture. One owner, one close.
+  to one worker with an explicit move capture.
 
 ## Binding to any free port
 
@@ -146,8 +146,8 @@ io.println("and knows who sent it {note.from.port == sender.port()?}")
 
 UDP is message-based. `send_to` sends one datagram to an `Address`. `recv_from`
 returns a `Datagram` that carries both the `data` and the sender's address in
-`from`, so you can reply. `set_timeouts` bounds the read, so a lost datagram is
-a reported timeout, never a hang.
+`from`, so you can reply. `set_timeouts` limits how long `recv_from` waits and
+reports a timeout if no datagram arrives.
 
 ## Names and addresses
 

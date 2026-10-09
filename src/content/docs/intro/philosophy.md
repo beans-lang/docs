@@ -3,10 +3,6 @@ title: Language philosophy
 description: The design rules Beans follows and the reasoning behind them, including why Option and some are cased the way they are.
 ---
 
-Beans is opinionated. It follows a short list of design rules, and every feature
-has to earn its place against them. Once you know these rules, most of the
-language stops being surprising.
-
 ## The design rules
 
 ### 1. Small grammar
@@ -15,17 +11,17 @@ Every keyword must remove more complexity than it adds. The grammar is kept smal
 on purpose. A feature that only saves a little typing but adds a new thing to
 learn does not get in.
 
-### 2. Everything is an object
+### 2. Methods on values
 
-You can call methods on any value, even primitives. `5.abs()` works. Primitives
-are unboxed underneath, so this costs nothing at run time.
+Primitive values have methods too: `5.abs()` works without boxing the integer.
+Structs copy by value, while classes have reference semantics. Beans also
+supports standalone functions and closures.
 
 ### 3. No null, no exceptions
 
 There is no `null` and there are no exceptions anywhere in the language. A value
 that might be missing has type `Option<T>`. An operation that might fail returns
-`Result<T>`. Both are ordinary values you handle in the open, so no control flow
-jumps out of your code without warning.
+`Result<T>`. Callers handle both through ordinary values.
 
 ### 4. Every new name states its type
 

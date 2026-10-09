@@ -3,9 +3,8 @@ title: Reproducible builds
 description: The content-addressed dependency cache, and the --locked and --offline flags.
 ---
 
-Beans is built so the same inputs give the same build later. Dependencies are
-cached by content, the lock file records exact hashes, and two flags let you
-demand that nothing drifts.
+Beans caches dependencies by content and records their exact hashes in the lock
+file. `--locked` and `--offline` enforce those recorded dependencies.
 
 ## The content-addressed cache
 
@@ -49,7 +48,7 @@ beansc build --locked --offline app.b -o app
 - Git is always started with a plain argument vector, never through a shell.
 - A remote path is validated to be exactly `host/owner/repo` before it is used.
 
-Together with a pinned compiler (see [Compatibility](/project/compatibility/)),
-a committed `beans.lock` and `--locked --offline` give you a build that does not
-change under you. See [Dependencies and the lock file](/pot/dependencies/) and
+Pin the compiler (see [Compatibility](/project/compatibility/)), commit
+`beans.lock`, and use `--locked --offline` to keep compiler and dependency
+versions fixed. See [Dependencies and the lock file](/pot/dependencies/) and
 [the pot command reference](/pot/commands/) for the pieces this builds on.

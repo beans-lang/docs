@@ -51,8 +51,8 @@ p.moved()
 ## extern "C" structs
 
 `extern "C" struct` fixes the field order and uses the target's C size and
-alignment rules, so the layout matches a C `struct` exactly. That makes it safe
-to read and write through a `RawPtr` or `Slice` over native memory.
+alignment rules, so the layout matches a C `struct` exactly. Access through a
+`RawPtr` or `Slice` still requires `unsafe` and valid backing memory.
 
 ```beans
 extern "C" struct Packet {

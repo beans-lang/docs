@@ -41,9 +41,8 @@ More: [Numbers and decimal](/reference/builtins/numbers/) and
 
 ## decimal
 
-`decimal` is an exact base-10 number. `0.1 + 0.2` is `0.3`, with no rounding
-error, which is why it is the type to use for every money value. Prefer it over
-`float` for any amount of money.
+`decimal` represents base-10 values exactly within its precision limit. For
+example, `0.1 + 0.2` is `0.3` without binary floating-point rounding.
 
 ```beans
 let price: decimal = 19.99

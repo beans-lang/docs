@@ -7,10 +7,9 @@ description: Run other programs directly, with no shell, capture output, feed in
 **API summary** (generated from the Beans source by `npm run coverage`): 4 types · 1 constructor · 28 instance methods · 7 public fields.
 <!-- coverage:summary:end -->
 
-`std.process` runs other programs. There is no shell: the program name and each
-argument reach `execvp` untouched, so a filename with a space, a quote, or a
-semicolon is just a filename. There is nothing to escape and no shell injection
-to worry about. Read the source at
+`std.process` runs other programs. It passes the program name and each argument
+directly to `execvp` without shell parsing. Spaces, quotes, and semicolons stay
+in the argument. Read the source at
 [`stdlib/std/process/process.b`](https://github.com/beans-lang/beans/blob/main/stdlib/std/process/process.b).
 
 ```beans
@@ -76,8 +75,8 @@ pub fn capture_limit(bytes: int) -> Command
 - `stdin_bytes` moves the byte buffer into the command; `stdin_text` stores text.
   Both set what to write to the child's stdin. Its stdin
   is closed once those bytes are written, so a program that reads to EOF finishes.
-- `capture_limit` caps how much of each stream is kept. The default is 8 MiB
-  (8388608 bytes), so a program that prints forever cannot exhaust memory.
+- `capture_limit` caps how many bytes are retained from each output stream.
+  The default is 8 MiB (8388608 bytes) per stream.
 
 Run it:
 

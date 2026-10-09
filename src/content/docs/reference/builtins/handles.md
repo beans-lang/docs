@@ -186,8 +186,8 @@ still abandon cancelled frames and do not guarantee child cleanup.
 
 ## TaskGroup&lt;T&gt;
 
-`TaskGroup<T>` is a fleet of fibers for when the count is a runtime value. It is
-move-only and carries the same scope-bound rules as `Brew<T>`.
+`TaskGroup<T>` manages a group of child fibers whose count is a runtime value.
+It is move-only and carries the same scope-bound rules as `Brew<T>`.
 
 ```beans
 new TaskGroup<T>()
@@ -199,8 +199,8 @@ TaskGroup<T>.cancel_all()
 
 - `group.brew(f(x))` starts a child in the group, at any block depth.
 - `next()` parks for the earliest unclaimed completion and answers `none` once
-  the fleet is drained. Delivery is in completion order.
-- `try_next()` answers immediately, `none` when nothing has landed.
+  every result has been collected. Results arrive in completion order.
+- `try_next()` returns immediately, with `none` when no result is ready.
 - `wait_all()` joins the rest and answers a list in spawn order, or the first
   failure in spawn order.
 - `cancel_all()` cancels newest-first, joins, and discards every outcome.

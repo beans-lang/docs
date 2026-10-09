@@ -120,8 +120,7 @@ doctype
 
 ## Options
 
-`Options` controls parse behaviour. Both fields default to the safe, lean
-setting.
+`Options` controls parse behaviour. Both fields default to `false`.
 
 ```beans
 pub class Options

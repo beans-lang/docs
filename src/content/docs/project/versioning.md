@@ -24,9 +24,8 @@ runtime_abi=22
 - **language**: the language version (`1.0`).
 - **runtime_abi**: the runtime ABI number (`22`).
 
-From that file, `src/version.b` is generated. A test
-(`test/version.sh`) refuses a stale copy, so the generated Beans file can never
-drift from `VERSION`.
+`src/version.b` is generated from that file. `test/version.sh` fails when the
+generated file differs from `VERSION`.
 
 `beansc --version` prints all three.
 

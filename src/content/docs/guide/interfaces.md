@@ -115,7 +115,7 @@ class Dog extends Animal {
     fn init(breed: string, name: string) {
         self.breed = breed        // 1. this class's own fields
         super.init(name)          // 2. the parent's constructor, exactly once
-        self.bark()               // 3. everything is assigned, anything goes
+        self.bark()               // 3. initialization is complete; methods can use self
     }
 }
 ```
@@ -133,7 +133,8 @@ initializer. A subclass that adds a required field must declare its own `init`.
 
 ## Downcast with `as?`
 
-`as?` checks a reference's real type and returns an `Option`. It never crashes:
+`as?` checks a reference's real type and returns an `Option`. A failed downcast
+returns `none`:
 
 ```beans
 let s: Shape = pick_a_shape()

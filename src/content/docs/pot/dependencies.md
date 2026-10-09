@@ -105,7 +105,7 @@ version to use, so only the commands that make that decision touch the file:
 - [`beansc pot update`](/pot/commands/) refreshes locked dependencies and
   rewrites the lock.
 
-Commit `beans.lock` for any serious project. It, plus a pinned compiler, is how
-you get the same build later. See [Reproducible
+Commit `beans.lock` and pin the compiler to keep compiler and dependency versions
+consistent between builds. See [Reproducible
 builds](/pot/reproducible/) for `--locked` and `--offline`, and
 [Compatibility](/project/compatibility/) for why pinning matters before 1.0.

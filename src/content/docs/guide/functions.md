@@ -79,9 +79,8 @@ fn main() {
 Every parameter after a defaulted one needs a default too, defaults are
 by-value only (`move` and `inout` parameters cannot have them), and
 `extern "C"` signatures never have them. A function used as a value keeps its
-full arity. There are **no named arguments** and **no overloading** — one
-name, one signature; a defaulted tail is the one sanctioned way to make an
-argument optional.
+full arity. There are **no named arguments** or **overloading**. Each function
+name has one signature; trailing default parameters let callers omit arguments.
 
 ## Anonymous functions (closures)
 

@@ -121,8 +121,7 @@ plus the width runs past the end of the buffer.
 ### Turning bytes into text
 
 - `to_string()` returns every byte as a string, including any NUL bytes.
-- `to_string_until_nul()` stops at the first NUL byte. The names say which one you
-  get, so a binary-safe reader cannot pick the truncating form by accident.
+- `to_string_until_nul()` stops at the first NUL byte.
 
 ### Varints and checksums
 

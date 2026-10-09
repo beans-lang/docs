@@ -1,6 +1,6 @@
 ---
 title: Attributes and modifiers
-description: Built-in Beans modifiers for visibility, OOP, layout, ownership, and CPU features.
+description: Built-in Beans modifiers for visibility, classes and methods, layout, ownership, and CPU features.
 ---
 
 Beans has custom [annotations](/guide/annotations/) for typed metadata and a
@@ -44,9 +44,7 @@ See [Classes](/guide/classes/) and
 
 ## Layout modifiers
 
-Two modifiers apply **only** to `extern "C"` structs and unions. A modifier that
-moves bytes only means something against a fixed C layout, which is what
-`extern "C"` promises:
+Two modifiers control field layout and require an `extern "C"` struct or union:
 
 - **`packed`** removes every byte of padding between fields.
 - **`align(N)`** raises a record's alignment, or one field's. `N` must be a

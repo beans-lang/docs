@@ -126,12 +126,11 @@ The defaults are strict parsing and a maximum depth of 128.
 spaces for `indent`. `Option.none` becomes JSON `null`; NaN and infinity are
 errors.
 
-`encode_into` appends the same compact JSON to the end of a `Bytes` you already
-own and answers how many bytes it added. It is there for the case `encode`
-cannot serve without a copy: a response body being assembled in a buffer, where
-`encode` would allocate a string only for you to append it and drop it. The
-target keeps whatever was in it. Native builds only — under `beansc run` it
-answers `err` of kind `unsupported` rather than a different set of bytes.
+`encode_into` appends compact JSON to an existing `Bytes` buffer and returns the
+number of bytes added. This avoids allocating an intermediate string when
+assembling a response body. The buffer keeps its existing content. This function
+is supported only in native builds; `beansc run` returns an `err` with kind
+`unsupported`.
 
 Printing stays explicit:
 

@@ -5,13 +5,10 @@ description: Green threads in Beans — brew starts a child fiber, the scope joi
 
 A **fiber** is a green thread: its own stack, scheduled by the Beans runtime on
 a worker thread rather than by the operating system. `brew f(args)` starts `f`
-on a child fiber of the current scope. Fibers are cheap enough to give one to
-every connection, and they park instead of blocking — a fiber waiting on a
-socket, a channel, or a timer costs its worker nothing.
+on a child fiber of the current scope. While a fiber waits on a socket, channel,
+or timer, it parks so the worker can run other fibers.
 
-There are **no colored functions**. Any function may park, and the caller
-neither knows nor cares; there is no `async` keyword and nothing to `await`.
-Code that waits reads exactly like code that does not.
+Any function may park. There is no `async` keyword or `await` at the call site.
 
 ```beans
 import std.io
@@ -97,8 +94,7 @@ without it.
   request; the join still waits for each child to unwind.
 - **An unseen failure escalates.** If the scope exit joins a child that
   panicked and no `join()` ever saw that failure, the parent panics at the
-  scope exit with the child's message and position. A failure can be handled or
-  it propagates — it cannot evaporate.
+  scope exit with the child's message and position.
 
 Because the join happens at scope exit, an un-joined child runs *after* the
 last statement of the scope:
@@ -152,10 +148,10 @@ mid-protocol, the same discipline synchronous code already has.
 
 ## A panic stops one fiber
 
-**A panic terminates only the fiber it happened on.** That fiber's stack
-unwinds, running its defers and dropping its values; the failure — message and
-source position — is delivered at its join as an ordinary catchable error.
-Nothing else stops.
+A panic unwinds the fiber's stack, running its defers and dropping its values.
+The failure, including its message and source position, is returned by `join`
+as a catchable error. Unhandled failures and poisoned locks can affect other
+fibers, as described below.
 
 <!-- beans:compile -->
 ```beans
@@ -178,23 +174,15 @@ fn main() {
 }
 ```
 
-The main fiber panicking with nobody to catch it still ends the program exactly
-as before, so plain programs are unchanged. One sharp edge: a panic while
-holding a `Mutex` **poisons** the lock, and every later `with_lock` on it panics
-with kind `poisoned`. The blast radius is exactly the fibers that touch the
-poisoned data.
+An unhandled panic on the main fiber ends the program. A panic while holding a
+`Mutex` **poisons** the lock. Every later `with_lock` call on that mutex panics
+with kind `poisoned`.
 
 ## contained
 
-Catching a panic used to need a fiber: the only boundary a failure could stop
-at was a brewed fiber's entry, so a server that wanted a panicking handler to
-become a 500 paid a spawn, two context switches and a join on every request —
-whether or not anything ever panicked.
-
-`contained` makes the boundary a **call**. It runs the call on the current
-fiber, in place, under a catch frame, and answers `Result<T>` where `T` is the
-function's declared result type. No fiber is spawned, nothing switches, nothing
-is joined.
+`contained` catches a panic from a call on the current fiber without spawning
+or joining a child fiber. It runs the call under a catch frame and returns
+`Result<T>`, where `T` is the function's declared result type.
 
 <!-- beans:compile -->
 ```beans
@@ -248,9 +236,9 @@ TaskGroup<T>.cancel_all()
 - `group.brew(f(x))` starts a child exactly as a lone `brew` does. Unlike a
   lone `brew`, it is legal at any block depth.
 - `next()` parks for the earliest unclaimed completion and answers
-  `some(ok(v))`, `some(err(e))`, or `none` once the fleet is drained. Delivery
-  is in **completion order** — a fleet exists to take answers as they land.
-- `try_next()` answers immediately, `none` when nothing has landed yet.
+  `some(ok(v))`, `some(err(e))`, or `none` after every result has been collected.
+  Results arrive in **completion order**.
+- `try_next()` returns immediately, with `none` when no result is ready.
 - `wait_all()` joins the rest and answers `ok` of a list in **spawn order**, or
   the first failure in spawn order.
 - `cancel_all()` cancels newest-first, joins, and discards every outcome.
@@ -313,11 +301,9 @@ blocking its worker.
 
 ## Where fibers are not available
 
-Restricted targets have no scheduler. wasm and freestanding builds refuse
-`brew`, `Brew`, and every parking operation at check time, the same way
-freestanding already refuses timer and channel waits. Plain synchronous Beans is
-fully supported there — concurrency is honestly absent rather than quietly
-broken. A program that never brews never parks and pays for nothing.
+Restricted targets have no scheduler. wasm and freestanding builds reject
+`brew`, `Brew`, and parking operations at compile time, including timer and
+channel waits. Synchronous Beans programs are supported on these targets.
 
 ## See also
 

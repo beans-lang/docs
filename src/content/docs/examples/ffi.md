@@ -132,9 +132,8 @@ Two rules from the file's header:
 - **The library opens `RTLD_LOCAL`**, so its symbols never leak into the global
   namespace where an `extern "C" fn` would look.
 
-Because a library binary cannot be committed to the repo, this example takes its
-path from the `BEANS_DYLIB_EXAMPLE` environment variable. Without it, the
-example still exercises every failure path.
+Set `BEANS_DYLIB_EXAMPLE` to the path of a library binary. Without it, the example
+exercises failure cases rather than loading a supplied library.
 
 [Foreign function interface](/guide/ffi/) is the FFI guide, and
 [Unsafe and raw memory](/guide/unsafe/) explains what `unsafe` and `RawPtr` mean.

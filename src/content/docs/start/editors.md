@@ -3,10 +3,9 @@ title: Editor setup
 description: Set up Beans support in VS Code and Zed, both driven by the compiler's language server.
 ---
 
-Beans has editor integrations for **VS Code** and **Zed**. Both are thin
-clients over `beansc lsp`, the compiler's built-in language server. That means
-every answer (errors, completion, go-to-definition) comes from the same
-compiler that builds your code, so the editor never disagrees with the build.
+Beans has editor integrations for **VS Code** and **Zed**. Both use
+`beansc lsp`, the compiler's built-in language server, for errors, completion,
+and go-to-definition.
 
 The integrations live in a separate repository:
 [`github.com/beans-lang/editors`](https://github.com/beans-lang/editors).

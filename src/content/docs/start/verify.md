@@ -3,8 +3,8 @@ title: Verify the install
 description: Confirm your Beans install works with beansc --version, beansc doctor, and a hello program.
 ---
 
-After installing, three quick checks confirm everything is in place. Open a
-**new** terminal first, so the updated PATH is active.
+After installing, check the compiler version, read the doctor report, and run a
+small program. Open a **new** terminal first, so the updated PATH is active.
 
 ## 1. Check the version
 
@@ -55,6 +55,7 @@ beansc run hello.b
 hello from beans
 ```
 
-If all three checks worked, your install is good. Next, [write and run your
-first program](/start/hello-world/) or [set up a project](/start/projects/). For
+These checks confirm that `beansc` is available and can run this program.
+Next, [write and run your first program](/start/hello-world/) or
+[set up a project](/start/projects/). For
 more on `beansc doctor`, see [doctor and upgrade](/tools/doctor-upgrade/).

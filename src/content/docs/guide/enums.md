@@ -133,8 +133,8 @@ fn main() {
 1 1 4
 ```
 
-Reach for it when the layout is the point — a field in a large array, or a
-compact record you keep many of. An ordinary enum is the default otherwise.
+Use this form when you need a fixed one-byte representation, such as a compact
+record or a large array. Use an ordinary enum otherwise.
 
 The checker refuses the marker, naming the rule, on:
 

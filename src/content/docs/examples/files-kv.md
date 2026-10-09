@@ -3,9 +3,9 @@ title: Files and a KV store
 description: A walk through examples/files.b, the append-only key-value store in examples/kv.b, and advisory file locks in examples/locks.b.
 ---
 
-These three examples cover the file story: the file API
+These examples show the file API
 ([`files.b`](https://github.com/beans-lang/beans/blob/main/examples/files.b)), a
-real durable key-value store built on it
+key-value store built on append-only records
 ([`kv.b`](https://github.com/beans-lang/beans/blob/main/examples/kv.b)), and
 advisory locks for a single-writer database
 ([`locks.b`](https://github.com/beans-lang/beans/blob/main/examples/locks.b)).
@@ -112,8 +112,8 @@ pub fn set(key: string, value: string) -> Result<int> {
 ```
 
 Each `set` builds one record, an 8-byte header (two lengths) followed by the
-key and value bytes, and appends it. No seeking, no rewriting; appends are
-cheap and crash-safe.
+key and value bytes, and appends it without seeking or rewriting existing
+records. The reader stops at a torn trailing record, as described below.
 
 ### Reading scans the log
 

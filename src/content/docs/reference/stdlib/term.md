@@ -7,10 +7,8 @@ description: Terminals — is this a tty, how big is it, raw mode that restores 
 **API summary** (generated from the Beans source by `npm run coverage`): 9 package functions · 5 types · 3 constructors · 1 static method · 25 instance methods · 2 public fields · 19 enum variants.
 <!-- coverage:summary:end -->
 
-`std.term` is what a full-screen terminal program needs and would otherwise
-hand-roll: the tty questions, raw mode, an ANSI frame builder, and a key
-decoder that understands the escape sequences a terminal actually sends. Read
-the source at
+`std.term` provides terminal detection, size queries, raw mode, an ANSI frame
+builder, and a key decoder. Read the source at
 [`stdlib/std/term/`](https://github.com/beans-lang/beans/tree/main/stdlib/std/term).
 
 ```beans
@@ -33,10 +31,9 @@ fenced to flushing output. A full-screen program should watch `terminate` and
 own loop, which needs no handler. In raw mode `Ctrl-C` arrives as the byte
 `0x03` rather than a signal, so the common interrupt is already yours.
 
-**Frames are written whole and unbuffered.** `io.print` goes through stdio,
-where a frame with no trailing newline sits in the buffer. `Frame.flush` writes
-the whole escape-and-text buffer with one `write(2)`, so what you drew is on
-screen when the call returns.
+**`Frame.flush` bypasses stdio buffering.** `io.print` uses stdio, which can
+buffer a frame that has no trailing newline. `Frame.flush` writes the frame's
+escape sequences and text directly with `write(2)`.
 
 **It needs the full runtime.** The checker refuses `std.term` on any runtime
 below full, with a message about the program rather than a link error.

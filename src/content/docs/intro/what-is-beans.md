@@ -3,40 +3,30 @@ title: What Beans is
 description: A short introduction to the Beans language, what it is built to do well, and the one tool you use to work with it.
 ---
 
-Beans is a small object-oriented programming language. It has classes,
-interfaces, and inheritance with reference semantics, on top of a small grammar.
-It has predictable ownership and direct access to the operating system.
+Beans is a small, general-purpose programming language with explicit types,
+predictable ownership, and direct systems access.
+
+It supports standalone functions and closures, structs and enums, and classes
+with interfaces and inheritance. Structs copy by value; classes have reference
+semantics. You can write a complete program with functions, without defining a
+class.
 
 Source files end in `.b`.
 
-## Built to be exact and low-level
+## Types, arithmetic, and errors
 
-Beans is built to be both exact and low-level. Most design choices serve one or
-both of those — which is why it is as comfortable with business software as with
-systems work.
-
-### Business apps
-
-Accounting, ERP, and billing: programs where a wrong number is a real problem.
-For this work Beans gives you:
-
-- **Mandatory explicit types.** Every name says what it is, so code stays
-  readable months later.
-- **Exact `decimal` arithmetic.** `19.99 * 3` is `59.97` exactly, not a float
-  that is almost right.
+- **Mandatory explicit types.** Declarations state their types.
+- **Exact `decimal` arithmetic.** Base-10 arithmetic gives `19.99 * 3` as
+  `59.97` exactly.
 - **No null and no exceptions.** Missing values use `Option<T>`; failures use
-  `Result<T>`. There is no hidden control flow.
+  `Result<T>`.
 
-### Systems work
-
-Databases, operating systems, and hardware control: programs that touch the
-machine directly. For this work Beans gives you:
+## Memory and systems access
 
 - **Sized integers** like `i32` and `u64`, and value types (`struct`, `union`).
 - **An `unsafe` layer** with raw memory and C interop.
-- **No garbage-collector pauses.** Memory is managed with automatic reference
-  counting plus a cycle collector, so no tracing collector stops your program at
-  random.
+- **Automatic memory management.** Memory uses automatic reference counting
+  with a cycle collector, rather than a tracing garbage collector.
 
 ## One tool: `beansc`
 

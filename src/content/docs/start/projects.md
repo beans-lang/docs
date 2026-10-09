@@ -3,9 +3,9 @@ title: Create and run a project
 description: Set up a Beans project with a beans.pot manifest, a main package, and sub-packages.
 ---
 
-A single `.b` file is fine for a quick test. A real program is a **project**:
-a folder tree with a manifest at its root. This page shows how one is laid out
-and how to run it.
+A **project** groups files and packages in a folder tree with a manifest at its
+root. This page shows how to lay out a project and run it. You can also run a
+single `.b` file without a project.
 
 ## What makes a project
 

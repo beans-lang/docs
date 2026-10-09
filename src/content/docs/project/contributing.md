@@ -43,7 +43,8 @@ Beans' own code follows the language design rules. A few basics:
 
 See the [release process](/project/release/) for how changes ship.
 
-For the bounded CLI/SQLite workload, prospective-user interview questions, and
-independent build and release rehearsal, use the corresponding sections of
+For the CLI/SQLite pilot tasks, questions for potential users, and steps for
+another contributor to test the build and release process, see
 [`CONTRIBUTING.md`](https://github.com/beans-lang/beans/blob/main/CONTRIBUTING.md#dependability-pilot).
-These are checklists; they do not claim completed interviews or retained users.
+The checklists describe planned work. They do not record completed interviews
+or retained users.

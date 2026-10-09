@@ -46,11 +46,16 @@ Where a row is not ready, the fix names the exact command, for example
 
 ```bash
 beansc upgrade
+beansc upgrade --force
 ```
 
 `upgrade` moves this installation to the latest release. It needs an **installed
 release**: it reads `BEANS_HOME`, and a plain source checkout has no install, so
 it errors there.
+
+When the latest release is the one already installed, `upgrade` says so and
+stops. `--force` installs it again anyway, which is what to reach for when an
+installation is damaged rather than old.
 
 What it does:
 
