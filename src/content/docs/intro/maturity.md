@@ -13,9 +13,9 @@ phrase means something specific:
 
 - **The language contract is the `1.0` candidate.** Compatibility remains a goal;
   the pre-1.0 line can still change. Pin the compiler and dependencies.
-- **This reference tracks compiler release `0.1.52`.** Release checks test the
+- **This reference tracks compiler release `0.1.53`.** Release checks test the
   compiler. Applications need their own tests.
-- **The runtime ABI is `22`.**
+- **The runtime ABI is `23`.**
 
 It is a preview, not a finished 1.0. It is usable, but the full 1.0 release still
 has open work, listed below.

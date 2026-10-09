@@ -4,7 +4,7 @@ description: Read and write whole files in one call, as bytes or as text.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 12 package functions.
+**API summary** (generated from the Beans source by `npm run coverage`): 15 package functions.
 <!-- coverage:summary:end -->
 
 `std.fs` gives you one-call helpers to read or write a whole file. Under the hood
@@ -62,6 +62,39 @@ fn main() {
     io.print(text)                          // hello / again
 }
 ```
+
+## Durability
+
+```beans
+pub fn write_durable(path: string, data: string) -> Result<int>
+pub fn write_bytes_durable(path: string, data: Bytes) -> Result<int>
+pub fn sync(path: string) -> Result<bool>
+```
+
+`write_durable` and `write_bytes_durable` truncate, write, flush and close on the
+same handle, returning the byte count. Empty input still truncates and flushes.
+They add one OS flush to an ordinary write and do not reopen the file.
+
+`sync` opens an existing file in `"rw"` mode, flushes and closes it without
+creating or truncating it. It requires read/write permission on every platform
+for the portable Windows contract. It adds one open, one flush and one close.
+
+The helpers propagate open, write, flush and successful-path close errors.
+Cleanup after an earlier error preserves that error. A failed write may leave
+the file changed; there is no rollback.
+
+These calls request `fsync` on POSIX or `FlushFileBuffers` on Windows, subject to
+filesystem and device guarantees. They flush file contents; directory entries
+remain the responsibility of `Dir.sync`. Writes truncate in place.
+
+For atomic replacement, write a distinct temporary file in the destination
+directory using `write_durable`, rename it over the destination, then call
+`Dir.sync` on the parent directory. Sync both directories for a move between
+directories. Coordinate concurrent writers yourself. Directory sync on Windows
+is currently best effort, so success does not prove metadata durability.
+
+Directories stay on `Dir`: use `create`, `create_all`, `list`, `walk`, `remove`,
+`remove_all`, `exists`, `current`, `temp_path` and `sync` directly.
 
 ## Asking about a path
 

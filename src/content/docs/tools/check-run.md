@@ -66,3 +66,13 @@ beansc llvm app.b
 ```
 
 `lex` and `parse` take one or more files. `mir` and `llvm` take one file.
+
+## Compiler stack and source limits
+
+From v0.1.53, compiler commands, including the interpreter and editor servers,
+run on a guarded 256 MiB stack on the original OS thread. Syntax nesting is
+limited to 256 levels, and a declaration may have a syntax-tree path of at most
+16,384 nodes. Long chains preserve evaluation and floating-point association
+order. Split larger expressions into intermediate `let` bindings, or split
+large `else if` ladders into functions. Iterative chain representation remains
+future work.

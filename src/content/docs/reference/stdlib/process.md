@@ -94,8 +94,7 @@ pub fn start() -> Result<Child>
   On timeout it stops the child process group, reaps the child, and returns an
   error of kind `timeout`. Negative durations return `invalid`; zero requests
   an immediate deadline. Output capture limits and ordinary run errors match
-  `run()`. This method is available on current `main` and is not included in the
-  published v0.1.52 archives.
+  `run()`. This method is available from v0.1.53.
 - `start()` spawns and returns straight away, handing back a live [`Child`](#unique-class-child)
   to watch, talk to, and stop. `stdin_bytes`, `stdin_text`, and `capture_limit`
   do not apply to `start()`, because its streams stay open for you to use;

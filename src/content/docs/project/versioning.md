@@ -10,19 +10,19 @@ currently on a preview line leading up to 1.0.
 
 All version numbers come from one file:
 [`VERSION`](https://github.com/beans-lang/beans/blob/main/VERSION).
-The current release is `0.1.52`, with the contract below.
+The current release is `0.1.53`, with the contract below.
 Released contracts are preserved in dated
 [`CHANGELOG.md`](https://github.com/beans-lang/beans/blob/main/CHANGELOG.md) entries.
 
 ```text
-compiler=0.1.52
+compiler=0.1.53
 language=1.0
-runtime_abi=22
+runtime_abi=23
 ```
 
-- **compiler**: the compiler version (`0.1.52`).
+- **compiler**: the compiler version (`0.1.53`).
 - **language**: the language version (`1.0`).
-- **runtime_abi**: the runtime ABI number (`22`).
+- **runtime_abi**: the runtime ABI number (`23`).
 
 `src/version.b` is generated from that file. `test/version.sh` fails when the
 generated file differs from `VERSION`.

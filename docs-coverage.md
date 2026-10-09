@@ -8,10 +8,10 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1540**
-- Symbols with an enforced signature: **1078**
+- Total public symbols: **1543**
+- Symbols with an enforced signature: **1081**
 - Builtin reference symbols: **332**
-- Standard-library symbols: **1194**
+- Standard-library symbols: **1197**
 - Coverage gaps: **0**
 
 ## builtin Arena
@@ -1056,9 +1056,12 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `remove` | function | `pub fn remove(path: string) -> Result<bool>` | `reference/stdlib/fs` | ✓ |
 | `rename` | function | `pub fn rename(from: string, to: string) -> Result<bool>` | `reference/stdlib/fs` | ✓ |
 | `size` | function | `pub fn size(path: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
+| `sync` | function | `pub fn sync(path: string) -> Result<bool>` | `reference/stdlib/fs` | ✓ |
 | `temp_dir` | function | `pub fn temp_dir() -> string` | `reference/stdlib/fs` | ✓ |
 | `write` | function | `pub fn write(path: string, data: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 | `write_bytes` | function | `pub fn write_bytes(path: string, data: Bytes) -> Result<int>` | `reference/stdlib/fs` | ✓ |
+| `write_bytes_durable` | function | `pub fn write_bytes_durable(path: string, data: Bytes) -> Result<int>` | `reference/stdlib/fs` | ✓ |
+| `write_durable` | function | `pub fn write_durable(path: string, data: string) -> Result<int>` | `reference/stdlib/fs` | ✓ |
 
 ## std.http
 
