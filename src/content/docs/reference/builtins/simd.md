@@ -4,7 +4,7 @@ description: The low-level built-in types for vector math, fixed arrays, slices,
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 7 types · 6 static methods · 31 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 7 types · 6 static methods · 32 instance methods.
 <!-- coverage:summary:end -->
 
 This page covers the low-level builtins: SIMD vectors, fixed-size arrays, slices,
@@ -90,6 +90,8 @@ read at a different stage.
 - Indexing is checked (panics if out of range).
 - You can assign an element when the binding is `var`.
 - `array.len() -> int` gives `N`.
+- `array.get(int) -> Option<T>` returns a copyable element when present and
+  `none` for a negative or out-of-range index.
 - Two arrays compare equal with `==`.
 - You can loop over one with `for`.
 
@@ -112,7 +114,7 @@ it points at. All of its operations require `unsafe` and are bounds-checked.
 ```beans
 Slice.from_raw(ptr, len)
 
-Slice<T>.get(int) -> T
+Slice<T>.get(int) -> Option<T>
 Slice<T>.set(int, T)
 Slice<T>.subslice(int, int) -> Slice<T>
 Slice<T>.as_ptr() -> RawPtr<T>
@@ -121,7 +123,11 @@ Slice<T>.len() -> int
 
 - `Slice.from_raw(ptr, len)` makes a slice over `len` items at `ptr`. A non-empty
   slice rejects a null pointer.
-- `get(i)` reads item `i` and `set(i, v)` writes it; `s[i]` does the same by index.
+- `get(i)` returns `some(item)` when present and `none` for a negative or
+  out-of-range index. `s[i]` requires the element and panics out of range.
+- `set(i, v)` and `s[i] = v` write an existing item and panic out of range.
+- `get` still requires `unsafe`: an in-range index cannot prove that the
+  allocation is alive. To migrate a required read from 0.1.53, use `s[i]`.
 - `subslice(from, to)` is a smaller view over the same storage.
 - `as_ptr()` hands back the underlying pointer; `len()` is the number of items.
 - You can loop over a slice with `for`.
@@ -129,7 +135,7 @@ Slice<T>.len() -> int
 ```beans
 unsafe {
     let view: Slice<i32> = Slice.from_raw(ptr, 4)
-    let first: i32 = view.get(0)
+    let first: i32 = view[0]
 }
 ```
 
@@ -224,7 +230,7 @@ fn main() {
         let memory: RawPtr<f32> = RawPtr.alloc(4)
         result.store(memory)
         let view: Slice<f32> = Slice.from_raw(memory, 4)
-        io.println("view len {view.len()} first {view.get(0)}")
+        io.println("view len {view.len()} first {view[0]}")
         memory.free()
     }
 }

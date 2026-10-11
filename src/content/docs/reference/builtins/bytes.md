@@ -54,7 +54,7 @@ Bytes.as_ptr() -> RawPtr<u8>
 Bytes.reserve(int)
 Bytes.resize(int)
 Bytes.fill(int)
-Bytes.get(int) -> int
+Bytes.get(int) -> Option<int>
 Bytes.set(int, int)
 Bytes.push(int)
 Bytes.get_u8(int) -> int
@@ -81,9 +81,10 @@ Bytes.get_uvarint(int) -> int
 Bytes.crc32(int, int) -> int
 ```
 
-`bytes[i]` is not one of them, and is refused when you write it rather than
-when a backend tries to emit it: read one byte with `get(index)`, write one
-with `set(index, value)`.
+`bytes[i]` is a checked, required read: it returns `int` and panics out of
+range. `bytes[i] = value` replaces an existing byte, like `set(i, value)`.
+Neither a read nor an indexed write grows the buffer; use `push` to append.
+Compound bracket assignment is not supported.
 
 ### Size and shape
 
@@ -97,8 +98,10 @@ with `set(index, value)`.
 
 ### Single bytes
 
-- `get(i)` returns the byte at `i` as an integer, and panics if `i` is out of
-  range.
+- `get(i)` returns `some(byte)` when present and `none` for a negative or
+  out-of-range index. The byte is an `int` from 0 to 255.
+- To migrate a required `get(i)` read from 0.1.53, use `bytes[i]`.
+  `get_u8(i)` also remains a required read and works with older compilers.
 - `set(i, v)` writes the byte at `i`, and panics if `i` is out of range.
 - `push(v)` adds one byte at the end, growing the buffer.
 

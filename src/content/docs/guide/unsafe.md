@@ -55,7 +55,9 @@ to one stack value for the duration of the closure.
 
 `Slice<T>` is a non-owning `{pointer, length}` view over raw-compatible memory.
 `Slice.from_raw(ptr, len)`, `get`, `set`, indexing, `subslice`, `as_ptr`, and
-iteration all require `unsafe`; reads and writes are bounds-checked. A non-empty
+iteration all require `unsafe`; reads and writes are bounds-checked.
+`get(i)` returns `Option<T>` and uses `none` for a missing index; `view[i]`
+requires the element and panics out of range. A non-empty
 slice rejects a null pointer. You must keep the backing allocation alive and not
 use the view after `free`.
 

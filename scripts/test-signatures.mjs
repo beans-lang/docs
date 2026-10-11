@@ -80,6 +80,10 @@ function findMethod(recv, name) {
 }
 ok(findMethod('List', 'push') === 'List<T>.push(T)', 'builtin List.push signature');
 ok(findMethod('List', 'get') === 'List<T>.get(int) -> Option<T>', 'builtin List.get signature');
+ok(findMethod('array', 'get') === 'array.get(int) -> Option<T>', 'builtin array.get signature');
+ok(findMethod('Bytes', 'get') === 'Bytes.get(int) -> Option<int>', 'builtin Bytes.get signature');
+ok(findMethod('Slice', 'get') === 'Slice<T>.get(int) -> Option<T>', 'builtin Slice.get signature');
+ok(findMethod('string', 'get_byte') === 'string.get_byte(int) -> Option<int>', 'builtin string.get_byte signature');
 ok(findMethod('Map', 'set') === 'Map<K, V>.set(K, V)', 'builtin Map.set signature');
 ok(findMethod('string', 'split') === 'string.split(string) -> List<string>', 'builtin string.split signature');
 ok(

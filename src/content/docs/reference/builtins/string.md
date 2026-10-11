@@ -4,7 +4,7 @@ description: The immutable UTF-8 string type in Beans and every method it has.
 ---
 
 <!-- coverage:summary -->
-**API summary** (generated from the Beans source by `npm run coverage`): 29 instance methods.
+**API summary** (generated from the Beans source by `npm run coverage`): 30 instance methods.
 <!-- coverage:summary:end -->
 
 `string` is immutable UTF-8 text. Once you make a string, it never changes. A
@@ -45,6 +45,7 @@ string.first(int) -> string
 string.last(int) -> string
 string.slice(int, int) -> string
 string.byte_at(int) -> int
+string.get_byte(int) -> Option<int>
 ```
 
 - `first(n)` returns the first `n` bytes; `last(n)` returns the last `n` bytes.
@@ -52,6 +53,9 @@ string.byte_at(int) -> int
   the range is out of bounds.
 - `byte_at(i)` returns the byte value at index `i`, and panics if `i` is out of
   range.
+- `get_byte(i)` returns `some(byte)` when present and `none` for a negative or
+  out-of-range index. Both byte readers return integers from 0 to 255 and use
+  byte offsets, including UTF-8 continuation bytes and embedded NULs.
 
 ```beans
 let s: string = "hello"

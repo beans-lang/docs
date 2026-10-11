@@ -22,7 +22,7 @@ import { BEANS_REPO, compilerSource } from './paths.mjs';
 // Receiver display + generic variable environment, per receiver name.
 const RECEIVERS = {
   string: { display: 'string', env: {} },
-  array: { display: 'array', env: {} },
+  array: { display: 'array', env: { element: 'T' } },
   List: { display: 'List<T>', env: { element: 'T' } },
   Map: { display: 'Map<K, V>', env: { key: 'K', value: 'V' } },
   OrderedMap: { display: 'OrderedMap<K, V>', env: { key: 'K', value: 'V' } },

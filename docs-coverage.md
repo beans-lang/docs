@@ -8,9 +8,9 @@ Beans compiler and standard library to the documentation page that covers it,
 with the exact signature that page must show. The check fails when a symbol is
 missing, its signature is missing or wrong, or a page API summary is stale.
 
-- Total public symbols: **1543**
-- Symbols with an enforced signature: **1081**
-- Builtin reference symbols: **332**
+- Total public symbols: **1545**
+- Symbols with an enforced signature: **1083**
+- Builtin reference symbols: **334**
 - Standard-library symbols: **1197**
 - Coverage gaps: **0**
 
@@ -28,6 +28,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
+| `array.get` | method | `array.get(int) -> Option<T>` | `reference/builtins/simd` | ✓ |
 | `array.len` | method | `array.len() -> int` | `reference/builtins/simd` | ✓ |
 
 ## builtin Atomic
@@ -88,7 +89,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `Bytes.filled` | static | `Bytes.filled(int, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.from` | static | `Bytes.from(string) -> Bytes` | `reference/builtins/bytes` | ✓ |
 | `Bytes.from_raw` | static | `Bytes.from_raw(RawPtr<u8>, int) -> Bytes` | `reference/builtins/bytes` | ✓ |
-| `Bytes.get` | method | `Bytes.get(int) -> int` | `reference/builtins/bytes` | ✓ |
+| `Bytes.get` | method | `Bytes.get(int) -> Option<int>` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_i64` | method | `Bytes.get_i64(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_u16` | method | `Bytes.get_u16(int) -> int` | `reference/builtins/bytes` | ✓ |
 | `Bytes.get_u32` | method | `Bytes.get_u32(int) -> int` | `reference/builtins/bytes` | ✓ |
@@ -311,7 +312,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | Symbol | Kind | Signature | Page | Documented |
 |---|---|---|---|---|
 | `Slice.as_ptr` | method | `Slice<T>.as_ptr() -> RawPtr<T>` | `reference/builtins/simd` | ✓ |
-| `Slice.get` | method | `Slice<T>.get(int) -> T` | `reference/builtins/simd` | ✓ |
+| `Slice.get` | method | `Slice<T>.get(int) -> Option<T>` | `reference/builtins/simd` | ✓ |
 | `Slice.len` | method | `Slice<T>.len() -> int` | `reference/builtins/simd` | ✓ |
 | `Slice.set` | method | `Slice<T>.set(int, T)` | `reference/builtins/simd` | ✓ |
 | `Slice.subslice` | method | `Slice<T>.subslice(int, int) -> Slice<T>` | `reference/builtins/simd` | ✓ |
@@ -328,6 +329,7 @@ missing, its signature is missing or wrong, or a page API summary is stale.
 | `string.find` | method | `string.find(string) -> Option<int>` | `reference/builtins/string` | ✓ |
 | `string.find_byte` | method | `string.find_byte(int, int) -> int` | `reference/builtins/string` | ✓ |
 | `string.first` | method | `string.first(int) -> string` | `reference/builtins/string` | ✓ |
+| `string.get_byte` | method | `string.get_byte(int) -> Option<int>` | `reference/builtins/string` | ✓ |
 | `string.is_empty` | method | `string.is_empty() -> bool` | `reference/builtins/string` | ✓ |
 | `string.last` | method | `string.last(int) -> string` | `reference/builtins/string` | ✓ |
 | `string.len` | method | `string.len() -> int` | `reference/builtins/string` | ✓ |
